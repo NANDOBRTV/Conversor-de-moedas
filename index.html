@@ -15,8 +15,11 @@ label{display:block;font-size:11px;font-weight:700;color:#666;text-transform:upp
 select,input{width:100%;padding:13px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;background:#fafafa;outline:none;font-family:inherit;margin-bottom:8px}
 select:focus,input:focus{border-color:#2a5298;background:#fff}
 #currencySelect{font-weight:600;color:#1e3c72;cursor:pointer}
-#userId{font-size:15px}
-.hint{font-size:11px;color:#999;margin-top:-4px;margin-bottom:12px}
+#userId{font-size:16px;letter-spacing:2px;font-weight:600;text-align:center}
+#userId.invalido{border-color:#e74c3c;background:#fff5f5}
+#userId.valido{border-color:#00b894;background:#f0fff9}
+.hint{font-size:11px;color:#999;margin-top:-4px;margin-bottom:12px;text-align:center}
+.hint.ok{color:#00a383;font-weight:600}
 .hint.warn{color:#e74c3c;font-weight:600}
 .tabs{display:flex;gap:6px;margin:14px 0;background:#f0f3f8;padding:4px;border-radius:12px}
 .tab{flex:1;padding:10px;border:none;background:transparent;color:#666;font-size:13px;font-weight:700;cursor:pointer;border-radius:9px;font-family:inherit}
@@ -67,8 +70,8 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 <select id="currencySelect"></select>
 
 <label for="userId">🆔 Seu ID <span style="color:#e74c3c">*</span></label>
-<input type="text" id="userId" placeholder="Digite seu ID" maxlength="50">
-<div class="hint" id="idHint">Preenchimento obrigatório para recarregar</div>
+<input type="text" id="userId" placeholder="00000000" inputmode="numeric" maxlength="8" autocomplete="off">
+<div class="hint" id="idHint">Digite 8 dígitos (ex: 76328158)</div>
 
 <div class="tabs">
 <button class="tab active" data-m="c" id="tabC">🪙 Moedas → Moeda</button>
@@ -87,7 +90,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 </div>
 <div class="pgto" id="pgtoC">💳 Para pagar <b id="pgtoCVal">—</b></div>
 <div class="brl" id="brlC">💡 Em reais: <b id="brlCVal">—</b></div>
-<div class="needid" id="needC">⚠️ Digite seu ID acima para liberar a compra</div>
+<div class="needid" id="needC">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
 <a id="wppC" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
 </div>
 
@@ -102,7 +105,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
   <div class="det" id="detR">—</div>
 </div>
 <div class="brl" id="brlR">💡 Em reais: <b id="brlRVal">—</b></div>
-<div class="needid" id="needR">⚠️ Digite seu ID acima para liberar a compra</div>
+<div class="needid" id="needR">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
 <a id="wppR" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
 </div>
 
@@ -129,6 +132,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 var WHATSAPP="5582996843269";
 var REF_MOEDAS=1500,REF_PRECO=6.00,MIN=1000;
 var CUSTO=REF_PRECO/REF_MOEDAS;
+var ID_LENGTH=8;
 
 var MOEDAS={
 ARS:{f:'🇦🇷',s:'ARS$',n:'Peso Argentino'},BOB:{f:'🇧🇴',s:'Bs',n:'Boliviano'},
@@ -158,12 +162,33 @@ function fmtRd(v,c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',c
 function fmtM(v){if(Math.abs(v-Math.round(v))<.0001)return fmtN.format(Math.round(v))+' moedas';var s=v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');var p=s.split('.');return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(p[1]?','+p[1]:'')+' moedas'}
 function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg)}
 
-function getUserId(){return document.getElementById('userId').value.trim()}
+var userIdEl=document.getElementById('userId');
+
+// Sanitiza e valida ID em tempo real
+function sanitizeId(){
+  var v=userIdEl.value.replace(/\D/g,'').slice(0,ID_LENGTH);
+  if(userIdEl.value!==v)userIdEl.value=v;
+  return v;
+}
+
+function getUserId(){return userIdEl.value.trim()}
+function isIdValid(){return getUserId().length===ID_LENGTH}
 
 function updateIdHint(){
   var id=getUserId(),hint=document.getElementById('idHint');
-  if(id){hint.textContent='✓ ID preenchido';hint.className='hint';}
-  else{hint.textContent='Preenchimento obrigatório para recarregar';hint.className='hint';}
+  if(id.length===0){
+    userIdEl.className='';
+    hint.textContent='Digite 8 dígitos (ex: 76328158)';
+    hint.className='hint';
+  }else if(id.length<ID_LENGTH){
+    userIdEl.className='invalido';
+    hint.textContent='Faltam '+(ID_LENGTH-id.length)+' dígito'+(ID_LENGTH-id.length>1?'s':'')+' (ex: 76328158)';
+    hint.className='hint warn';
+  }else{
+    userIdEl.className='valido';
+    hint.textContent='✓ ID válido';
+    hint.className='hint ok';
+  }
 }
 
 var sel=document.getElementById('currencySelect');
@@ -189,8 +214,8 @@ rc.classList.add('show');
 var p=Math.round(exato*100)/100;
 if(Math.abs(exato-p)>.0001){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
 if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtEx(exatoBRL,'BRL')}
+if(!isIdValid()){nc.classList.add('show');return}
 var id=getUserId();
-if(!id){nc.classList.add('show');return}
 var msg='Olá! Vim pelo site.\n\n🪙 *Recarga:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
 if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(Math.round(exatoBRL*100)/100,'BRL')+'\n';
 msg+='🆔 *ID:* '+id+'\n\nQuero recarregar!';
@@ -208,8 +233,8 @@ document.getElementById('detR').textContent=fmtRd(v,moeda)+' ÷ '+fmtEx(custo,mo
 rr.classList.add('show');
 var vBRL=v/TAXAS[moeda];
 if(moeda!=='BRL'){br.classList.add('show');document.getElementById('brlRVal').textContent=fmtRd(vBRL,'BRL')}
+if(!isIdValid()){nr.classList.add('show');return}
 var id=getUserId();
-if(!id){nr.classList.add('show');return}
 var qtd=inteira?mi:Math.floor(mf);
 var msg='Olá! Vim pelo site.\n\n💵 *Recarga:* '+fmtRd(v,moeda)+'\n🪙 *Moedas:* '+fmtN.format(qtd)+'\n';
 if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(vBRL,'BRL')+'\n';
@@ -233,7 +258,7 @@ function calcCross(){
 crossFrom.addEventListener('change',calcCross);
 crossTo.addEventListener('change',calcCross);
 
-document.getElementById('userId').addEventListener('input',function(){updateIdHint();calcC();calcR()});
+userIdEl.addEventListener('input',function(){sanitizeId();updateIdHint();calcC();calcR()});
 sel.addEventListener('change',function(e){moeda=e.target.value;attLabels();calcC();calcR()});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
@@ -247,4 +272,4 @@ calcCross();
 fetch('https://open.er-api.com/v6/latest/BRL').then(function(r){return r.json()}).then(function(d){if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='BRL'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR();renderRatesTable();calcCross()}}).catch(function(){renderRatesTable();calcCross()});
 </script>
 </body>
-</html>u
+  </html>
