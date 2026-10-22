@@ -1,513 +1,188 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Conversor de Moedas da América Latina ↔ Reais</title>
-  <meta name="description" content="Converta moedas de toda a América Latina para reais ou para outras moedas. Compre pelo WhatsApp.">
-  <meta name="theme-color" content="#1e3c72">
-
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://nandobrtv.github.io/Conversor-de-moedas/">
-  <meta property="og:title" content="Conversor de Moedas da América Latina">
-  <meta property="og:description" content="Converta moedas de toda a América Latina. Compre pelo WhatsApp.">
-  <meta property="og:image" content="https://nandobrtv.github.io/Conversor-de-moedas/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:locale" content="pt_BR">
-  <meta property="og:site_name" content="Conversor de Moedas">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Conversor de Moedas da América Latina">
-  <meta name="twitter:description" content="Converta moedas de toda a América Latina.">
-  <meta name="twitter:image" content="https://nandobrtv.github.io/Conversor-de-moedas/og-image.png">
-
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪙</text></svg>">
-
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 26px;
-      width: 100%;
-      max-width: 440px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    h1 {
-      font-size: 21px;
-      color: #1e3c72;
-      text-align: center;
-      margin-bottom: 4px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #666;
-      font-size: 13px;
-      margin-bottom: 18px;
-    }
-
-    .currency-select-wrap {
-      margin-bottom: 18px;
-    }
-    .currency-select-wrap label {
-      display: block;
-      font-size: 11px;
-      font-weight: 700;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-      text-align: center;
-    }
-    #currencySelect {
-      width: 100%;
-      padding: 12px 14px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #1e3c72;
-      background: #fafafa;
-      outline: none;
-      cursor: pointer;
-      font-family: inherit;
-      transition: border 0.2s;
-    }
-    #currencySelect:focus { border-color: #2a5298; background: #fff; }
-
-    .tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 18px;
-      background: #f0f3f8;
-      padding: 4px;
-      border-radius: 12px;
-    }
-    .tab {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: transparent;
-      color: #666;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      border-radius: 9px;
-      transition: all 0.2s;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-    .tab.active {
-      background: #fff;
-      color: #2a5298;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .mode { display: none; }
-    .mode.active { display: block; }
-
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: #555;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 18px;
-      outline: none;
-      background: #fafafa;
-      transition: border 0.2s, background 0.2s;
-      margin-bottom: 8px;
-    }
-    input:focus { border-color: #2a5298; background: #fff; }
-    input.invalido { border-color: #e74c3c; background: #fff5f5; }
-
-    .minimo {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 14px;
-      text-align: right;
-    }
-    .minimo b { color: #2a5298; }
-
-    .erro {
-      background: #ffecec;
-      border: 2px solid #e74c3c;
-      color: #c0392b;
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-      font-size: 13px;
-      margin-bottom: 14px;
-      display: none;
-    }
-    .erro b { font-size: 15px; }
-    .erro.show { display: block; }
-
-    .resultado {
-      background: linear-gradient(135deg, #00b894, #00a383);
-      color: #fff;
-      border-radius: 14px;
-      padding: 22px 16px;
-      text-align: center;
-      display: none;
-    }
-    .resultado.show { display: block; }
-    .resultado .titulo {
-      font-size: 12px;
-      opacity: 0.9;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-    }
-    .resultado .principal {
-      font-size: 36px;
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: -1.5px;
-      word-break: break-all;
-    }
-    .resultado .detalhe {
-      margin-top: 12px;
-      font-size: 12px;
-      opacity: 0.92;
-      font-family: 'Courier New', monospace;
-      background: rgba(255,255,255,0.15);
-      padding: 6px 10px;
-      border-radius: 8px;
-      display: inline-block;
-    }
-    .resultado .nota {
-      margin-top: 10px;
-      font-size: 12px;
-      opacity: 0.9;
-    }
-
-    .pagamento {
-      margin-top: 12px;
-      background: #fff7e6;
-      border: 2px dashed #f5a623;
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      font-size: 13px;
-      color: #8a6d1c;
-      display: none;
-    }
-    .pagamento.show { display: block; }
-    .pagamento b {
-      display: block;
-      color: #b87800;
-      font-size: 19px;
-      margin-top: 4px;
-    }
-    .pagamento small {
-      display: block;
-      color: #b09a6a;
-      font-size: 11px;
-      margin-top: 4px;
-    }
-
-    .brl-equiv {
-      margin-top: 10px;
-      background: #eef3fb;
-      border: 1px dashed #b9c6dd;
-      border-radius: 10px;
-      padding: 10px;
-      text-align: center;
-      font-size: 13px;
-      color: #2a5298;
-      display: none;
-    }
-    .brl-equiv.show { display: block; }
-    .brl-equiv b { font-size: 15px; }
-
-    .btn-whats {
-      display: none;
-      width: 100%;
-      margin-top: 12px;
-      padding: 15px;
-      background: linear-gradient(135deg, #25d366, #128c7e);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
-      transition: transform 0.15s, box-shadow 0.15s;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .btn-whats.show { display: flex; }
-    .btn-whats:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(37, 211, 102, 0.45);
-    }
-    .btn-whats:active { transform: translateY(0); }
-    .btn-whats svg { width: 22px; height: 22px; flex-shrink: 0; }
-
-    .info {
-      text-align: center;
-      color: #666;
-      font-size: 12px;
-      margin-top: 14px;
-      line-height: 1.6;
-    }
-    .info b { color: #2a5298; }
-    .info .live { color: #00a383; font-weight: 700; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conversor de Moedas - América Latina</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+h1{font-size:20px;color:#1e3c72;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#666;font-size:13px;margin-bottom:16px}
+label{display:block;font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+select,input{width:100%;padding:13px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;background:#fafafa;outline:none;font-family:inherit;margin-bottom:8px}
+select:focus,input:focus{border-color:#2a5298;background:#fff}
+#currencySelect{font-weight:600;color:#1e3c72;cursor:pointer}
+.tabs{display:flex;gap:6px;margin:14px 0;background:#f0f3f8;padding:4px;border-radius:12px}
+.tab{flex:1;padding:10px;border:none;background:transparent;color:#666;font-size:13px;font-weight:700;cursor:pointer;border-radius:9px;font-family:inherit}
+.tab.active{background:#fff;color:#2a5298;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.mode{display:none}.mode.active{display:block}
+.minimo{font-size:12px;color:#666;margin-bottom:12px;text-align:right}
+.minimo b{color:#2a5298}
+.erro{background:#ffecec;border:2px solid #e74c3c;color:#c0392b;border-radius:10px;padding:12px;text-align:center;font-size:13px;margin-bottom:12px;display:none}
+.erro.show{display:block}
+.result{background:linear-gradient(135deg,#00b894,#00a383);color:#fff;border-radius:14px;padding:20px 16px;text-align:center;display:none}
+.result.show{display:block}
+.result .tit{font-size:11px;opacity:.9;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.result .val{font-size:34px;font-weight:800;line-height:1;word-break:break-all}
+.result .det{margin-top:10px;font-size:11px;opacity:.92;font-family:monospace;background:rgba(255,255,255,.15);padding:6px 10px;border-radius:6px;display:inline-block}
+.pgto{margin-top:10px;background:#fff7e6;border:2px dashed #f5a623;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#8a6d1c;display:none}
+.pgto.show{display:block}
+.pgto b{display:block;color:#b87800;font-size:18px;margin-top:3px}
+.brl{margin-top:10px;background:#eef3fb;border:1px dashed #b9c6dd;border-radius:10px;padding:10px;text-align:center;font-size:13px;color:#2a5298;display:none}
+.brl.show{display:block}
+.wpp{display:none;width:100%;margin-top:12px;padding:15px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;text-align:center;box-shadow:0 6px 18px rgba(37,211,102,.35)}
+.wpp.show{display:block}
+.info{text-align:center;color:#666;font-size:12px;margin-top:14px;line-height:1.5}
+.info b{color:#2a5298}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>🪙 Conversor de Moedas da América Latina</h1>
-    <p class="subtitle">Escolha a moeda, converta e compre pelo WhatsApp</p>
+<div class="card">
+<h1>🪙 Conversor de Moedas</h1>
+<p class="sub">América Latina — escolha e converta</p>
 
-    <!-- SELETOR DE MOEDA -->
-    <div class="currency-select-wrap">
-      <label for="currencySelect">💱 Escolha a moeda</label>
-      <select id="currencySelect"></select>
-    </div>
+<label for="currencySelect">💱 Moeda</label>
+<select id="currencySelect"></select>
 
-    <!-- ABAS -->
-    <div class="tabs" role="tablist">
-      <button class="tab active" data-mode="coins" id="tabCoins" role="tab">🪙 Moedas → Moeda</button>
-      <button class="tab" data-mode="reais" id="tabReais" role="tab">💵 Moeda → Moedas</button>
-    </div>
+<div class="tabs">
+<button class="tab active" data-m="c" id="tabC">🪙 Moedas → Moeda</button>
+<button class="tab" data-m="r" id="tabR">💵 Moeda → Moedas</button>
+</div>
 
-    <!-- MODO 1: Moedas → Moeda estrangeira -->
-    <div id="modeCoins" class="mode active">
-      <label for="moedas">Quantidade de moedas</label>
-      <input type="text" id="moedas" inputmode="numeric" placeholder="Ex: 6666" autofocus aria-describedby="minimoCoins">
-      <div class="minimo" id="minimoCoins">Mínimo: <b>1.000 moedas</b></div>
+<div id="modeC" class="mode active">
+<label>Quantidade de moedas</label>
+<input type="text" id="moedas" inputmode="numeric" placeholder="Ex: 6666" autofocus>
+<div class="minimo" id="minC">Mínimo: <b>1.000 moedas</b></div>
+<div class="erro" id="errC">⚠️ <b>Mínimo 1.000 moedas</b><br><span id="errCMsg"></span></div>
+<div class="result" id="resC">
+  <div class="tit">Valor exato</div>
+  <div class="val" id="valC">—</div>
+  <div class="det" id="detC">—</div>
+</div>
+<div class="pgto" id="pgtoC">💳 Para pagar <b id="pgtoCVal">—</b></div>
+<div class="brl" id="brlC">💡 Em reais: <b id="brlCVal">—</b></div>
+<a id="wppC" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
+</div>
 
-      <div class="erro" id="erroCoins" role="alert">
-        ⚠️ <b>Valor mínimo é de 1.000 moedas</b><br>
-        <span id="erroCoinsMsg">Digite pelo menos 1.000 para ver o valor.</span>
-      </div>
+<div id="modeR" class="mode">
+<label id="lblR">Valor em moeda</label>
+<input type="text" id="reais" inputmode="decimal" placeholder="Ex: 20,00">
+<div class="minimo" id="minR">Mínimo: —</div>
+<div class="erro" id="errR">⚠️ <b>Valor mínimo</b><br><span id="errRMsg"></span></div>
+<div class="result" id="resR">
+  <div class="tit">Você recebe</div>
+  <div class="val" id="valR">—</div>
+  <div class="det" id="detR">—</div>
+</div>
+<div class="brl" id="brlR">💡 Em reais: <b id="brlRVal">—</b></div>
+<a id="wppR" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
+</div>
 
-      <div class="resultado" id="resultadoCoins" aria-live="polite">
-        <div class="titulo">Valor exato</div>
-        <div class="principal" id="resultCoins">—</div>
-        <div class="detalhe" id="detalheCoins">—</div>
-      </div>
+<p class="info" id="info"></p>
+</div>
 
-      <div class="pagamento" id="pagamentoBox">
-        💳 Para pagar (arredondado)
-        <b id="pagamento">—</b>
-        <small>arredondado para a menor unidade da moeda</small>
-      </div>
+<script>
+var WHATSAPP="5582996843269";
+var REF_MOEDAS=1500,REF_PRECO=6.00,MIN=1000;
+var CUSTO=REF_PRECO/REF_MOEDAS;
 
-      <div class="brl-equiv" id="brlEquivCoins">
-        💡 Em reais: <b id="brlCoins">—</b>
-      </div>
+var MOEDAS={
+ARS:{f:'🇦🇷',s:'ARS$',n:'Peso Argentino'},
+BOB:{f:'🇧🇴',s:'Bs',n:'Boliviano'},
+BRL:{f:'🇧🇷',s:'R$',n:'Real'},
+CLP:{f:'🇨🇱',s:'CLP$',n:'Peso Chileno'},
+COP:{f:'🇨🇴',s:'COP$',n:'Peso Colombiano'},
+USD:{f:'🇺🇸',s:'US$',n:'Dólar'},
+GYD:{f:'🇬🇾',s:'GY$',n:'Dólar Guianense'},
+PYG:{f:'🇵🇾',s:'₲',n:'Guarani'},
+PEN:{f:'🇵🇪',s:'S/',n:'Sol'},
+SRD:{f:'🇸🇷',s:'SR$',n:'Dólar Surinamês'},
+UYU:{f:'🇺🇾',s:'$U',n:'Peso Uruguaio'},
+VES:{f:'🇻🇪',s:'Bs.S',n:'Bolívar'},
+EUR:{f:'🇪🇺',s:'€',n:'Euro'},
+BZD:{f:'🇧🇿',s:'BZ$',n:'Dólar Belize'},
+CRC:{f:'🇨🇷',s:'₡',n:'Colón CR'},
+GTQ:{f:'🇬🇹',s:'Q',n:'Quetzal'},
+HNL:{f:'🇭🇳',s:'L',n:'Lempira'},
+MXN:{f:'🇲🇽',s:'MX$',n:'Peso Mexicano'},
+NIO:{f:'🇳🇮',s:'C$',n:'Córdoba'},
+PAB:{f:'🇵🇦',s:'B/.',n:'Balboa'},
+CUP:{f:'🇨🇺',s:'CUP$',n:'Peso Cubano'},
+DOP:{f:'🇩🇴',s:'RD$',n:'Peso Dominicano'},
+HTG:{f:'🇭🇹',s:'G',n:'Gourde'},
+JMD:{f:'🇯🇲',s:'J$',n:'Dólar Jamaicano'},
+TTD:{f:'🇹🇹',s:'TT$',n:'Dólar Trinidad'},
+BSD:{f:'🇧🇸',s:'B$',n:'Dólar Bahamas'},
+BBD:{f:'🇧🇧',s:'Bds$',n:'Dólar Barbados'},
+XCD:{f:'🌎',s:'EC$',n:'Dólar Caribe Leste'}
+};
 
-      <a id="btnWhatsCoins" class="btn-whats" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Comprar pelo WhatsApp
-      </a>
-    </div>
+var TAXAS={BRL:1,ARS:170,BOB:1.2,CLP:160,COP:800,USD:.17,GYD:35,PYG:1200,PEN:.65,SRD:6.5,UYU:6.5,VES:.0001,EUR:.16,BZD:.34,CRC:90,GTQ:1.3,HNL:4.2,MXN:3,NIO:6.1,PAB:.17,CUP:5,DOP:10,HTG:22,JMD:26,TTD:1.2,BSD:.17,BBD:.34,XCD:.46};
 
-    <!-- MODO 2: Moeda estrangeira → Moedas -->
-    <div id="modeReais" class="mode">
-      <label for="reais" id="reaisLabel">Valor em moeda</label>
-      <input type="text" id="reais" inputmode="decimal" placeholder="Ex: 20,00" aria-describedby="minimoReais">
-      <div class="minimo" id="minimoReais">Mínimo: <b>—</b></div>
+var moeda='BRL';
+var fmtN=new Intl.NumberFormat('pt-BR');
 
-      <div class="erro" id="erroReais" role="alert">
-        ⚠️ <b id="erroReaisTitulo">Valor mínimo não atingido</b><br>
-        <span id="erroReaisMsg">Digite pelo menos o valor mínimo para ver as moedas.</span>
-      </div>
+function num(v){v=String(v).replace(/[^\d.,-]/g,'');if(!v)return NaN;if(v.indexOf(',')>-1)v=v.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(v))v=v.replace(/\./g,'');var n=parseFloat(v);return isNaN(n)?NaN:n}
 
-      <div class="resultado" id="resultadoReais" aria-live="polite">
-        <div class="titulo">Você recebe</div>
-        <div class="principal" id="resultReais">0 moedas</div>
-        <div class="detalhe" id="detalheReais">—</div>
-        <div class="nota" id="notaReais"></div>
-      </div>
+function fmtEx(v,c){var s=MOEDAS[c].s;if(v===0)return s+' 0,00';var t=v.toFixed(10).replace(/0+$/,'').replace(/\.$/,'');if(t.indexOf('.')<0)t+='.00';var p=t.split('.');var d=p[1]||'00';if(d.length===1)d+='0';return s+' '+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+','+d}
 
-      <div class="brl-equiv" id="brlEquivReais">
-        💡 Em reais: <b id="brlReais">—</b>
-      </div>
+function fmtRd(v,c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',currency:c}).format(v)}catch(e){return MOEDAS[c].s+' '+v.toFixed(2).replace('.',',')}}
 
-      <a id="btnWhatsReais" class="btn-whats" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Comprar pelo WhatsApp
-      </a>
-    </div>
+function fmtM(v){if(Math.abs(v-Math.round(v))<.0001)return fmtN.format(Math.round(v))+' moedas';var s=v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');var p=s.split('.');return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(p[1]?','+p[1]:'')+' moedas'}
 
-    <p class="info" id="info"></p>
-  </div>
+function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg)}
 
-  <script>
-    // ===== CONFIGURAÇÃO =====
-    const WHATSAPP_NUMERO = "5582996843269"; // ✅ SEU NÚMERO
-    const MOEDAS_REF      = 1500;
-    const PRECO_REF_BRL   = 6.00;  // Preço do pacote de referência EM REAIS
-    const MOEDAS_MINIMO   = 1000;
-    // ========================
+var sel=document.getElementById('currencySelect');
+Object.keys(MOEDAS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
 
-    const CUSTO_POR_MOEDA_BRL = PRECO_REF_BRL / MOEDAS_REF; // 0.004 BRL/moeda
+function attLabels(){var c=MOEDAS[moeda];document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';var minV=MIN*CUSTO*TAXAS[moeda];document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(minV,moeda)+'</b>';document.getElementById('info').innerHTML='Referência: <b>'+fmtN.format(REF_MOEDAS)+' moedas = '+fmtRd(REF_PRECO,'BRL')+'</b><br>cada moeda = '+fmtEx(CUSTO*TAXAS[moeda],moeda)}
 
-    // ===== MOEDAS DA AMÉRICA LATINA E CARIBE =====
-    const currencies = {
-      // América do Sul
-      ARS: { flag: '🇦🇷', symbol: 'ARS$',  name: 'Peso Argentino' },
-      BOB: { flag: '🇧🇴', symbol: 'Bs',    name: 'Boliviano' },
-      BRL: { flag: '🇧🇷', symbol: 'R$',    name: 'Real' },
-      CLP: { flag: '🇨🇱', symbol: 'CLP$',  name: 'Peso Chileno' },
-      COP: { flag: '🇨🇴', symbol: 'COP$',  name: 'Peso Colombiano' },
-      USD: { flag: '🇺🇸', symbol: 'US$',   name: 'Dólar Americano' },
-      GYD: { flag: '🇬🇾', symbol: 'GY$',   name: 'Dólar Guianense' },
-      PYG: { flag: '🇵🇾', symbol: '₲',     name: 'Guarani' },
-      PEN: { flag: '🇵🇪', symbol: 'S/',    name: 'Sol' },
-      SRD: { flag: '🇸🇷', symbol: 'SR$',   name: 'Dólar Surinamês' },
-      UYU: { flag: '🇺🇾', symbol: '$U',    name: 'Peso Uruguaio' },
-      VES: { flag: '🇻🇪', symbol: 'Bs.S',  name: 'Bolívar Venezuelano' },
-      EUR: { flag: '🇪🇺', symbol: '€',     name: 'Euro' }, // Guiana Francesa
+function calcC(){var m=num(document.getElementById('moedas').value);
+var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('brlC'),wc=document.getElementById('wppC');
+rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');
+if(!(m>0))return;
+if(m<MIN){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MIN-m)+'</b> moedas';return}
+var custo=CUSTO*TAXAS[moeda],exato=m*custo,exatoBRL=m*CUSTO;
+document.getElementById('valC').textContent=fmtEx(exato,moeda);
+document.getElementById('detC').textContent=fmtN.format(m)+' × '+fmtEx(custo,moeda)+' = '+fmtEx(exato,moeda);
+rc.classList.add('show');
+var p=Math.round(exato*100)/100;
+if(Math.abs(exato-p)>.0001){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
+if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtEx(exatoBRL,'BRL')}
+var msg='Olá! Vim pelo site.\n\n🪙 *Quero:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
+if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(Math.round(exatoBRL*100)/100,'BRL')+'\n';
+msg+='\nPodemos combinar?';
+wc.href=wpp(msg);wc.classList.add('show')}
 
-      // América Central e México
-      BZD: { flag: '🇧🇿', symbol: 'BZ$',   name: 'Dólar de Belize' },
-      CRC: { flag: '🇨🇷', symbol: '₡',     name: 'Colón Costa-riquenho' },
-      GTQ: { flag: '🇬🇹', symbol: 'Q',     name: 'Quetzal' },
-      HNL: { flag: '🇭🇳', symbol: 'L',     name: 'Lempira' },
-      MXN: { flag: '🇲🇽', symbol: 'MX$',   name: 'Peso Mexicano' },
-      NIO: { flag: '🇳🇮', symbol: 'C$',    name: 'Córdoba' },
-      PAB: { flag: '🇵🇦', symbol: 'B/.',   name: 'Balboa' },
+function calcR(){var v=num(document.getElementById('reais').value);
+var rr=document.getElementById('resR'),er=document.getElementById('errR'),br=document.getElementById('brlR'),wr=document.getElementById('wppR');
+rr.classList.remove('show');er.classList.remove('show');br.classList.remove('show');wr.classList.remove('show');
+if(!(v>0))return;
+var custo=CUSTO*TAXAS[moeda],mq=v/custo;
+if(mq<MIN-.01){er.classList.add('show');var minV=MIN*custo;document.getElementById('errRMsg').innerHTML='Faltam <b>'+fmtRd(minV-v,moeda)+'</b>';return}
+var mi=Math.round(mq),inteira=Math.abs(mq-mi)<.0001,mf=inteira?mi:mq;
+document.getElementById('valR').textContent=fmtM(mf);
+document.getElementById('detR').textContent=fmtRd(v,moeda)+' ÷ '+fmtEx(custo,moeda)+' = '+fmtM(mf);
+rr.classList.add('show');
+var vBRL=v/TAXAS[moeda];
+if(moeda!=='BRL'){br.classList.add('show');document.getElementById('brlRVal').textContent=fmtRd(vBRL,'BRL')}
+var qtd=inteira?mi:Math.floor(mf);
+var msg='Olá! Vim pelo site.\n\n💵 *Quero:* '+fmtRd(v,moeda)+' em moedas\n🪙 *Equivale:* '+fmtN.format(qtd)+' moedas\n';
+if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(vBRL,'BRL')+'\n';
+msg+='\nPodemos combinar?';
+wr.href=wpp(msg);wr.classList.add('show')}
 
-      // Caribe
-      CUP: { flag: '🇨🇺', symbol: 'CUP$',  name: 'Peso Cubano' },
-      DOP: { flag: '🇩🇴', symbol: 'RD$',   name: 'Peso Dominicano' },
-      HTG: { flag: '🇭🇹', symbol: 'G',     name: 'Gourde' },
-      JMD: { flag: '🇯🇲', symbol: 'J$',    name: 'Dólar Jamaicano' },
-      TTD: { flag: '🇹🇹', symbol: 'TT$',   name: 'Dólar de Trinidad e Tobago' },
-      BSD: { flag: '🇧🇸', symbol: 'B$',    name: 'Dólar das Bahamas' },
-      BBD: { flag: '🇧🇧', symbol: 'Bds$',  name: 'Dólar de Barbados' },
-      XCD: { flag: '🌎',  symbol: 'EC$',   name: 'Dólar do Caribe Oriental' }
-    };
+sel.addEventListener('change',function(e){moeda=e.target.value;attLabels();calcC();calcR()});
+document.getElementById('moedas').addEventListener('input',calcC);
+document.getElementById('reais').addEventListener('input',calcR);
 
-    // Cotações de fallback (1 BRL = X moeda)
-    const FALLBACK_RATES = {
-      BRL: 1,
-      ARS: 170, BOB: 1.2, CLP: 160, COP: 800, USD: 0.17,
-      GYD: 35, PYG: 1200, PEN: 0.65, SRD: 6.5, UYU: 6.5, VES: 0.0001, EUR: 0.16,
-      BZD: 0.34, CRC: 90, GTQ: 1.3, HNL: 4.2, MXN: 3.0, NIO: 6.1, PAB: 0.17,
-      CUP: 5, DOP: 10, HTG: 22, JMD: 26, TTD: 1.2, BSD: 0.17, BBD: 0.34, XCD: 0.46
-    };
-    let rates = { ...FALLBACK_RATES };
-    let currentCurrency = 'BRL';
-    let liveRates = false;
+document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});t.classList.add('active');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r')})});
 
-    // Elementos
-    const currencySelect = document.getElementById('currencySelect');
-    const tabs = document.querySelectorAll('.tab');
-    const tabCoins = document.getElementById('tabCoins');
-    const tabReais = document.getElementById('tabReais');
-    const modeCoinsEl = document.getElementById('modeCoins');
-    const modeReaisEl = document.getElementById('modeReais');
-    const moedasEl    = document.getElementById('moedas');
-    const reaisEl     = document.getElementById('reais');
-    const reaisLabel  = document.getElementById('reaisLabel');
-
-    const resultCoinsEl   = document.getElementById('resultCoins');
-    const detalheCoinsEl  = document.getElementById('detalheCoins');
-    const pagamentoEl     = document.getElementById('pagamento');
-    const pagamentoBox    = document.getElementById('pagamentoBox');
-    const resultadoCoinsBox = document.getElementById('resultadoCoins');
-    const erroCoinsBox    = document.getElementById('erroCoins');
-    const erroCoinsMsg    = document.getElementById('erroCoinsMsg');
-    const brlEquivCoins   = document.getElementById('brlEquivCoins');
-    const brlCoinsEl      = document.getElementById('brlCoins');
-
-    const resultReaisEl   = document.getElementById('resultReais');
-    const detalheReaisEl  = document.getElementById('detalheReais');
-    const notaReaisEl     = document.getElementById('notaReais');
-    const resultadoReaisBox = document.getElementById('resultadoReais');
-    const erroReaisBox    = document.getElementById('erroReais');
-    const erroReaisMsg    = document.getElementById('erroReaisMsg');
-    const erroReaisTitulo = document.getElementById('erroReaisTitulo');
-    const brlEquivReais   = document.getElementById('brlEquivReais');
-    const brlReaisEl      = document.getElementById('brlReais');
-
-    const btnWhatsCoins = document.getElementById('btnWhatsCoins');
-    const btnWhatsReais = document.getElementById('btnWhatsReais');
-    const infoEl = document.getElementById('info');
-
-    const fmtNum = new Intl.NumberFormat('pt-BR');
-
-    // ===== HELPERS =====
-    function parseNum(str) {
-      let s = String(str).trim();
-      if (!s) return NaN;
-      // Remove símbolos de moeda comuns e espaços
-      s = s.replace(/[R$€£]|US\$|MX\$|ARS\$|CLP\$|COP\$|GY\$|SR\$|BZ\$|CUP\$|RD\$|J\$|TT\$|B\$|Bds\$|EC\$|S\/|Bs\.S|Bs|₲|₡|Q|L|C\$|B\/\.|G/gi, '').replace(/\s/g, '');
-      if (!s) return NaN;
-      if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
-      else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
-      const n = parseFloat(s);
-      return isNaN(n) ? NaN : n;
-    }
-
-    function formatExato(value, code) {
-      const sym = currencies[code].symbol;
-      if (value === 0) return sym + ' 0,00';
-      let str = value.toFixed(10).replace(/0+$/, '').replace(/\.$/, '');
-      if (!str.includes('.')) str += '.00';
-      const [intP, decP] = str.split('.');
-      let dec = decP || '00';
-      if (dec.length === 1) dec += '0';
-      const intFmt = intP.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-      return sym + ' ' + intFmt + ',' + dec;
-    }
-
-    function formatRound(value, code) {
-      return new Intl.NumberFormat('pt-BR', {
-        style: 'currency', currency: code
-      }).format(value);
-    }
-
-    function formatMoedas(v) {
-      if (Math.abs(v - Math.round(v)) < 0.0001) {
-        return fmtNum.format(Math.round(v)) + ' moedas';
-      }
-      let str = v.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-      const [intP, decP] = str.split('.');
-      const intFmt = intP.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-      return intFmt + (decP ? ',' + decP : '') + ' moedas';
-    }
-
-    function gerarLinkWhats(mensagem) {
-      const numero = WHATSAPP_NUMERO.replace(/\D/g, '');
-      return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
-    }
-
-    // ===== SELETOR DE MOEDA =====
-    function renderCurrencySelector() {
-      currencySelect.innerHTML = '';
-      for (const code of Object.keys(currencies)) {
-        const c = currencies[code];
-        const opt = document.createElement('option');
-        opt.value = code;
-        opt.textContent = `${c.flag} ${code} — ${c.name}`;
-        if (code === currentCurrency
+attLabels();
+fetch('https://open.er-api.com/v6/latest/BRL').then(function(r){return r.json()}).then(function(d){if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='BRL'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR()}}).catch(function(){});
+</script>
+</body>
+        </html>
