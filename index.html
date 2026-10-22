@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversor de Moedas → Reais</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 30px;
+      width: 100%;
+      max-width: 430px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 22px;
+      color: #1e3c72;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #666;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 18px;
+      outline: none;
+      background: #fafafa;
+      transition: border 0.2s, background 0.2s;
+      margin-bottom: 8px;
+    }
+    input:focus { border-color: #2a5298; background: #fff; }
+    input.invalido { border-color: #e74c3c; background: #fff5f5; }
+
+    .minimo {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 16px;
+      text-align: right;
+    }
+    .minimo b { color: #2a5298; }
+
+    .erro {
+      background: #ffecec;
+      border: 2px solid #e74c3c;
+      color: #c0392b;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .erro b { font-size: 16px; }
+    .erro.show { display: block; }
+
+    .resultado {
+      background: linear-gradient(135deg, #00b894, #00a383);
+      color: #fff;
+      border-radius: 14px;
+      padding: 24px 18px;
+      text-align: center;
+      display: none;
+    }
+    .resultado.show { display: block; }
+    .resultado .titulo {
+      font-size: 12px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .resultado .principal {
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -1.5px;
+      word-break: break-all;
+    }
+    .resultado .detalhe {
+      margin-top: 12px;
+      font-size: 13px;
+      opacity: 0.92;
+      font-family: 'Courier New', monospace;
+      background: rgba(255,255,255,0.15);
+      padding: 7px 12px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .pagamento {
+      margin-top: 14px;
+      background: #fff7e6;
+      border: 2px dashed #f5a623;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      font-size: 14px;
+      color: #8a6d1c;
+      display: none;
+    }
+    .pagamento.show { display: block; }
+    .pagamento b {
+      display: block;
+      color: #b87800;
+      font-size: 20px;
+      margin-top: 4px;
+    }
+    .pagamento small {
+      display: block;
+      color: #b09a6a;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .info {
+      text-align: center;
+      color: #999;
+      font-size: 12px;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+    .info b { color: #2a5298; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🪙 Conversor de Moedas</h1>
+    <p class="subtitle">Digite quantas moedas e veja quanto vai pagar</p>
+
+    <label>Quantidade de moedas</label>
+    <input type="text" id="moedas" inputmode="numeric" placeholder="Ex: 6666" autofocus>
+    <div class="minimo">Mínimo: <b>1.000 moedas</b></div>
+
+    <div class="erro" id="erroBox">
+      ⚠️ <b>Valor mínimo é de 1.000 moedas</b><br>
+      <span id="erroMsg">Digite pelo menos 1000 para ver o valor.</span>
+    </div>
+
+    <div class="resultado" id="resultadoBox">
+      <div class="titulo">Valor exato</div>
+      <div class="principal" id="resultado">R$ 0,00</div>
+      <div class="detalhe" id="detalhe">—</div>
+    </div>
+
+    <div class="pagamento" id="pagamentoBox">
+      💳 Para pagar (arredondado ao centavo)
+      <b id="pagamento">—</b>
+      <small>valor exato arredondado para a moeda de 1 centavo</small>
+    </div>
+
+    <p class="info" id="info"></p>
+  </div>
+
+  <script>
+    // ===== CONFIGURAÇÃO =====
+    const MOEDAS_REF    = 1500;   // pacote de referência
+    const PRECO_REF     = 6.00;   // preço do pacote em reais
+    const MOEDAS_MINIMO = 1000;   // valor mínimo de moedas
+    // ========================
+
+    const CUSTO_POR_MOEDA = PRECO_REF / MOEDAS_REF;
+
+    const moedasEl     = document.getElementById('moedas');
+    const resultadoEl  = document.getElementById('resultado');
+    const detalheEl    = document.getElementById('detalhe');
+    const pagamentoEl  = document.getElementById('pagamento');
+    const pagamentoBox = document.getElementById('pagamentoBox');
+    const resultadoBox = document.getElementById('resultadoBox');
+    const erroBox      = document.getElementById('erroBox');
+    const erroMsg      = document.getElementById('erroMsg');
+    const infoEl       = document.getElementById('info');
+
+    const fmtBRL = new Intl.NumberFormat('pt-BR', {
+      style: 'currency', currency: 'BRL'
+    });
+    const fmtNum = new Intl.NumberFormat('pt-BR');
+
+    function parseNum(str) {
+      let s = String(str).trim();
+      if (!s) return NaN;
+      if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+      else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+      const n = parseFloat(s);
+      return isNaN(n) ? NaN : n;
+    }
+
+    function formatExato(value) {
+      if (value === 0) return 'R$ 0,00';
+      let str = value.toFixed(10);
+      str = str.replace(/0+$/, '').replace(/\.$/, '');
+      if (!str.includes('.')) str += '.00';
+      const [intP, decP] = str.split('.');
+      let dec = decP || '00';
+      if (dec.length === 1) dec += '0';
+      const intFmt = intP.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return 'R$ ' + intFmt + ',' + dec;
+    }
+
+    function esconderTudo() {
+      resultadoBox.classList.remove('show');
+      pagamentoBox.classList.remove('show');
+      erroBox.classList.remove('show');
+      moedasEl.classList.remove('invalido');
+    }
+
+    function calcular() {
+      const moedas = parseNum(moedasEl.value);
+
+      if (!(moedas > 0)) {
+        esconderTudo();
+        return;
+      }
+
+      if (moedas < MOEDAS_MINIMO) {
+        esconderTudo();
+        moedasEl.classList.add('invalido');
+        erroBox.classList.add('show');
+        const faltam = MOEDAS_MINIMO - moedas;
+        erroMsg.innerHTML =
+          `Você digitou <b>${fmtNum.format(moedas)}</b> moedas.<br>` +
+          `Faltam <b>${fmtNum.format(faltam)}</b> para atingir o mínimo de ${fmtNum.format(MOEDAS_MINIMO)}.`;
+        return;
+      }
+
+      erroBox.classList.remove('show');
+      moedasEl.classList.remove('invalido');
+      resultadoBox.classList.add('show');
+
+      const exato = moedas * CUSTO_POR_MOEDA;
+
+      resultadoEl.textContent = formatExato(exato);
+      detalheEl.textContent =
+        `${fmtNum.format(moedas)} × ${formatExato(CUSTO_POR_MOEDA)} = ${formatExato(exato)}`;
+
+      const pagamento = Math.round(exato * 100) / 100;
+      const temDiferenca = Math.abs(exato - pagamento) > 0.0001;
+
+      if (temDiferenca) {
+        pagamentoBox.classList.add('show');
+        pagamentoEl.textContent = fmtBRL.format(pagamento);
+      } else {
+        pagamentoBox.classList.remove('show');
+      }
+    }
+
+    moedasEl.addEventListener('input', calcular);
+
+    infoEl.innerHTML =
+      `Referência: <b>${fmtNum.format(MOEDAS_REF)} moedas = ${fmtBRL.format(PRECO_REF)}</b><br>` +
+      `(cada moeda custa ${formatExato(CUSTO_POR_MOEDA)}) • Mínimo: <b>${fmtNum.format(MOEDAS_MINIMO)} moedas</b>`;
+  </script>
+</body>
+</html>
