@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 h1{font-size:20px;color:#1e3c72;text-align:center;margin-bottom:4px}
 .sub{text-align:center;color:#666;font-size:13px;margin-bottom:16px}
 label{display:block;font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
@@ -37,6 +37,22 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 .wpp.show{display:block}
 .info{text-align:center;color:#666;font-size:12px;margin-top:14px;line-height:1.5}
 .info b{color:#2a5298}
+
+/* Tabela de taxas */
+.rates-section{margin-top:24px;border-top:2px dashed #e0e0e0;padding-top:20px}
+.rates-title{font-size:16px;font-weight:700;color:#1e3c72;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.rates-table{width:100%;border-collapse:collapse;font-size:12px}
+.rates-table th{background:#f0f3f8;color:#2a5298;padding:8px 6px;text-align:left;border-bottom:2px solid #d0d8e8;font-weight:700}
+.rates-table td{padding:8px 6px;border-bottom:1px solid #eee;color:#333}
+.rates-table tr:hover td{background:#f9fbff}
+.rates-table .moeda-cell{font-weight:600;color:#1e3c72}
+.rates-table .taxa-cell{font-family:monospace;font-size:11px;color:#555}
+.cross-box{background:#f7f9fc;border-radius:10px;padding:14px;margin-top:16px}
+.cross-box label{font-size:10px;margin-bottom:4px}
+.cross-selects{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.cross-selects select{margin-bottom:0;font-size:14px;padding:10px}
+.cross-result{text-align:center;font-size:15px;color:#1e3c72;font-weight:700;margin-top:10px;padding:10px;background:#fff;border-radius:8px;border:1px solid #e0e0e0}
+.cross-result small{display:block;font-size:11px;color:#888;font-weight:400;margin-top:3px}
 </style>
 </head>
 <body>
@@ -82,6 +98,29 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 </div>
 
 <p class="info" id="info"></p>
+
+<!-- ===== TABELA DE TAXAS ===== -->
+<div class="rates-section">
+  <div class="rates-title">📊 Taxas de conversão</div>
+  <table class="rates-table" id="ratesTable">
+    <thead>
+      <tr><th>Moeda</th><th>1 BRL →</th><th>1 Moeda → BRL</th></tr>
+    </thead>
+    <tbody id="ratesBody">
+      <tr><td colspan="3" style="text-align:center;color:#999">Carregando...</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cross-box">
+    <div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;margin-bottom:8px">🔄 Converter entre moedas</div>
+    <div class="cross-selects">
+      <div><label>De</label><select id="crossFrom"></select></div>
+      <div><label>Para</label><select id="crossTo"></select></div>
+    </div>
+    <div class="cross-result" id="crossResult">—</div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -138,6 +177,14 @@ function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(m
 var sel=document.getElementById('currencySelect');
 Object.keys(MOEDAS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
 
+// Popula selects de conversão cruzada
+var crossFrom=document.getElementById('crossFrom');
+var crossTo=document.getElementById('crossTo');
+Object.keys(MOEDAS).forEach(function(k){
+  var o1=document.createElement('option');o1.value=k;o1.textContent=MOEDAS[k].f+' '+k;if(k==='USD')o1.selected=true;crossFrom.appendChild(o1);
+  var o2=document.createElement('option');o2.value=k;o2.textContent=MOEDAS[k].f+' '+k;if(k==='EUR')o2.selected=true;crossTo.appendChild(o2);
+});
+
 function attLabels(){var c=MOEDAS[moeda];document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';var minV=MIN*CUSTO*TAXAS[moeda];document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(minV,moeda)+'</b>';document.getElementById('info').innerHTML='Referência: <b>'+fmtN.format(REF_MOEDAS)+' moedas = '+fmtRd(REF_PRECO,'BRL')+'</b><br>cada moeda = '+fmtEx(CUSTO*TAXAS[moeda],moeda)}
 
 function calcC(){var m=num(document.getElementById('moedas').value);
@@ -175,6 +222,36 @@ if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(vBRL,'BRL')+'\n';
 msg+='\nPodemos combinar?';
 wr.href=wpp(msg);wr.classList.add('show')}
 
+// Preenche tabela de taxas
+function renderRatesTable(){
+  var tbody=document.getElementById('ratesBody');
+  tbody.innerHTML='';
+  var codigos=Object.keys(MOEDAS).sort(function(a,b){return a.localeCompare(b)});
+  codigos.forEach(function(k){
+    var taxaParaMoeda=TAXAS[k]; // 1 BRL = X moeda
+    var taxaParaBRL=1/taxaParaMoeda; // 1 moeda = X BRL
+    var tr=document.createElement('tr');
+    tr.innerHTML=
+      '<td class="moeda-cell">'+MOEDAS[k].f+' '+k+'</td>'+
+      '<td class="taxa-cell">'+taxaParaMoeda.toFixed(4)+'</td>'+
+      '<td class="taxa-cell">'+taxaParaBRL.toFixed(4)+' BRL</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// Conversão cruzada
+function calcCross(){
+  var de=crossFrom.value,para=crossTo.value;
+  if(!de||!para)return;
+  var taxa=TAXAS[para]/TAXAS[de]; // 1 DE = X PARA
+  var inverso=1/taxa;
+  document.getElementById('crossResult').innerHTML=
+    '1 '+de+' = <b>'+taxa.toFixed(4)+' '+para+'</b>'+
+    '<small>1 '+para+' = '+inverso.toFixed(4)+' '+de+'</small>';
+}
+crossFrom.addEventListener('change',calcCross);
+crossTo.addEventListener('change',calcCross);
+
 sel.addEventListener('change',function(e){moeda=e.target.value;attLabels();calcC();calcR()});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
@@ -182,7 +259,9 @@ document.getElementById('reais').addEventListener('input',calcR);
 document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});t.classList.add('active');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r')})});
 
 attLabels();
-fetch('https://open.er-api.com/v6/latest/BRL').then(function(r){return r.json()}).then(function(d){if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='BRL'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR()}}).catch(function(){});
+calcCross();
+
+fetch('https://open.er-api.com/v6/latest/BRL').then(function(r){return r.json()}).then(function(d){if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='BRL'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR();renderRatesTable();calcCross()}}).catch(function(){renderRatesTable();calcCross()});
 </script>
 </body>
-        </html>
+</html>
