@@ -3,29 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Conversor de Moedas ↔ Reais (BRL) — Valor Exato</title>
-  <meta name="description" content="Converta moedas para reais ou reais para moedas. Compre direto pelo WhatsApp.">
+  <title>Conversor de Moedas da América Latina ↔ Reais</title>
+  <meta name="description" content="Converta moedas de toda a América Latina para reais ou para outras moedas. Compre pelo WhatsApp.">
   <meta name="theme-color" content="#1e3c72">
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://nandobrtv.github.io/Conversor-de-moedas/">
-  <meta property="og:title" content="Conversor de Moedas ↔ Reais (BRL)">
-  <meta property="og:description" content="Converta moedas para reais ou reais para moedas. Compre direto pelo WhatsApp.">
+  <meta property="og:title" content="Conversor de Moedas da América Latina">
+  <meta property="og:description" content="Converta moedas de toda a América Latina. Compre pelo WhatsApp.">
   <meta property="og:image" content="https://nandobrtv.github.io/Conversor-de-moedas/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:locale" content="pt_BR">
   <meta property="og:site_name" content="Conversor de Moedas">
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Conversor de Moedas ↔ Reais">
-  <meta name="twitter:description" content="Converta moedas para reais ou reais para moedas. Compre direto pelo WhatsApp.">
+  <meta name="twitter:title" content="Conversor de Moedas da América Latina">
+  <meta name="twitter:description" content="Converta moedas de toda a América Latina.">
   <meta name="twitter:image" content="https://nandobrtv.github.io/Conversor-de-moedas/og-image.png">
 
-  <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪙</text></svg>">
 
   <style>
@@ -42,13 +38,13 @@
     .card {
       background: #fff;
       border-radius: 18px;
-      padding: 28px;
+      padding: 26px;
       width: 100%;
-      max-width: 430px;
+      max-width: 440px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
     h1 {
-      font-size: 22px;
+      font-size: 21px;
       color: #1e3c72;
       text-align: center;
       margin-bottom: 4px;
@@ -57,13 +53,42 @@
       text-align: center;
       color: #666;
       font-size: 13px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
+
+    .currency-select-wrap {
+      margin-bottom: 18px;
+    }
+    .currency-select-wrap label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    #currencySelect {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e3c72;
+      background: #fafafa;
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+    #currencySelect:focus { border-color: #2a5298; background: #fff; }
 
     .tabs {
       display: flex;
       gap: 6px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
       background: #f0f3f8;
       padding: 4px;
       border-radius: 12px;
@@ -117,7 +142,7 @@
     .minimo {
       font-size: 12px;
       color: #666;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       text-align: right;
     }
     .minimo b { color: #2a5298; }
@@ -127,20 +152,20 @@
       border: 2px solid #e74c3c;
       color: #c0392b;
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px;
       text-align: center;
-      font-size: 14px;
-      margin-bottom: 16px;
+      font-size: 13px;
+      margin-bottom: 14px;
       display: none;
     }
-    .erro b { font-size: 16px; }
+    .erro b { font-size: 15px; }
     .erro.show { display: block; }
 
     .resultado {
       background: linear-gradient(135deg, #00b894, #00a383);
       color: #fff;
       border-radius: 14px;
-      padding: 24px 18px;
+      padding: 22px 16px;
       text-align: center;
       display: none;
     }
@@ -153,7 +178,7 @@
       margin-bottom: 10px;
     }
     .resultado .principal {
-      font-size: 40px;
+      font-size: 36px;
       font-weight: 800;
       line-height: 1;
       letter-spacing: -1.5px;
@@ -161,11 +186,11 @@
     }
     .resultado .detalhe {
       margin-top: 12px;
-      font-size: 13px;
+      font-size: 12px;
       opacity: 0.92;
       font-family: 'Courier New', monospace;
       background: rgba(255,255,255,0.15);
-      padding: 7px 12px;
+      padding: 6px 10px;
       border-radius: 8px;
       display: inline-block;
     }
@@ -176,13 +201,13 @@
     }
 
     .pagamento {
-      margin-top: 14px;
+      margin-top: 12px;
       background: #fff7e6;
       border: 2px dashed #f5a623;
       border-radius: 12px;
-      padding: 14px;
+      padding: 12px;
       text-align: center;
-      font-size: 14px;
+      font-size: 13px;
       color: #8a6d1c;
       display: none;
     }
@@ -190,7 +215,7 @@
     .pagamento b {
       display: block;
       color: #b87800;
-      font-size: 20px;
+      font-size: 19px;
       margin-top: 4px;
     }
     .pagamento small {
@@ -200,16 +225,30 @@
       margin-top: 4px;
     }
 
+    .brl-equiv {
+      margin-top: 10px;
+      background: #eef3fb;
+      border: 1px dashed #b9c6dd;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      color: #2a5298;
+      display: none;
+    }
+    .brl-equiv.show { display: block; }
+    .brl-equiv b { font-size: 15px; }
+
     .btn-whats {
       display: none;
       width: 100%;
-      margin-top: 14px;
-      padding: 16px;
+      margin-top: 12px;
+      padding: 15px;
       background: linear-gradient(135deg, #25d366, #128c7e);
       color: #fff;
       border: none;
       border-radius: 12px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       font-family: inherit;
       cursor: pointer;
@@ -233,23 +272,31 @@
       text-align: center;
       color: #666;
       font-size: 12px;
-      margin-top: 16px;
+      margin-top: 14px;
       line-height: 1.6;
     }
     .info b { color: #2a5298; }
+    .info .live { color: #00a383; font-weight: 700; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>🪙 Conversor de Moedas</h1>
-    <p class="subtitle">Escolha o modo, converta e compre pelo WhatsApp</p>
+    <h1>🪙 Conversor de Moedas da América Latina</h1>
+    <p class="subtitle">Escolha a moeda, converta e compre pelo WhatsApp</p>
 
-    <div class="tabs" role="tablist">
-      <button class="tab active" data-mode="coins" role="tab">🪙 Moedas → R$</button>
-      <button class="tab" data-mode="reais" role="tab">💵 R$ → Moedas</button>
+    <!-- SELETOR DE MOEDA -->
+    <div class="currency-select-wrap">
+      <label for="currencySelect">💱 Escolha a moeda</label>
+      <select id="currencySelect"></select>
     </div>
 
-    <!-- MODO 1 -->
+    <!-- ABAS -->
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-mode="coins" id="tabCoins" role="tab">🪙 Moedas → Moeda</button>
+      <button class="tab" data-mode="reais" id="tabReais" role="tab">💵 Moeda → Moedas</button>
+    </div>
+
+    <!-- MODO 1: Moedas → Moeda estrangeira -->
     <div id="modeCoins" class="mode active">
       <label for="moedas">Quantidade de moedas</label>
       <input type="text" id="moedas" inputmode="numeric" placeholder="Ex: 6666" autofocus aria-describedby="minimoCoins">
@@ -262,14 +309,18 @@
 
       <div class="resultado" id="resultadoCoins" aria-live="polite">
         <div class="titulo">Valor exato</div>
-        <div class="principal" id="resultCoins">R$ 0,00</div>
+        <div class="principal" id="resultCoins">—</div>
         <div class="detalhe" id="detalheCoins">—</div>
       </div>
 
       <div class="pagamento" id="pagamentoBox">
-        💳 Para pagar (arredondado ao centavo)
+        💳 Para pagar (arredondado)
         <b id="pagamento">—</b>
-        <small>valor exato arredondado para a moeda de 1 centavo</small>
+        <small>arredondado para a menor unidade da moeda</small>
+      </div>
+
+      <div class="brl-equiv" id="brlEquivCoins">
+        💡 Em reais: <b id="brlCoins">—</b>
       </div>
 
       <a id="btnWhatsCoins" class="btn-whats" href="#" target="_blank" rel="noopener">
@@ -278,15 +329,15 @@
       </a>
     </div>
 
-    <!-- MODO 2 -->
+    <!-- MODO 2: Moeda estrangeira → Moedas -->
     <div id="modeReais" class="mode">
-      <label for="reais">Valor em reais (R$)</label>
+      <label for="reais" id="reaisLabel">Valor em moeda</label>
       <input type="text" id="reais" inputmode="decimal" placeholder="Ex: 20,00" aria-describedby="minimoReais">
-      <div class="minimo" id="minimoReais">Mínimo: <b>R$ 4,00</b></div>
+      <div class="minimo" id="minimoReais">Mínimo: <b>—</b></div>
 
       <div class="erro" id="erroReais" role="alert">
-        ⚠️ <b>Valor mínimo é de R$ 4,00</b><br>
-        <span id="erroReaisMsg">Digite pelo menos R$ 4,00 para ver as moedas.</span>
+        ⚠️ <b id="erroReaisTitulo">Valor mínimo não atingido</b><br>
+        <span id="erroReaisMsg">Digite pelo menos o valor mínimo para ver as moedas.</span>
       </div>
 
       <div class="resultado" id="resultadoReais" aria-live="polite">
@@ -294,6 +345,10 @@
         <div class="principal" id="resultReais">0 moedas</div>
         <div class="detalhe" id="detalheReais">—</div>
         <div class="nota" id="notaReais"></div>
+      </div>
+
+      <div class="brl-equiv" id="brlEquivReais">
+        💡 Em reais: <b id="brlReais">—</b>
       </div>
 
       <a id="btnWhatsReais" class="btn-whats" href="#" target="_blank" rel="noopener">
@@ -309,18 +364,71 @@
     // ===== CONFIGURAÇÃO =====
     const WHATSAPP_NUMERO = "5582996843269"; // ✅ SEU NÚMERO
     const MOEDAS_REF      = 1500;
-    const PRECO_REF       = 6.00;
+    const PRECO_REF_BRL   = 6.00;  // Preço do pacote de referência EM REAIS
     const MOEDAS_MINIMO   = 1000;
     // ========================
 
-    const CUSTO_POR_MOEDA = PRECO_REF / MOEDAS_REF;
-    const MINIMO_REAIS = Math.round(MOEDAS_MINIMO * CUSTO_POR_MOEDA * 100) / 100;
+    const CUSTO_POR_MOEDA_BRL = PRECO_REF_BRL / MOEDAS_REF; // 0.004 BRL/moeda
 
+    // ===== MOEDAS DA AMÉRICA LATINA E CARIBE =====
+    const currencies = {
+      // América do Sul
+      ARS: { flag: '🇦🇷', symbol: 'ARS$',  name: 'Peso Argentino' },
+      BOB: { flag: '🇧🇴', symbol: 'Bs',    name: 'Boliviano' },
+      BRL: { flag: '🇧🇷', symbol: 'R$',    name: 'Real' },
+      CLP: { flag: '🇨🇱', symbol: 'CLP$',  name: 'Peso Chileno' },
+      COP: { flag: '🇨🇴', symbol: 'COP$',  name: 'Peso Colombiano' },
+      USD: { flag: '🇺🇸', symbol: 'US$',   name: 'Dólar Americano' },
+      GYD: { flag: '🇬🇾', symbol: 'GY$',   name: 'Dólar Guianense' },
+      PYG: { flag: '🇵🇾', symbol: '₲',     name: 'Guarani' },
+      PEN: { flag: '🇵🇪', symbol: 'S/',    name: 'Sol' },
+      SRD: { flag: '🇸🇷', symbol: 'SR$',   name: 'Dólar Surinamês' },
+      UYU: { flag: '🇺🇾', symbol: '$U',    name: 'Peso Uruguaio' },
+      VES: { flag: '🇻🇪', symbol: 'Bs.S',  name: 'Bolívar Venezuelano' },
+      EUR: { flag: '🇪🇺', symbol: '€',     name: 'Euro' }, // Guiana Francesa
+
+      // América Central e México
+      BZD: { flag: '🇧🇿', symbol: 'BZ$',   name: 'Dólar de Belize' },
+      CRC: { flag: '🇨🇷', symbol: '₡',     name: 'Colón Costa-riquenho' },
+      GTQ: { flag: '🇬🇹', symbol: 'Q',     name: 'Quetzal' },
+      HNL: { flag: '🇭🇳', symbol: 'L',     name: 'Lempira' },
+      MXN: { flag: '🇲🇽', symbol: 'MX$',   name: 'Peso Mexicano' },
+      NIO: { flag: '🇳🇮', symbol: 'C$',    name: 'Córdoba' },
+      PAB: { flag: '🇵🇦', symbol: 'B/.',   name: 'Balboa' },
+
+      // Caribe
+      CUP: { flag: '🇨🇺', symbol: 'CUP$',  name: 'Peso Cubano' },
+      DOP: { flag: '🇩🇴', symbol: 'RD$',   name: 'Peso Dominicano' },
+      HTG: { flag: '🇭🇹', symbol: 'G',     name: 'Gourde' },
+      JMD: { flag: '🇯🇲', symbol: 'J$',    name: 'Dólar Jamaicano' },
+      TTD: { flag: '🇹🇹', symbol: 'TT$',   name: 'Dólar de Trinidad e Tobago' },
+      BSD: { flag: '🇧🇸', symbol: 'B$',    name: 'Dólar das Bahamas' },
+      BBD: { flag: '🇧🇧', symbol: 'Bds$',  name: 'Dólar de Barbados' },
+      XCD: { flag: '🌎',  symbol: 'EC$',   name: 'Dólar do Caribe Oriental' }
+    };
+
+    // Cotações de fallback (1 BRL = X moeda)
+    const FALLBACK_RATES = {
+      BRL: 1,
+      ARS: 170, BOB: 1.2, CLP: 160, COP: 800, USD: 0.17,
+      GYD: 35, PYG: 1200, PEN: 0.65, SRD: 6.5, UYU: 6.5, VES: 0.0001, EUR: 0.16,
+      BZD: 0.34, CRC: 90, GTQ: 1.3, HNL: 4.2, MXN: 3.0, NIO: 6.1, PAB: 0.17,
+      CUP: 5, DOP: 10, HTG: 22, JMD: 26, TTD: 1.2, BSD: 0.17, BBD: 0.34, XCD: 0.46
+    };
+    let rates = { ...FALLBACK_RATES };
+    let currentCurrency = 'BRL';
+    let liveRates = false;
+
+    // Elementos
+    const currencySelect = document.getElementById('currencySelect');
     const tabs = document.querySelectorAll('.tab');
+    const tabCoins = document.getElementById('tabCoins');
+    const tabReais = document.getElementById('tabReais');
     const modeCoinsEl = document.getElementById('modeCoins');
     const modeReaisEl = document.getElementById('modeReais');
     const moedasEl    = document.getElementById('moedas');
     const reaisEl     = document.getElementById('reais');
+    const reaisLabel  = document.getElementById('reaisLabel');
 
     const resultCoinsEl   = document.getElementById('resultCoins');
     const detalheCoinsEl  = document.getElementById('detalheCoins');
@@ -329,6 +437,8 @@
     const resultadoCoinsBox = document.getElementById('resultadoCoins');
     const erroCoinsBox    = document.getElementById('erroCoins');
     const erroCoinsMsg    = document.getElementById('erroCoinsMsg');
+    const brlEquivCoins   = document.getElementById('brlEquivCoins');
+    const brlCoinsEl      = document.getElementById('brlCoins');
 
     const resultReaisEl   = document.getElementById('resultReais');
     const detalheReaisEl  = document.getElementById('detalheReais');
@@ -336,19 +446,22 @@
     const resultadoReaisBox = document.getElementById('resultadoReais');
     const erroReaisBox    = document.getElementById('erroReais');
     const erroReaisMsg    = document.getElementById('erroReaisMsg');
+    const erroReaisTitulo = document.getElementById('erroReaisTitulo');
+    const brlEquivReais   = document.getElementById('brlEquivReais');
+    const brlReaisEl      = document.getElementById('brlReais');
 
     const btnWhatsCoins = document.getElementById('btnWhatsCoins');
     const btnWhatsReais = document.getElementById('btnWhatsReais');
-
     const infoEl = document.getElementById('info');
 
-    const fmtBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
     const fmtNum = new Intl.NumberFormat('pt-BR');
 
+    // ===== HELPERS =====
     function parseNum(str) {
       let s = String(str).trim();
       if (!s) return NaN;
-      s = s.replace(/R\$\s*/gi, '').replace(/\s/g, '');
+      // Remove símbolos de moeda comuns e espaços
+      s = s.replace(/[R$€£]|US\$|MX\$|ARS\$|CLP\$|COP\$|GY\$|SR\$|BZ\$|CUP\$|RD\$|J\$|TT\$|B\$|Bds\$|EC\$|S\/|Bs\.S|Bs|₲|₡|Q|L|C\$|B\/\.|G/gi, '').replace(/\s/g, '');
       if (!s) return NaN;
       if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
       else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
@@ -356,15 +469,22 @@
       return isNaN(n) ? NaN : n;
     }
 
-    function formatExato(value) {
-      if (value === 0) return 'R$ 0,00';
+    function formatExato(value, code) {
+      const sym = currencies[code].symbol;
+      if (value === 0) return sym + ' 0,00';
       let str = value.toFixed(10).replace(/0+$/, '').replace(/\.$/, '');
       if (!str.includes('.')) str += '.00';
       const [intP, decP] = str.split('.');
       let dec = decP || '00';
       if (dec.length === 1) dec += '0';
       const intFmt = intP.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-      return 'R$ ' + intFmt + ',' + dec;
+      return sym + ' ' + intFmt + ',' + dec;
+    }
+
+    function formatRound(value, code) {
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency', currency: code
+      }).format(value);
     }
 
     function formatMoedas(v) {
@@ -382,144 +502,12 @@
       return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
     }
 
-    // ===== MODO 1 =====
-    function esconderCoins() {
-      resultadoCoinsBox.classList.remove('show');
-      pagamentoBox.classList.remove('show');
-      erroCoinsBox.classList.remove('show');
-      btnWhatsCoins.classList.remove('show');
-      moedasEl.classList.remove('invalido');
-    }
-
-    function calcularCoins() {
-      const moedas = parseNum(moedasEl.value);
-      if (!(moedas > 0)) { esconderCoins(); return; }
-
-      if (moedas < MOEDAS_MINIMO) {
-        esconderCoins();
-        moedasEl.classList.add('invalido');
-        erroCoinsBox.classList.add('show');
-        const faltam = MOEDAS_MINIMO - moedas;
-        erroCoinsMsg.innerHTML =
-          `Você digitou <b>${fmtNum.format(moedas)}</b> moedas.<br>` +
-          `Faltam <b>${fmtNum.format(faltam)}</b> para o mínimo de ${fmtNum.format(MOEDAS_MINIMO)}.`;
-        return;
-      }
-
-      erroCoinsBox.classList.remove('show');
-      moedasEl.classList.remove('invalido');
-      resultadoCoinsBox.classList.add('show');
-
-      const exato = moedas * CUSTO_POR_MOEDA;
-      resultCoinsEl.textContent = formatExato(exato);
-      detalheCoinsEl.textContent =
-        `${fmtNum.format(moedas)} × ${formatExato(CUSTO_POR_MOEDA)} = ${formatExato(exato)}`;
-
-      const pagamento = Math.round(exato * 100) / 100;
-      const temDiferenca = Math.abs(exato - pagamento) > 0.0001;
-
-      if (temDiferenca) {
-        pagamentoBox.classList.add('show');
-        pagamentoEl.textContent = fmtBRL.format(pagamento);
-      } else {
-        pagamentoBox.classList.remove('show');
-      }
-
-      const moedasInt = Math.round(moedas);
-      const valorFinal = fmtBRL.format(pagamento);
-      const mensagem =
-        `Olá! 👋 Vim pelo site Conversor de Moedas.\n\n` +
-        `🪙 *Quero comprar:* ${fmtNum.format(moedasInt)} moedas\n` +
-        `💰 *Valor:* ${valorFinal}\n\n` +
-        `Podemos combinar o pagamento?`;
-
-      btnWhatsCoins.href = gerarLinkWhats(mensagem);
-      btnWhatsCoins.classList.add('show');
-    }
-
-    // ===== MODO 2 =====
-    function esconderReais() {
-      resultadoReaisBox.classList.remove('show');
-      erroReaisBox.classList.remove('show');
-      btnWhatsReais.classList.remove('show');
-      reaisEl.classList.remove('invalido');
-    }
-
-    function calcularReais() {
-      const reais = parseNum(reaisEl.value);
-      if (!(reais > 0)) { esconderReais(); return; }
-
-      const moedasCalc = reais / CUSTO_POR_MOEDA;
-      if (moedasCalc < MOEDAS_MINIMO - 0.01) {
-        esconderReais();
-        reaisEl.classList.add('invalido');
-        erroReaisBox.classList.add('show');
-        const faltam = MINIMO_REAIS - reais;
-        erroReaisMsg.innerHTML =
-          `Você digitou <b>${fmtBRL.format(reais)}</b>.<br>` +
-          `Faltam <b>${fmtBRL.format(faltam)}</b> para o mínimo de ${fmtBRL.format(MINIMO_REAIS)}.`;
-        return;
-      }
-
-      erroReaisBox.classList.remove('show');
-      reaisEl.classList.remove('invalido');
-      resultadoReaisBox.classList.add('show');
-
-      const moedasInteira = Math.round(moedasCalc);
-      const ehInteira = Math.abs(moedasCalc - moedasInteira) < 0.0001;
-      const moedasFinal = ehInteira ? moedasInteira : moedasCalc;
-
-      resultReaisEl.textContent = formatMoedas(moedasFinal);
-      detalheReaisEl.textContent =
-        `${formatExato(reais)} ÷ ${formatExato(CUSTO_POR_MOEDA)} = ${formatMoedas(moedasFinal)}`;
-
-      if (!ehInteira) {
-        const inteiras = Math.floor(moedasFinal);
-        notaReaisEl.innerHTML = `ℹ️ Você receberia <b>${fmtNum.format(inteiras)} moedas inteiras</b>`;
-      } else {
-        notaReaisEl.innerHTML = '';
-      }
-
-      const qtdFinal = ehInteira ? moedasInteira : Math.floor(moedasFinal);
-      const mensagem =
-        `Olá! 👋 Vim pelo site Conversor de Moedas.\n\n` +
-        `💵 *Quero comprar:* ${fmtBRL.format(reais)} em moedas\n` +
-        `🪙 *Equivale a:* ${fmtNum.format(qtdFinal)} moedas\n\n` +
-        `Podemos combinar o pagamento?`;
-
-      btnWhatsReais.href = gerarLinkWhats(mensagem);
-      btnWhatsReais.classList.add('show');
-    }
-
-    // ===== ABAS =====
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const mode = tab.dataset.mode;
-        if (mode === 'coins') {
-          modeCoinsEl.classList.add('active');
-          modeReaisEl.classList.remove('active');
-          moedasEl.focus();
-        } else {
-          modeReaisEl.classList.add('active');
-          modeCoinsEl.classList.remove('active');
-          reaisEl.focus();
-        }
-      });
-    });
-
-    moedasEl.addEventListener('input', calcularCoins);
-    reaisEl.addEventListener('input', calcularReais);
-
-    document.getElementById('minimoCoins').innerHTML =
-      `Mínimo: <b>${fmtNum.format(MOEDAS_MINIMO)} moedas</b>`;
-    document.getElementById('minimoReais').innerHTML =
-      `Mínimo: <b>${fmtBRL.format(MINIMO_REAIS)}</b> (${fmtNum.format(MOEDAS_MINIMO)} moedas)`;
-
-    infoEl.innerHTML =
-      `Referência: <b>${fmtNum.format(MOEDAS_REF)} moedas = ${fmtBRL.format(PRECO_REF)}</b><br>` +
-      `(cada moeda custa ${formatExato(CUSTO_POR_MOEDA)})`;
-  </script>
-</body>
-</html>
+    // ===== SELETOR DE MOEDA =====
+    function renderCurrencySelector() {
+      currencySelect.innerHTML = '';
+      for (const code of Object.keys(currencies)) {
+        const c = currencies[code];
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = `${c.flag} ${code} — ${c.name}`;
+        if (code === currentCurrency
