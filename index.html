@@ -15,6 +15,9 @@ label{display:block;font-size:11px;font-weight:700;color:#666;text-transform:upp
 select,input{width:100%;padding:13px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;background:#fafafa;outline:none;font-family:inherit;margin-bottom:8px}
 select:focus,input:focus{border-color:#2a5298;background:#fff}
 #currencySelect{font-weight:600;color:#1e3c72;cursor:pointer}
+#userId{font-size:15px}
+.hint{font-size:11px;color:#999;margin-top:-4px;margin-bottom:12px}
+.hint.warn{color:#e74c3c;font-weight:600}
 .tabs{display:flex;gap:6px;margin:14px 0;background:#f0f3f8;padding:4px;border-radius:12px}
 .tab{flex:1;padding:10px;border:none;background:transparent;color:#666;font-size:13px;font-weight:700;cursor:pointer;border-radius:9px;font-family:inherit}
 .tab.active{background:#fff;color:#2a5298;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -35,12 +38,12 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 .brl.show{display:block}
 .wpp{display:none;width:100%;margin-top:12px;padding:15px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;text-align:center;box-shadow:0 6px 18px rgba(37,211,102,.35)}
 .wpp.show{display:block}
+.needid{display:none;margin-top:12px;background:#fff3cd;border:2px solid #ffc107;color:#856404;border-radius:10px;padding:12px;text-align:center;font-size:13px;font-weight:600}
+.needid.show{display:block}
 .info{text-align:center;color:#666;font-size:12px;margin-top:14px;line-height:1.5}
 .info b{color:#2a5298}
-
-/* Tabela de taxas */
 .rates-section{margin-top:24px;border-top:2px dashed #e0e0e0;padding-top:20px}
-.rates-title{font-size:16px;font-weight:700;color:#1e3c72;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.rates-title{font-size:16px;font-weight:700;color:#1e3c72;margin-bottom:12px}
 .rates-table{width:100%;border-collapse:collapse;font-size:12px}
 .rates-table th{background:#f0f3f8;color:#2a5298;padding:8px 6px;text-align:left;border-bottom:2px solid #d0d8e8;font-weight:700}
 .rates-table td{padding:8px 6px;border-bottom:1px solid #eee;color:#333}
@@ -63,6 +66,10 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 <label for="currencySelect">💱 Moeda</label>
 <select id="currencySelect"></select>
 
+<label for="userId">🆔 Seu ID <span style="color:#e74c3c">*</span></label>
+<input type="text" id="userId" placeholder="Digite seu ID" maxlength="50">
+<div class="hint" id="idHint">Preenchimento obrigatório para recarregar</div>
+
 <div class="tabs">
 <button class="tab active" data-m="c" id="tabC">🪙 Moedas → Moeda</button>
 <button class="tab" data-m="r" id="tabR">💵 Moeda → Moedas</button>
@@ -80,6 +87,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 </div>
 <div class="pgto" id="pgtoC">💳 Para pagar <b id="pgtoCVal">—</b></div>
 <div class="brl" id="brlC">💡 Em reais: <b id="brlCVal">—</b></div>
+<div class="needid" id="needC">⚠️ Digite seu ID acima para liberar a compra</div>
 <a id="wppC" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
 </div>
 
@@ -94,23 +102,18 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
   <div class="det" id="detR">—</div>
 </div>
 <div class="brl" id="brlR">💡 Em reais: <b id="brlRVal">—</b></div>
+<div class="needid" id="needR">⚠️ Digite seu ID acima para liberar a compra</div>
 <a id="wppR" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
 </div>
 
 <p class="info" id="info"></p>
 
-<!-- ===== TABELA DE TAXAS ===== -->
 <div class="rates-section">
   <div class="rates-title">📊 Taxas de conversão</div>
   <table class="rates-table" id="ratesTable">
-    <thead>
-      <tr><th>Moeda</th><th>1 BRL →</th><th>1 Moeda → BRL</th></tr>
-    </thead>
-    <tbody id="ratesBody">
-      <tr><td colspan="3" style="text-align:center;color:#999">Carregando...</td></tr>
-    </tbody>
+    <thead><tr><th>Moeda</th><th>1 BRL →</th><th>1 Moeda → BRL</th></tr></thead>
+    <tbody id="ratesBody"><tr><td colspan="3" style="text-align:center;color:#999">Carregando...</td></tr></tbody>
   </table>
-
   <div class="cross-box">
     <div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;margin-bottom:8px">🔄 Converter entre moedas</div>
     <div class="cross-selects">
@@ -120,7 +123,6 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
     <div class="cross-result" id="crossResult">—</div>
   </div>
 </div>
-
 </div>
 
 <script>
@@ -129,34 +131,20 @@ var REF_MOEDAS=1500,REF_PRECO=6.00,MIN=1000;
 var CUSTO=REF_PRECO/REF_MOEDAS;
 
 var MOEDAS={
-ARS:{f:'🇦🇷',s:'ARS$',n:'Peso Argentino'},
-BOB:{f:'🇧🇴',s:'Bs',n:'Boliviano'},
-BRL:{f:'🇧🇷',s:'R$',n:'Real'},
-CLP:{f:'🇨🇱',s:'CLP$',n:'Peso Chileno'},
-COP:{f:'🇨🇴',s:'COP$',n:'Peso Colombiano'},
-USD:{f:'🇺🇸',s:'US$',n:'Dólar'},
-GYD:{f:'🇬🇾',s:'GY$',n:'Dólar Guianense'},
-PYG:{f:'🇵🇾',s:'₲',n:'Guarani'},
-PEN:{f:'🇵🇪',s:'S/',n:'Sol'},
-SRD:{f:'🇸🇷',s:'SR$',n:'Dólar Surinamês'},
-UYU:{f:'🇺🇾',s:'$U',n:'Peso Uruguaio'},
-VES:{f:'🇻🇪',s:'Bs.S',n:'Bolívar'},
-EUR:{f:'🇪🇺',s:'€',n:'Euro'},
-BZD:{f:'🇧🇿',s:'BZ$',n:'Dólar Belize'},
-CRC:{f:'🇨🇷',s:'₡',n:'Colón CR'},
-GTQ:{f:'🇬🇹',s:'Q',n:'Quetzal'},
-HNL:{f:'🇭🇳',s:'L',n:'Lempira'},
-MXN:{f:'🇲🇽',s:'MX$',n:'Peso Mexicano'},
-NIO:{f:'🇳🇮',s:'C$',n:'Córdoba'},
-PAB:{f:'🇵🇦',s:'B/.',n:'Balboa'},
-CUP:{f:'🇨🇺',s:'CUP$',n:'Peso Cubano'},
-DOP:{f:'🇩🇴',s:'RD$',n:'Peso Dominicano'},
-HTG:{f:'🇭🇹',s:'G',n:'Gourde'},
-JMD:{f:'🇯🇲',s:'J$',n:'Dólar Jamaicano'},
-TTD:{f:'🇹🇹',s:'TT$',n:'Dólar Trinidad'},
-BSD:{f:'🇧🇸',s:'B$',n:'Dólar Bahamas'},
-BBD:{f:'🇧🇧',s:'Bds$',n:'Dólar Barbados'},
-XCD:{f:'🌎',s:'EC$',n:'Dólar Caribe Leste'}
+ARS:{f:'🇦🇷',s:'ARS$',n:'Peso Argentino'},BOB:{f:'🇧🇴',s:'Bs',n:'Boliviano'},
+BRL:{f:'🇧🇷',s:'R$',n:'Real'},CLP:{f:'🇨🇱',s:'CLP$',n:'Peso Chileno'},
+COP:{f:'🇨🇴',s:'COP$',n:'Peso Colombiano'},USD:{f:'🇺🇸',s:'US$',n:'Dólar'},
+GYD:{f:'🇬🇾',s:'GY$',n:'Dólar Guianense'},PYG:{f:'🇵🇾',s:'₲',n:'Guarani'},
+PEN:{f:'🇵🇪',s:'S/',n:'Sol'},SRD:{f:'🇸🇷',s:'SR$',n:'Dólar Surinamês'},
+UYU:{f:'🇺🇾',s:'$U',n:'Peso Uruguaio'},VES:{f:'🇻🇪',s:'Bs.S',n:'Bolívar'},
+EUR:{f:'🇪🇺',s:'€',n:'Euro'},BZD:{f:'🇧🇿',s:'BZ$',n:'Dólar Belize'},
+CRC:{f:'🇨🇷',s:'₡',n:'Colón CR'},GTQ:{f:'🇬🇹',s:'Q',n:'Quetzal'},
+HNL:{f:'🇭🇳',s:'L',n:'Lempira'},MXN:{f:'🇲🇽',s:'MX$',n:'Peso Mexicano'},
+NIO:{f:'🇳🇮',s:'C$',n:'Córdoba'},PAB:{f:'🇵🇦',s:'B/.',n:'Balboa'},
+CUP:{f:'🇨🇺',s:'CUP$',n:'Peso Cubano'},DOP:{f:'🇩🇴',s:'RD$',n:'Peso Dominicano'},
+HTG:{f:'🇭🇹',s:'G',n:'Gourde'},JMD:{f:'🇯🇲',s:'J$',n:'Dólar Jamaicano'},
+TTD:{f:'🇹🇹',s:'TT$',n:'Dólar Trinidad'},BSD:{f:'🇧🇸',s:'B$',n:'Dólar Bahamas'},
+BBD:{f:'🇧🇧',s:'Bds$',n:'Dólar Barbados'},XCD:{f:'🌎',s:'EC$',n:'Dólar Caribe Leste'}
 };
 
 var TAXAS={BRL:1,ARS:170,BOB:1.2,CLP:160,COP:800,USD:.17,GYD:35,PYG:1200,PEN:.65,SRD:6.5,UYU:6.5,VES:.0001,EUR:.16,BZD:.34,CRC:90,GTQ:1.3,HNL:4.2,MXN:3,NIO:6.1,PAB:.17,CUP:5,DOP:10,HTG:22,JMD:26,TTD:1.2,BSD:.17,BBD:.34,XCD:.46};
@@ -165,21 +153,23 @@ var moeda='BRL';
 var fmtN=new Intl.NumberFormat('pt-BR');
 
 function num(v){v=String(v).replace(/[^\d.,-]/g,'');if(!v)return NaN;if(v.indexOf(',')>-1)v=v.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(v))v=v.replace(/\./g,'');var n=parseFloat(v);return isNaN(n)?NaN:n}
-
 function fmtEx(v,c){var s=MOEDAS[c].s;if(v===0)return s+' 0,00';var t=v.toFixed(10).replace(/0+$/,'').replace(/\.$/,'');if(t.indexOf('.')<0)t+='.00';var p=t.split('.');var d=p[1]||'00';if(d.length===1)d+='0';return s+' '+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+','+d}
-
 function fmtRd(v,c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',currency:c}).format(v)}catch(e){return MOEDAS[c].s+' '+v.toFixed(2).replace('.',',')}}
-
 function fmtM(v){if(Math.abs(v-Math.round(v))<.0001)return fmtN.format(Math.round(v))+' moedas';var s=v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');var p=s.split('.');return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(p[1]?','+p[1]:'')+' moedas'}
-
 function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg)}
+
+function getUserId(){return document.getElementById('userId').value.trim()}
+
+function updateIdHint(){
+  var id=getUserId(),hint=document.getElementById('idHint');
+  if(id){hint.textContent='✓ ID preenchido';hint.className='hint';}
+  else{hint.textContent='Preenchimento obrigatório para recarregar';hint.className='hint';}
+}
 
 var sel=document.getElementById('currencySelect');
 Object.keys(MOEDAS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
 
-// Popula selects de conversão cruzada
-var crossFrom=document.getElementById('crossFrom');
-var crossTo=document.getElementById('crossTo');
+var crossFrom=document.getElementById('crossFrom'),crossTo=document.getElementById('crossTo');
 Object.keys(MOEDAS).forEach(function(k){
   var o1=document.createElement('option');o1.value=k;o1.textContent=MOEDAS[k].f+' '+k;if(k==='USD')o1.selected=true;crossFrom.appendChild(o1);
   var o2=document.createElement('option');o2.value=k;o2.textContent=MOEDAS[k].f+' '+k;if(k==='EUR')o2.selected=true;crossTo.appendChild(o2);
@@ -188,8 +178,8 @@ Object.keys(MOEDAS).forEach(function(k){
 function attLabels(){var c=MOEDAS[moeda];document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';var minV=MIN*CUSTO*TAXAS[moeda];document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(minV,moeda)+'</b>';document.getElementById('info').innerHTML='Referência: <b>'+fmtN.format(REF_MOEDAS)+' moedas = '+fmtRd(REF_PRECO,'BRL')+'</b><br>cada moeda = '+fmtEx(CUSTO*TAXAS[moeda],moeda)}
 
 function calcC(){var m=num(document.getElementById('moedas').value);
-var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('brlC'),wc=document.getElementById('wppC');
-rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');
+var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('brlC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');
+rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');
 if(!(m>0))return;
 if(m<MIN){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MIN-m)+'</b> moedas';return}
 var custo=CUSTO*TAXAS[moeda],exato=m*custo,exatoBRL=m*CUSTO;
@@ -199,14 +189,16 @@ rc.classList.add('show');
 var p=Math.round(exato*100)/100;
 if(Math.abs(exato-p)>.0001){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
 if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtEx(exatoBRL,'BRL')}
-var msg='Olá! Vim pelo site.\n\n🪙 *Quero:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
+var id=getUserId();
+if(!id){nc.classList.add('show');return}
+var msg='Olá! Vim pelo site.\n\n🪙 *Recarga:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
 if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(Math.round(exatoBRL*100)/100,'BRL')+'\n';
-msg+='\nPodemos combinar?';
+msg+='🆔 *ID:* '+id+'\n\nQuero recarregar!';
 wc.href=wpp(msg);wc.classList.add('show')}
 
 function calcR(){var v=num(document.getElementById('reais').value);
-var rr=document.getElementById('resR'),er=document.getElementById('errR'),br=document.getElementById('brlR'),wr=document.getElementById('wppR');
-rr.classList.remove('show');er.classList.remove('show');br.classList.remove('show');wr.classList.remove('show');
+var rr=document.getElementById('resR'),er=document.getElementById('errR'),br=document.getElementById('brlR'),wr=document.getElementById('wppR'),nr=document.getElementById('needR');
+rr.classList.remove('show');er.classList.remove('show');br.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');
 if(!(v>0))return;
 var custo=CUSTO*TAXAS[moeda],mq=v/custo;
 if(mq<MIN-.01){er.classList.add('show');var minV=MIN*custo;document.getElementById('errRMsg').innerHTML='Faltam <b>'+fmtRd(minV-v,moeda)+'</b>';return}
@@ -216,42 +208,32 @@ document.getElementById('detR').textContent=fmtRd(v,moeda)+' ÷ '+fmtEx(custo,mo
 rr.classList.add('show');
 var vBRL=v/TAXAS[moeda];
 if(moeda!=='BRL'){br.classList.add('show');document.getElementById('brlRVal').textContent=fmtRd(vBRL,'BRL')}
+var id=getUserId();
+if(!id){nr.classList.add('show');return}
 var qtd=inteira?mi:Math.floor(mf);
-var msg='Olá! Vim pelo site.\n\n💵 *Quero:* '+fmtRd(v,moeda)+' em moedas\n🪙 *Equivale:* '+fmtN.format(qtd)+' moedas\n';
+var msg='Olá! Vim pelo site.\n\n💵 *Recarga:* '+fmtRd(v,moeda)+'\n🪙 *Moedas:* '+fmtN.format(qtd)+'\n';
 if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(vBRL,'BRL')+'\n';
-msg+='\nPodemos combinar?';
+msg+='🆔 *ID:* '+id+'\n\nQuero recarregar!';
 wr.href=wpp(msg);wr.classList.add('show')}
 
-// Preenche tabela de taxas
 function renderRatesTable(){
-  var tbody=document.getElementById('ratesBody');
-  tbody.innerHTML='';
-  var codigos=Object.keys(MOEDAS).sort(function(a,b){return a.localeCompare(b)});
-  codigos.forEach(function(k){
-    var taxaParaMoeda=TAXAS[k]; // 1 BRL = X moeda
-    var taxaParaBRL=1/taxaParaMoeda; // 1 moeda = X BRL
+  var tbody=document.getElementById('ratesBody');tbody.innerHTML='';
+  Object.keys(MOEDAS).sort(function(a,b){return a.localeCompare(b)}).forEach(function(k){
     var tr=document.createElement('tr');
-    tr.innerHTML=
-      '<td class="moeda-cell">'+MOEDAS[k].f+' '+k+'</td>'+
-      '<td class="taxa-cell">'+taxaParaMoeda.toFixed(4)+'</td>'+
-      '<td class="taxa-cell">'+taxaParaBRL.toFixed(4)+' BRL</td>';
+    tr.innerHTML='<td class="moeda-cell">'+MOEDAS[k].f+' '+k+'</td><td class="taxa-cell">'+(TAXAS[k]||0).toFixed(4)+'</td><td class="taxa-cell">'+(1/TAXAS[k]).toFixed(4)+' BRL</td>';
     tbody.appendChild(tr);
   });
 }
 
-// Conversão cruzada
 function calcCross(){
-  var de=crossFrom.value,para=crossTo.value;
-  if(!de||!para)return;
-  var taxa=TAXAS[para]/TAXAS[de]; // 1 DE = X PARA
-  var inverso=1/taxa;
-  document.getElementById('crossResult').innerHTML=
-    '1 '+de+' = <b>'+taxa.toFixed(4)+' '+para+'</b>'+
-    '<small>1 '+para+' = '+inverso.toFixed(4)+' '+de+'</small>';
+  var de=crossFrom.value,para=crossTo.value;if(!de||!para)return;
+  var taxa=TAXAS[para]/TAXAS[de];
+  document.getElementById('crossResult').innerHTML='1 '+de+' = <b>'+taxa.toFixed(4)+' '+para+'</b><small>1 '+para+' = '+(1/taxa).toFixed(4)+' '+de+'</small>';
 }
 crossFrom.addEventListener('change',calcCross);
 crossTo.addEventListener('change',calcCross);
 
+document.getElementById('userId').addEventListener('input',function(){updateIdHint();calcC();calcR()});
 sel.addEventListener('change',function(e){moeda=e.target.value;attLabels();calcC();calcR()});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
@@ -259,9 +241,10 @@ document.getElementById('reais').addEventListener('input',calcR);
 document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});t.classList.add('active');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r')})});
 
 attLabels();
+updateIdHint();
 calcCross();
 
 fetch('https://open.er-api.com/v6/latest/BRL').then(function(r){return r.json()}).then(function(d){if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='BRL'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR();renderRatesTable();calcCross()}}).catch(function(){renderRatesTable();calcCross()});
 </script>
 </body>
-</html>
+</html>u
