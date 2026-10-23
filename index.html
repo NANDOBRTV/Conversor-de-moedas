@@ -230,7 +230,7 @@ function calcC(){
   var custoLocal=custoPorMoeda(moeda);
   var exato=m*custoLocal;
   var exatoUSD=m*CUSTO_USD;
-  var exatoBRL=exatoUSD*TAXAS['BRL'];
+  var exatoBRL=m*CUSTO_BRL;
   
   var p=arredondarParaCima(exato,moeda);
   document.getElementById('valC').textContent=fmtRd(p,moeda);
@@ -263,7 +263,7 @@ function calcR(){
   rr.classList.add('show');
   
   var vUSD=qtd*CUSTO_USD;
-  var vBRL=vUSD*TAXAS['BRL'];
+  var vBRL=qtd*CUSTO_BRL;
   if(moeda!=='BRL'){br.classList.add('show');document.getElementById('brlRVal').textContent=fmtRd(vBRL,'BRL')}
   
   if(!isIdValid()){nr.classList.add('show');return}
