@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; form-action 'self' https://wa.me">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://esm.sh; connect-src 'self' https://*.supabase.co; form-action 'self' https://wa.me">
 <meta name="theme-color" content="#0f172a">
 <title>Painel do Revendedor | Conversor Sanba</title>
 <style>
@@ -12,7 +12,7 @@
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#ecfeff 0,#f8fafc 260px,#f8fafc 100%);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);min-height:100vh}
 a{color:inherit}.wrap{max-width:1060px;margin:auto;padding:22px 16px 42px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:28px}.brand{font-weight:900;font-size:18px;letter-spacing:-.4px}.brand span{color:var(--brand)}.back{font-size:13px;font-weight:800;text-decoration:none;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:white}
 .hero{background:var(--ink);color:white;border-radius:24px;padding:28px 24px;position:relative;overflow:hidden;box-shadow:0 18px 45px #0f172a18}.eyebrow{color:#99f6e4;font-size:11px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase}.hero h1{font-size:clamp(27px,5vw,40px);line-height:1.1;letter-spacing:-1px;margin:10px 0}.hero p{color:#cbd5e1;line-height:1.65;max-width:650px;margin:0}.status{display:inline-flex;align-items:center;gap:8px;background:#78350f;color:#fef3c7;border:1px solid #92400e;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;margin-top:18px}
-.login-card{max-width:520px;margin:22px auto 30px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 14px 36px #0f172a0d}.login-card h2{margin:0 0 7px;font-size:23px;letter-spacing:-.5px}.login-intro{margin:0 0 20px;color:var(--muted);font-size:13px;line-height:1.6}.field{display:block;margin:15px 0}.field span{display:block;font-size:12px;font-weight:850;margin-bottom:7px}.field input{width:100%;border:1px solid #cbd5e1;border-radius:11px;padding:13px 12px;font:inherit;font-size:14px;outline:none;background:#fff}.field input:focus{border-color:var(--brand);box-shadow:0 0 0 3px #14b8a61c}.password-wrap{display:flex;gap:8px}.password-wrap input{flex:1;min-width:0}.show-pass{border:1px solid var(--line);border-radius:11px;background:#f8fafc;padding:0 12px;font-weight:800;cursor:pointer}.login-submit{width:100%;margin-top:6px;background:var(--brand);color:#fff}.login-message{display:none;margin-top:14px;padding:12px;border-radius:11px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;line-height:1.6}.login-message.visible{display:block}.login-footnote{font-size:11px;color:var(--muted);line-height:1.6;margin:14px 0 0}.notice{margin:18px 0;padding:14px 16px;border:1px solid #fed7aa;background:#fff7ed;border-radius:14px;color:#9a3412;font-size:13px;line-height:1.6}.section-head{margin:28px 0 14px}.section-head h2{font-size:20px;margin:0 0 5px}.section-head p{margin:0;color:var(--muted);font-size:13px}
+.protected-panel{display:none}.login-card{max-width:520px;margin:22px auto 30px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 14px 36px #0f172a0d}.login-card h2{margin:0 0 7px;font-size:23px;letter-spacing:-.5px}.login-intro{margin:0 0 20px;color:var(--muted);font-size:13px;line-height:1.6}.field{display:block;margin:15px 0}.field span{display:block;font-size:12px;font-weight:850;margin-bottom:7px}.field input{width:100%;border:1px solid #cbd5e1;border-radius:11px;padding:13px 12px;font:inherit;font-size:14px;outline:none;background:#fff}.field input:focus{border-color:var(--brand);box-shadow:0 0 0 3px #14b8a61c}.password-wrap{display:flex;gap:8px}.password-wrap input{flex:1;min-width:0}.show-pass{border:1px solid var(--line);border-radius:11px;background:#f8fafc;padding:0 12px;font-weight:800;cursor:pointer}.login-submit{width:100%;margin-top:6px;background:var(--brand);color:#fff}.login-message{display:none;margin-top:14px;padding:12px;border-radius:11px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;line-height:1.6}.login-message.visible{display:block}.login-footnote{font-size:11px;color:var(--muted);line-height:1.6;margin:14px 0 0}.notice{margin:18px 0;padding:14px 16px;border:1px solid #fed7aa;background:#fff7ed;border-radius:14px;color:#9a3412;font-size:13px;line-height:1.6}.section-head{margin:28px 0 14px}.section-head h2{font-size:20px;margin:0 0 5px}.section-head p{margin:0;color:var(--muted);font-size:13px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.tile{background:white;border:1px solid var(--line);border-radius:18px;padding:18px;min-height:160px;box-shadow:0 5px 16px #0f172a06}.tile-icon{font-size:25px}.tile h3{font-size:16px;margin:12px 0 6px}.tile p{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 12px}.pill{display:inline-block;border-radius:7px;padding:5px 8px;font-size:10px;font-weight:900;letter-spacing:.5px;background:#f1f5f9;color:#475569}.premium{background:#f0fdfa;border-color:#99f6e4}.premium .pill{background:#ccfbf1;color:#115e59}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.btn{display:inline-flex;justify-content:center;align-items:center;text-align:center;text-decoration:none;border:0;border-radius:12px;padding:12px 16px;font-weight:850;font-size:13px;cursor:pointer}.btn-main{background:#14b8a6;color:#042f2e}.btn-alt{background:white;color:var(--ink);border:1px solid var(--line)}.foot{font-size:11px;color:var(--muted);text-align:center;margin-top:28px;line-height:1.6}
 @media(max-width:620px){.wrap{padding:14px 12px 30px}.hero{padding:24px 18px;border-radius:19px}.grid{grid-template-columns:1fr}.tile{min-height:0}.back{padding:9px 11px}}
@@ -39,11 +39,11 @@ a{color:inherit}.wrap{max-width:1060px;margin:auto;padding:22px 16px 42px}.top{d
       <button class="btn login-submit" type="submit">Entrar no painel</button>
       <div class="login-message" id="loginMessage" role="status" aria-live="polite"></div>
     </form>
-    <p class="login-footnote">Por segurança, este formulário ainda não envia nem salva os dados digitados. A autenticação real será ativada quando o sistema seguro de contas estiver conectado.</p>
+    <p class="login-footnote">Sua senha é validada pelo serviço seguro de autenticação. Nunca compartilhe sua senha com ninguém.</p><div class="login-message" id="accountMessage" role="status" aria-live="polite"></div><button class="btn btn-alt" type="button" id="logoutButton" style="display:none;width:100%;margin-top:10px">Sair da conta</button>
   </section>
-  <div class="notice"><strong>Importante:</strong> a tela de login já está montada, mas a verificação de usuário, senha e acesso pago ainda não está ativa. Não use uma senha real nesta versão.</div>
+  <div class="notice"><strong>Configuração necessária:</strong> para ativar o login, é preciso criar o projeto Supabase, aplicar o esquema SQL e configurar as chaves públicas no arquivo <code>supabase-config.js</code>. Até isso ser feito, o login informará que o serviço não está configurado.</div>
   <div class="section-head"><h2>Suas ferramentas</h2><p>Recursos planejados para a área do revendedor.</p></div>
-  <section class="grid" aria-label="Ferramentas do painel">
+  <section class="grid protected-panel" id="premiumTools" aria-label="Ferramentas do painel">
     <article class="tile premium"><div class="tile-icon">🧮</div><h3>Calculadora de lucro Premium</h3><p>Calcule custo por lote, taxas, ponto de equilíbrio e preços para suas metas de lucro.</p><span class="pill">RECURSO PAGO • EM PREPARAÇÃO</span></article>
     <article class="tile"><div class="tile-icon">📊</div><h3>Resumo de custos</h3><p>Organize custos de compra, taxas e despesas extras para entender sua margem.</p><span class="pill">PLANEJADO</span></article>
     <article class="tile"><div class="tile-icon">🧾</div><h3>Histórico de cálculos</h3><p>Consulte cálculos anteriores depois que o sistema de conta e armazenamento estiver pronto.</p><span class="pill">PLANEJADO</span></article>
@@ -56,27 +56,115 @@ a{color:inherit}.wrap{max-width:1060px;margin:auto;padding:22px 16px 42px}.top{d
   <footer class="foot">Conversor Sanba · Área do revendedor em desenvolvimento.<br>O painel não é um serviço oficial do aplicativo Sanba.</footer>
 </main>
 
-<script>
-(function(){
-  const form = document.getElementById('resellerLoginForm');
-  const password = document.getElementById('password');
-  const toggle = document.getElementById('togglePassword');
-  const message = document.getElementById('loginMessage');
-  if (!form || !password || !toggle || !message) return;
-  toggle.addEventListener('click', function(){
-    const visible = password.type === 'password';
-    password.type = visible ? 'text' : 'password';
-    toggle.textContent = visible ? 'Ocultar' : 'Mostrar';
-    toggle.setAttribute('aria-label', visible ? 'Ocultar senha' : 'Mostrar senha');
-    toggle.setAttribute('aria-pressed', String(visible));
-  });
-  form.addEventListener('submit', function(event){
-    event.preventDefault();
-    message.textContent = 'A tela está pronta, mas a autenticação ainda não foi conectada. Nenhum dado foi enviado ou salvo. Para liberar o acesso real, é necessário integrar um serviço seguro de login.';
-    message.classList.add('visible');
+<script src="./supabase-config.js"></script>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const config = window.SANBA_SUPABASE_CONFIG || {};
+const form = document.getElementById('resellerLoginForm');
+const username = document.getElementById('username');
+const password = document.getElementById('password');
+const toggle = document.getElementById('togglePassword');
+const message = document.getElementById('loginMessage');
+const accountMessage = document.getElementById('accountMessage');
+const logoutButton = document.getElementById('logoutButton');
+const title = document.getElementById('loginTitle');
+const intro = document.querySelector('.login-intro');
+const premiumTools = document.getElementById('premiumTools');
+const validConfig = typeof config.url === 'string' && config.url.startsWith('https://') &&
+  typeof config.anonKey === 'string' && config.anonKey.length > 20 &&
+  !config.url.includes('COLOQUE_') && !config.anonKey.includes('COLOQUE_');
+let supabase = null;
+if (validConfig) {
+  supabase = createClient(config.url, config.anonKey);
+}
+function showMessage(el, text) {
+  el.textContent = text;
+  el.classList.add('visible');
+}
+function hideMessage(el) {
+  el.textContent = '';
+  el.classList.remove('visible');
+}
+function accessIsActive(profile) {
+  return profile.access_status === 'active' &&
+    (!profile.access_until || new Date(profile.access_until).getTime() > Date.now());
+}
+async function refreshAccount() {
+  if (!supabase) return;
+  const { data: sessionData } = await supabase.auth.getSession();
+  const session = sessionData.session;
+  if (!session) return;
+  const { data: profile, error } = await supabase.from('reseller_profiles')
+    .select('username, access_status, plan_name, access_until')
+    .eq('user_id', session.user.id).maybeSingle();
+  if (error || !profile) {
+    showMessage(accountMessage, 'Não foi possível carregar o perfil. Confira a configuração do Supabase.');
+    return;
+  }
+  form.style.display = 'none';
+  title.textContent = 'Olá, ' + profile.username + '!';
+  intro.textContent = 'Você entrou na sua conta do Painel do Revendedor.';
+  logoutButton.style.display = 'block';
+  const active = accessIsActive(profile);
+  premiumTools.style.display = active ? 'grid' : 'none';
+  showMessage(accountMessage, active
+    ? 'Acesso Premium ativo. As ferramentas disponíveis aparecem abaixo.'
+    : 'Sua conta foi autenticada, mas o acesso Premium ainda não está ativo. Se você já pagou, fale com o suporte para confirmar a liberação.');
+}
+toggle.addEventListener('click', function() {
+  const visible = password.type === 'password';
+  password.type = visible ? 'text' : 'password';
+  toggle.textContent = visible ? 'Ocultar' : 'Mostrar';
+  toggle.setAttribute('aria-label', visible ? 'Ocultar senha' : 'Mostrar senha');
+  toggle.setAttribute('aria-pressed', String(visible));
+});
+form.addEventListener('submit', async function(event) {
+  event.preventDefault();
+  hideMessage(message);
+  if (!supabase) {
+    showMessage(message, 'O login ainda não está configurado. Siga o arquivo LEIA-ME-SUPABASE.md no GitHub para conectar o serviço.');
+    return;
+  }
+  const user = username.value.trim();
+  const pass = password.value;
+  const submit = form.querySelector('button[type="submit"]');
+  submit.disabled = true;
+  submit.textContent = 'Verificando...';
+  try {
+    const response = await fetch(config.url.replace(/\/$/, '') + '/functions/v1/login-by-username', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': config.anonKey },
+      body: JSON.stringify({ username: user, password: pass })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || 'Não foi possível entrar. Confira seus dados.');
+    const { error } = await supabase.auth.setSession({
+      access_token: result.access_token,
+      refresh_token: result.refresh_token
+    });
+    if (error) throw new Error('Não foi possível iniciar sua sessão. Tente novamente.');
     password.value = '';
-  });
-})();
+    await refreshAccount();
+  } catch (err) {
+    showMessage(message, err.message || 'Falha de conexão. Tente novamente mais tarde.');
+    password.value = '';
+  } finally {
+    submit.disabled = false;
+    submit.textContent = 'Entrar no painel';
+  }
+});
+logoutButton.addEventListener('click', async function() {
+  if (supabase) await supabase.auth.signOut();
+  form.reset();
+  form.style.display = 'block';
+  title.textContent = 'Entrar na sua conta';
+  intro.textContent = 'Acesse sua área de revendedor usando seu nome de usuário e senha.';
+  logoutButton.style.display = 'none';
+  premiumTools.style.display = 'none';
+  hideMessage(accountMessage);
+  hideMessage(message);
+});
+if (supabase) refreshAccount();
 </script>
 </body>
 </html>
