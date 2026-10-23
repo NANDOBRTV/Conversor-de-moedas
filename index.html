@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self' https://wa.me">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; form-action 'self' https://wa.me">
 <title>Calculadora de Recarga Sanba</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
 <style>
@@ -139,9 +139,33 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 @media print{@page{margin:12mm}body{display:block!important;background:#fff!important;padding:0!important;min-height:0!important}body *{visibility:hidden!important}.card{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;padding:0!important;margin:0!important;box-shadow:none!important;border-radius:0!important}.card h1,.mode.active .result.show,.mode.active .result.show *{visibility:visible!important}.card>:not(h1){display:none!important}.mode.active{display:block!important}.mode.active .result.show{display:block!important;position:static!important;background:#fff!important;color:#111!important;border:1px solid #999!important}.mode.active .result.show .tit,.mode.active .result.show .val,.mode.active .result.show .det,.mode.active .result.show .summary{color:#111!important;background:#fff!important}.mode.active .result.show .copy-btn,.mode.active .result.show .print-btn{display:none!important}.mode.active .result.show .summary{border:1px solid #999!important}}
 #rateStatus{margin-top:8px;font-weight:700}
 
+
+/* Central de relatórios do projeto */
+.project-menu-button{position:fixed;top:12px;right:12px;z-index:1000;border:1px solid rgba(255,255,255,.55);border-radius:12px;background:#fff;color:#1e3c72;padding:10px 13px;font:800 13px system-ui;box-shadow:0 5px 18px rgba(0,0,0,.2);cursor:pointer}
+.project-menu-button:focus-visible,.project-close:focus-visible,.project-tab:focus-visible{outline:3px solid #ffbf47;outline-offset:3px}
+.project-overlay{position:fixed;inset:0;z-index:1100;background:rgba(8,20,44,.68);padding:16px;display:none;align-items:flex-start;justify-content:center;overflow:auto}
+.project-overlay.open{display:flex}
+.project-panel{background:#fff;color:#263449;width:min(760px,100%);margin:auto;border-radius:18px;box-shadow:0 20px 70px rgba(0,0,0,.35);overflow:hidden;max-height:calc(100vh - 32px);display:flex;flex-direction:column}
+.project-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px;background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff}
+.project-panel-head h2{font-size:19px;line-height:1.25;margin:0 0 5px}.project-panel-head p{font-size:12px;opacity:.9;line-height:1.4}
+.project-close{flex:0 0 auto;border:1px solid rgba(255,255,255,.5);border-radius:9px;background:transparent;color:#fff;font-size:21px;width:38px;height:38px;cursor:pointer}
+.project-tabs{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;background:#f3f6fb;border-bottom:1px solid #e0e7f1}
+.project-tab{flex:0 0 auto;border:0;border-radius:9px;padding:9px 11px;background:#e4eaf4;color:#334155;font:700 12px system-ui;cursor:pointer}
+.project-tab.active{background:#1e3c72;color:#fff}
+.project-panel-body{padding:18px 20px;overflow:auto;overscroll-behavior:contain}
+.project-section[hidden]{display:none}.project-section h3{font-size:16px;color:#1e3c72;margin:0 0 9px}.project-section p{font-size:13px;line-height:1.55;margin:7px 0}.project-section ul{padding-left:19px;margin:8px 0}.project-section li{font-size:13px;line-height:1.5;margin:5px 0}
+.project-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.project-kpi{background:#f3f6fb;border:1px solid #e0e7f1;border-radius:11px;padding:12px}.project-kpi span{display:block;font-size:11px;color:#64748b;margin-bottom:5px}.project-kpi strong{font-size:14px;color:#1e3c72}
+.project-callout{padding:11px 12px;border-radius:10px;background:#fff7e6;border:1px solid #f2cc7d;color:#704d08;font-size:12px;line-height:1.5;margin:10px 0}
+.project-status{display:inline-block;border-radius:20px;background:#fff0d5;color:#8a5200;padding:4px 8px;font-size:11px;font-weight:800}
+.project-history{list-style:none;padding:0!important;margin:10px 0!important}.project-history li{padding:10px 0;border-bottom:1px solid #e5eaf1}.project-history strong{display:block;color:#1e3c72}.project-history small{display:block;color:#64748b;margin-top:3px}.project-history a{color:#1d4ed8;font-size:12px;font-weight:700}
+.project-refresh{border:1px solid #cbd5e1;background:#fff;color:#1e3c72;border-radius:8px;padding:8px 10px;font:700 12px system-ui;cursor:pointer}
+.project-panel-foot{border-top:1px solid #e5eaf1;padding:10px 20px;color:#64748b;font-size:11px;line-height:1.45}
+@media(max-width:520px){.project-menu-button{top:8px;right:8px;padding:9px 10px;font-size:12px}.project-panel-head{padding:15px}.project-panel-body{padding:14px}.project-tabs{padding:8px}.project-kpis{grid-template-columns:1fr 1fr}.project-kpi{padding:10px}.project-panel{max-height:calc(100vh - 18px)}.project-overlay{padding:9px}}
 </style>
 </head>
 <body>
+<button type="button" class="project-menu-button" id="openProjectReports" aria-haspopup="dialog" aria-controls="projectReports">⌂ Relatórios</button>
 <div class="card">
   <h1>🪙 Calculadora de Recarga Sanba</h1>
   <p class="sub">Calcule sua recarga de moedas Sanba</p>
@@ -257,8 +281,92 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   <div class="creator-credit">Desenvolvido por <strong>Fernando Francisco de Lira</strong></div>
   <div class="footer-info">
     <div class="license-seal">🛡️ © Fernando Francisco de Lira · Todos os direitos reservados</div>
-    <div class="version">Calculadora independente · v1.3.14 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.15 · Atualizada em 23/10/2026</div>
   </div>
+</div>
+
+<div class="project-overlay" id="projectReports" role="dialog" aria-modal="true" aria-labelledby="projectPanelTitle" aria-hidden="true">
+  <section class="project-panel">
+    <header class="project-panel-head">
+      <div><h2 id="projectPanelTitle">Central do Projeto</h2><p>Conversor Sanba · relatório de funcionamento, alterações e segurança</p></div>
+      <button type="button" class="project-close" id="closeProjectReports" aria-label="Fechar relatórios">×</button>
+    </header>
+    <nav class="project-tabs" role="tablist" aria-label="Seções dos relatórios">
+      <button class="project-tab active" type="button" role="tab" aria-selected="true" data-project-tab="overview">Visão geral</button>
+      <button class="project-tab" type="button" role="tab" aria-selected="false" data-project-tab="features">Funções</button>
+      <button class="project-tab" type="button" role="tab" aria-selected="false" data-project-tab="security">Segurança</button>
+      <button class="project-tab" type="button" role="tab" aria-selected="false" data-project-tab="history">Alterações</button>
+      <button class="project-tab" type="button" role="tab" aria-selected="false" data-project-tab="tests">Testes</button>
+      <button class="project-tab" type="button" role="tab" aria-selected="false" data-project-tab="roadmap">Próximas melhorias</button>
+    </nav>
+    <div class="project-panel-body">
+      <section class="project-section" data-project-section="overview">
+        <h3>Resumo do projeto</h3>
+        <p>Calculadora independente para estimar recargas Sanba e preparar o pedido para atendimento manual pelo WhatsApp. Ela não é um serviço oficial do Sanba.</p>
+        <div class="project-kpis">
+          <div class="project-kpi"><span>Versão publicada no código</span><strong>v1.3.15</strong></div>
+          <div class="project-kpi"><span>Última atualização deste arquivo</span><strong>23/10/2026</strong></div>
+          <div class="project-kpi"><span>Processamento de pagamento</span><strong>Manual via WhatsApp</strong></div>
+          <div class="project-kpi"><span>Tipo de hospedagem</span><strong>Site estático</strong></div>
+        </div>
+        <div class="project-callout">Este painel é um relatório público de transparência. Ele não acessa pedidos, pagamentos ou dados privados dos visitantes.</div>
+        <p><strong>Fonte da lista de alterações:</strong> histórico público de commits do repositório GitHub. A lista depende da disponibilidade da API do GitHub.</p>
+      </section>
+      <section class="project-section" data-project-section="features" hidden>
+        <h3>Funções existentes</h3>
+        <ul>
+          <li>Dois modos de cálculo: moedas para valor e valor disponível para moedas.</li>
+          <li>Seleção de região/moeda: Brasil (BRL), internacional (USD) e Venezuela (VES).</li>
+          <li>Validação do ID Sanba com 8 dígitos numéricos.</li>
+          <li>Opção para lembrar o ID somente no armazenamento local deste navegador.</li>
+          <li>Resumo para copiar, opção de imprimir/salvar em PDF e botão para limpar os campos.</li>
+          <li>Mensagem de pedido pré-preenchida para continuar o atendimento no WhatsApp.</li>
+          <li>Aviso de que os valores são referências e precisam de confirmação manual.</li>
+          <li>Regras de atendimento, pagamento e privacidade disponíveis no próprio site.</li>
+        </ul>
+      </section>
+      <section class="project-section" data-project-section="security" hidden>
+        <h3>Proteções e limites conhecidos</h3>
+        <ul>
+          <li>Política de segurança de conteúdo (CSP) restringe origens de scripts, imagens, formulários e conexões permitidas.</li>
+          <li>Política de referência reduz o envio desnecessário de informações da página para outros sites.</li>
+          <li>Links de WhatsApp em nova aba usam proteções contra acesso à janela de origem.</li>
+          <li>Validação do ID e dos valores antes de preparar um pedido.</li>
+          <li>O ID só fica salvo neste navegador se a pessoa ativar a opção de lembrá-lo.</li>
+        </ul>
+        <div class="project-callout"><strong>Limitações importantes:</strong> por ser um site estático, os cálculos e parte do código são visíveis no navegador. A restrição de domínio não substitui autenticação nem segurança de servidor. Este painel não é privado e não deve exibir senhas, chaves, tokens ou dados de clientes.</div>
+        <p>Os preços são estimativas editáveis no código e não são uma confirmação automática de pagamento. A confirmação e a recarga continuam manuais pelo WhatsApp.</p>
+      </section>
+      <section class="project-section" data-project-section="history" hidden>
+        <h3>Histórico de modificações do GitHub</h3>
+        <p>As alterações abaixo são carregadas do histórico público do repositório, não de uma lista inventada manualmente.</p>
+        <button type="button" class="project-refresh" id="refreshProjectHistory">↻ Atualizar histórico</button>
+        <p id="projectHistoryStatus" role="status" aria-live="polite">Preparando histórico…</p>
+        <ul class="project-history" id="projectHistoryList"></ul>
+      </section>
+      <section class="project-section" data-project-section="tests" hidden>
+        <h3>Situação dos testes</h3>
+        <p><span class="project-status">Verificação manual pendente</span></p>
+        <ul>
+          <li>O código foi atualizado no repositório, mas não foi executado um teste real em vários celulares e navegadores nesta alteração.</li>
+          <li>É necessário conferir os dois modos de cálculo, as três moedas/regiões, IDs inválidos, copiar resumo, impressão e abertura do WhatsApp.</li>
+          <li>Também é necessário testar o painel de relatórios, a carga do histórico e o layout em telas pequenas.</li>
+        </ul>
+        <div class="project-callout">Para manter o relatório confiável, esta página não marca recursos como “testados” sem que os testes tenham sido realmente executados.</div>
+      </section>
+      <section class="project-section" data-project-section="roadmap" hidden>
+        <h3>Próximas melhorias recomendadas</h3>
+        <ul>
+          <li>Testes reais em Android e desktop, incluindo cálculo, moeda, validação e links do WhatsApp.</li>
+          <li>Revisão independente das fórmulas e dos arredondamentos dos preços.</li>
+          <li>Adicionar testes automatizados para cálculos e validação, se a estrutura do projeto permitir.</li>
+          <li>Revisar periodicamente a política CSP e as dependências externas.</li>
+          <li>Se futuramente precisar de um painel administrativo privado, usar autenticação e um serviço de servidor; apenas esconder um botão não protege informações.</li>
+        </ul>
+      </section>
+    </div>
+    <footer class="project-panel-foot">Relatório informativo do projeto. A lista de commits é fornecida pelo GitHub e pode ficar indisponível temporariamente. Não compartilhe informações confidenciais neste painel público.</footer>
+  </section>
 </div>
 
 <script>
@@ -447,6 +555,59 @@ document.getElementById('reais').addEventListener('input',calcR);
 document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');x.setAttribute('aria-selected','false')});t.classList.add('active');t.setAttribute('aria-selected','true');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r');document.getElementById('activeModeLabel').textContent='Modo ativo: '+(m==='c'?'Moedas → Valor':'Valor → Moedas')})});
 
 attLabels();updateIdHint();
+
+// Central pública de relatórios: sem dados de clientes ou segredos.
+(function(){
+  var overlay=document.getElementById('projectReports');
+  var openBtn=document.getElementById('openProjectReports');
+  var closeBtn=document.getElementById('closeProjectReports');
+  var historyList=document.getElementById('projectHistoryList');
+  var historyStatus=document.getElementById('projectHistoryStatus');
+  var historyLoaded=false;
+  function closePanel(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');openBtn.focus();}
+  function openPanel(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');closeBtn.focus();if(!historyLoaded)loadHistory();}
+  openBtn.addEventListener('click',openPanel);
+  closeBtn.addEventListener('click',closePanel);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)closePanel();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&overlay.classList.contains('open'))closePanel();});
+  document.querySelectorAll('[data-project-tab]').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('[data-project-tab]').forEach(function(t){var active=t===tab;t.classList.toggle('active',active);t.setAttribute('aria-selected',active?'true':'false');});
+      document.querySelectorAll('[data-project-section]').forEach(function(section){section.hidden=section.getAttribute('data-project-section')!==tab.getAttribute('data-project-tab');});
+      if(tab.getAttribute('data-project-tab')==='history'&&!historyLoaded)loadHistory();
+    });
+  });
+  function loadHistory(){
+    historyStatus.textContent='Carregando alterações do GitHub…';
+    historyList.replaceChildren();
+    fetch('https://api.github.com/repos/NANDOBRTV/Conversor-de-moedas/commits?per_page=10',{
+      headers:{'Accept':'application/vnd.github+json'}
+    }).then(function(response){if(!response.ok)throw new Error('GitHub indisponível');return response.json();})
+    .then(function(commits){
+      if(!Array.isArray(commits)||!commits.length)throw new Error('Histórico vazio');
+      commits.forEach(function(commit){
+        var li=document.createElement('li');
+        var title=document.createElement('strong');
+        var date=document.createElement('small');
+        var link=document.createElement('a');
+        var message=commit&&commit.commit&&commit.commit.message?commit.commit.message.split('\n')[0]:'Alteração sem título';
+        var rawDate=commit&&commit.commit&&commit.commit.author?commit.commit.author.date:'';
+        title.textContent=message;
+        date.textContent=rawDate?'Data: '+new Date(rawDate).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short',timeZone:'UTC'})+' UTC':'Data indisponível';
+        link.href=commit.html_url||'https://github.com/NANDOBRTV/Conversor-de-moedas/commits/main';
+        link.target='_blank';link.rel='noopener noreferrer';link.textContent='Ver commit no GitHub';
+        li.appendChild(title);li.appendChild(date);li.appendChild(link);historyList.appendChild(li);
+      });
+      historyStatus.textContent='Exibindo '+commits.length+' alterações recentes do repositório.';
+      historyLoaded=true;
+    }).catch(function(){
+      historyStatus.textContent='Não foi possível carregar o histórico agora. Confira a conexão e tente novamente.';
+      historyLoaded=false;
+    });
+  }
+  document.getElementById('refreshProjectHistory').addEventListener('click',loadHistory);
+})();
+
 // Os valores comerciais são definidos pelas configurações do conversor.\n// A confirmação final do preço e o pagamento acontecem manualmente pelo WhatsApp.
 </script>
 </body>
