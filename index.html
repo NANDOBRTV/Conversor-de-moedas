@@ -314,32 +314,15 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   <div class="creator-credit">Desenvolvido por <strong>Fernando Francisco de Lira</strong></div>
   <div class="footer-info">
     <div class="license-seal">🛡️ © Fernando Francisco de Lira · Todos os direitos reservados</div>
-    <div class="version">Calculadora independente · v1.3.19 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.20 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
 
-<section class="profit-card" aria-labelledby="profitTitle">
-  <div class="premium-lock-icon" aria-hidden="true">🔒</div>
-  <p class="premium-label">FERRAMENTA PREMIUM</p>
-  <h2 id="profitTitle">Calculadora de lucro para revendedores</h2>
-  <p class="profit-intro">Uma ferramenta exclusiva para quem revende moedas Sanba e precisa definir preços com segurança.</p>
-  <ul class="premium-benefits">
-    <li>Calcular custo, taxas e lucro por lote</li>
-    <li>Descobrir o preço mínimo para não ter prejuízo</li>
-    <li>Simular metas de lucro de 10%, 20% e 30%</li>
-    <li>Considerar despesas extras por venda</li>
-  </ul>
-  <div class="premium-status">Acesso pago em preparação</div>
-  <p class="profit-note">A ferramenta não está liberada gratuitamente. Estamos preparando a forma de liberar o acesso aos clientes que adquirirem o plano. O botão abaixo serve apenas para demonstrar interesse; ele não realiza pagamento nem ativa o acesso.</p>
-  <button class="profit-calc-btn" id="premiumInterest" type="button">Tenho interesse no acesso premium</button>
-  <p style="margin:12px 0 0;text-align:center"><a href="./revendedor.html" style="display:inline-block;color:#0f766e;font-weight:800;text-decoration:underline;text-underline-offset:3px;padding:8px">Abrir painel do revendedor →</a></p>
-</section>
-
 <div class="project-overlay" id="projectReports" role="dialog" aria-modal="true" aria-labelledby="projectPanelTitle" aria-hidden="true">
   <section class="project-panel">
     <header class="project-panel-head">
-      <div><h2 id="projectPanelTitle">Central do Projeto</h2><p>Conversor Sanba · relatório de funcionamento, alterações e segurança</p></div>
+      <div><h2 id="projectPanelTitle">Central do Projeto</h2><p>Conversor Sanba · relatório de funcionamento, alterações e segurança</p><a href="./revendedor.html" style="display:inline-block;margin-top:8px;color:#0f766e;font-size:13px;font-weight:800;text-decoration:underline;text-underline-offset:3px">Abrir Painel do Revendedor →</a></div>
       <button type="button" class="project-close" id="closeProjectReports" aria-label="Fechar relatórios">×</button>
     </header>
     <nav class="project-tabs" role="tablist" aria-label="Seções dos relatórios">
@@ -355,7 +338,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <h3>Resumo do projeto</h3>
         <p>Calculadora independente para estimar recargas Sanba e preparar o pedido para atendimento manual pelo WhatsApp. Ela não é um serviço oficial do Sanba.</p>
         <div class="project-kpis">
-          <div class="project-kpi"><span>Versão publicada no código</span><strong>v1.3.17</strong></div>
+          <div class="project-kpi"><span>Versão publicada no código</span><strong>v1.3.20</strong></div>
           <div class="project-kpi"><span>Última atualização deste arquivo</span><strong>23/10/2026</strong></div>
           <div class="project-kpi"><span>Processamento de pagamento</span><strong>Manual via WhatsApp</strong></div>
           <div class="project-kpi"><span>Tipo de hospedagem</span><strong>Site estático</strong></div>
@@ -367,7 +350,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <h3>Funções existentes</h3>
         <ul>
           <li>Dois modos de cálculo: moedas para valor e valor disponível para moedas.</li>
-          <li>Prévia pública da calculadora de lucro para revendedores, planejada como ferramenta premium paga; acesso ainda em preparação.</li>
+          <li>Link para o Painel do Revendedor em página separada; login e acesso Premium ainda em preparação.</li>
           <li>Seleção de região/moeda: Brasil (BRL), internacional (USD) e Venezuela (VES).</li>
           <li>Validação do ID Sanba com 8 dígitos numéricos.</li>
           <li>Opção para lembrar o ID somente no armazenamento local deste navegador.</li>
@@ -664,15 +647,7 @@ attLabels();updateIdHint();
 // Os valores comerciais são definidos pelas configurações do conversor.\n// A confirmação final do preço e o pagamento acontecem manualmente pelo WhatsApp.
 
 
-/* Interesse no futuro acesso premium; não processa pagamento nem concede acesso. */
-(function(){
-  var btn=document.getElementById('premiumInterest');
-  if(!btn)return;
-  btn.addEventListener('click',function(){
-    var message=encodeURIComponent('Olá! Tenho interesse no acesso pago à Calculadora de Lucro para Revendedores do Conversor Sanba. Gostaria de saber quando estará disponível e quais serão as condições.');
-    window.open('https://wa.me/5582996843269?text='+message,'_blank','noopener,noreferrer');
-  });
-})();
+;
 </script>
 </body>
 </html>
