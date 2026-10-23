@@ -161,7 +161,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
   setInterval(function(){ console.clear(); }, 1000);
 }();
 
-var WHATSAPP="5582996843269", CUSTO_USD=0.99/1500, CUSTO_BRL=6/1500, CUSTO_VES=1450/1500, MINIMO_MOEDAS=1000, TAMANHO_ID=8;
+var WHATSAPP_BRL="5582996843269", WHATSAPP_INTERNACIONAL="584145154287", CUSTO_USD=0.99/1500, CUSTO_BRL=6/1500, CUSTO_VES=1450/1500, MINIMO_MOEDAS=1000, TAMANHO_ID=8;
 function custoPorMoeda(c){if(c==='BRL')return CUSTO_BRL;if(c==='VES')return CUSTO_VES;return CUSTO_USD*(TAXAS[c]||1)}
 var MOEDAS={BRL:{f:'🇧🇷',s:'R$',n:'Real'},USD:{f:'🇺🇸',s:'US$',n:'Dólar'},VES:{f:'🇻🇪',s:'Bs',n:'Bolívar venezuelano'}};
 var TAXAS={USD:1,BRL:5.60,VES:1450/0.99};
@@ -181,7 +181,7 @@ function fmtRd(v,c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',c
 function casasMoeda(c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',currency:c}).resolvedOptions().maximumFractionDigits}catch(e){return 2}}
 function arredondarParaCima(v,c){var fator=Math.pow(10,casasMoeda(c));return Math.ceil(v*fator-1e-9)/fator}
 function fmtM(v){if(Math.abs(v-Math.round(v))<.0001)return fmtN.format(Math.round(v))+' moedas';var s=v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');var p=s.split('.');return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(p[1]?','+p[1]:'')+' moedas'}
-function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg)}
+function wpp(msg,c){var numero=c==='BRL'?WHATSAPP_BRL:WHATSAPP_INTERNACIONAL;return 'https://wa.me/'+numero+'?text='+encodeURIComponent(msg)}
 
 document.getElementById('linkSanba').addEventListener('click',function(e){
   e.preventDefault();
@@ -244,7 +244,7 @@ function calcC(){
   var msg='Olá! Vim pelo site.\n\n🪙 *Recarga:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
   if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(Math.round(exatoBRL*100)/100,'BRL')+'\n';
   msg+='🆔 *ID:* '+getUserId()+'\n\nQuero recarregar!';
-  wc.href=wpp(msg);wc.classList.add('show');
+  wc.href=wpp(msg,moeda);wc.classList.add('show');
 }
 
 function calcR(){
@@ -271,7 +271,7 @@ function calcR(){
   var msg='Olá! Vim pelo site.\n\n💵 *Valor calculado:* '+fmtRd(valorCobrado,moeda)+'\n🪙 *Moedas:* '+fmtN.format(qtd)+'\n';
   if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(vBRL,'BRL')+'\n';
   msg+='🆔 *ID:* '+getUserId()+'\n\nQuero recarregar!';
-  wr.href=wpp(msg);wr.classList.add('show');
+  wr.href=wpp(msg,moeda);wr.classList.add('show');
 }
 
 userIdEl.addEventListener('input',function(){sanitizeId();updateIdHint();calcC();calcR()});
