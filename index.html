@@ -189,6 +189,12 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 .profit-target-row strong{text-align:right}
 .profit-note{font-size:11px;color:#64748b;line-height:1.5;margin-top:12px}
 @media(max-width:360px){.profit-card{padding:16px 12px}.profit-fields{grid-template-columns:1fr}.profit-field.full{grid-column:auto}.profit-main-result strong{font-size:24px}}
+
+/* Prévia pública de ferramenta premium — não contém a calculadora funcional */
+.premium-lock-icon{font-size:30px;margin-bottom:7px}
+.premium-label{font-size:10px;letter-spacing:1.8px;font-weight:900;color:#0f766e;margin:0 0 8px}
+.premium-benefits{padding-left:20px;margin:12px 0;color:#334155;font-size:13px;line-height:1.7}
+.premium-status{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:10px;border-radius:9px;font-size:12px;font-weight:800;text-align:center;margin-top:12px}
 </style>
 </head>
 <body>
@@ -308,61 +314,25 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   <div class="creator-credit">Desenvolvido por <strong>Fernando Francisco de Lira</strong></div>
   <div class="footer-info">
     <div class="license-seal">🛡️ © Fernando Francisco de Lira · Todos os direitos reservados</div>
-    <div class="version">Calculadora independente · v1.3.17 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.18 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
 
 <section class="profit-card" aria-labelledby="profitTitle">
-  <h2 id="profitTitle">📈 Calculadora de lucro do revendedor</h2>
-  <p class="profit-intro">Descubra quanto sobra em uma venda, incluindo taxa percentual e despesas extras. Esta ferramenta é independente do preço estimado na calculadora de recarga.</p>
-  <div class="profit-fields">
-    <div class="profit-field">
-      <label for="profitCoins">Moedas compradas no lote</label>
-      <input id="profitCoins" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 1600" value="1600">
-    </div>
-    <div class="profit-field">
-      <label for="profitCost">Custo do lote (R$)</label>
-      <input id="profitCost" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 8,00">
-    </div>
-    <div class="profit-field">
-      <label for="profitSale">Preço de venda do lote (R$)</label>
-      <input id="profitSale" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 12,00">
-    </div>
-    <div class="profit-field">
-      <label for="profitFee">Taxa da venda (%)</label>
-      <input id="profitFee" type="number" min="0" max="99.99" step="0.01" inputmode="decimal" placeholder="Ex.: 20" value="0">
-    </div>
-    <div class="profit-field">
-      <label for="profitFixedFee">Taxa fixa por venda (R$)</label>
-      <input id="profitFixedFee" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Se não houver, deixe 0" value="0">
-    </div>
-    <div class="profit-field">
-      <label for="profitExtra">Outras despesas (R$)</label>
-      <input id="profitExtra" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: transporte" value="0">
-    </div>
-  </div>
-  <button class="profit-calc-btn" id="calculateProfit" type="button">Calcular lucro e preço mínimo</button>
-  <div class="profit-results" id="profitResults" aria-live="polite">
-    <div class="profit-main-result" id="profitMainResult">
-      <small>Lucro estimado por lote</small>
-      <strong id="profitValue">R$ 0,00</strong>
-      <span id="profitStatus">Preencha os valores para calcular.</span>
-    </div>
-    <div class="profit-breakdown">
-      <div class="profit-stat"><span>Receita após taxa percentual</span><strong id="profitNetRevenue">—</strong></div>
-      <div class="profit-stat"><span>Custo total com despesas</span><strong id="profitTotalCost">—</strong></div>
-      <div class="profit-stat"><span>Preço mínimo para não perder</span><strong id="profitBreakEven">—</strong></div>
-      <div class="profit-stat"><span>Lucro por 1.000 moedas</span><strong id="profitPerThousand">—</strong></div>
-    </div>
-    <div class="profit-targets">
-      <h3>Preços sugeridos para cada meta de lucro</h3>
-      <div class="profit-target-row"><span>10% acima do custo total</span><strong id="profitTarget10">—</strong></div>
-      <div class="profit-target-row"><span>20% acima do custo total</span><strong id="profitTarget20">—</strong></div>
-      <div class="profit-target-row"><span>30% acima do custo total</span><strong id="profitTarget30">—</strong></div>
-    </div>
-  </div>
-  <p class="profit-note">Estimativa local: os valores digitados não são enviados nem salvos pelo site. Inclua todos os custos e confirme as taxas reais do seu meio de pagamento. O preço mínimo considera as taxas informadas, mas não garante venda nem lucro.</p>
+  <div class="premium-lock-icon" aria-hidden="true">🔒</div>
+  <p class="premium-label">FERRAMENTA PREMIUM</p>
+  <h2 id="profitTitle">Calculadora de lucro para revendedores</h2>
+  <p class="profit-intro">Uma ferramenta exclusiva para quem revende moedas Sanba e precisa definir preços com segurança.</p>
+  <ul class="premium-benefits">
+    <li>Calcular custo, taxas e lucro por lote</li>
+    <li>Descobrir o preço mínimo para não ter prejuízo</li>
+    <li>Simular metas de lucro de 10%, 20% e 30%</li>
+    <li>Considerar despesas extras por venda</li>
+  </ul>
+  <div class="premium-status">Acesso pago em preparação</div>
+  <p class="profit-note">A ferramenta não está liberada gratuitamente. Estamos preparando a forma de liberar o acesso aos clientes que adquirirem o plano. O botão abaixo serve apenas para demonstrar interesse; ele não realiza pagamento nem ativa o acesso.</p>
+  <button class="profit-calc-btn" id="premiumInterest" type="button">Tenho interesse no acesso premium</button>
 </section>
 
 <div class="project-overlay" id="projectReports" role="dialog" aria-modal="true" aria-labelledby="projectPanelTitle" aria-hidden="true">
@@ -396,7 +366,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <h3>Funções existentes</h3>
         <ul>
           <li>Dois modos de cálculo: moedas para valor e valor disponível para moedas.</li>
-          <li>Calculadora separada de lucro do revendedor, com taxa percentual, taxa fixa, despesas, ponto de equilíbrio e metas de preço.</li>
+          <li>Prévia pública da calculadora de lucro para revendedores, planejada como ferramenta premium paga; acesso ainda em preparação.</li>
           <li>Seleção de região/moeda: Brasil (BRL), internacional (USD) e Venezuela (VES).</li>
           <li>Validação do ID Sanba com 8 dígitos numéricos.</li>
           <li>Opção para lembrar o ID somente no armazenamento local deste navegador.</li>
@@ -440,7 +410,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <ul>
           <li>Testes reais em Android e desktop, incluindo cálculo, moeda, validação e links do WhatsApp.</li>
           <li>Revisão independente das fórmulas e dos arredondamentos dos preços.</li>
-          <li>Medir o tráfego com uma ferramenta gratuita de estatísticas, depois de configurar a conta com consentimento e política de privacidade adequados.</li>
+          <li>Implementar autenticação e controle de acesso no servidor antes de liberar a ferramenta premium paga.</li>
           <li>Adicionar testes automatizados para cálculos e validação, se a estrutura do projeto permitir.</li>
           <li>Revisar periodicamente a política CSP e as dependências externas.</li>
           <li>Se futuramente precisar de um painel administrativo privado, usar autenticação e um serviço de servidor; apenas esconder um botão não protege informações.</li>
@@ -713,24 +683,13 @@ attLabels();updateIdHint();
     }
     var rate=fee/100,totalCost=cost+extra,net=sale*(1-rate)-fixed,profit=net-totalCost;
     var breakEven=(totalCost+fixed)/(1-rate);
-    function target(markup){return (totalCost*(1+markup)+fixed)/(1-rate);}
-    var main=document.getElementById('profitMainResult');
-    main.classList.toggle('loss',profit<0);
-    set('profitValue',money(profit));
-    set('profitStatus',profit<0?'Prejuízo estimado neste lote.':profit===0?'Você está no ponto de equilíbrio.':'Lucro estimado antes de eventuais custos não informados.');
-    set('profitNetRevenue',money(net));
-    set('profitTotalCost',money(totalCost));
-    set('profitBreakEven',money(breakEven));
-    set('profitPerThousand',money(profit/coins*1000));
-    set('profitTarget10',money(target(.10)));
-    set('profitTarget20',money(target(.20)));
-    set('profitTarget30',money(target(.30)));
-    results.classList.add('show');
-  }
-  document.getElementById('calculateProfit').addEventListener('click',calculate);
-  ids.forEach(function(id){el[id].addEventListener('input',function(){if(results.classList.contains('show'))calculate();});});
+    function target(markup){retu
+/* Interesse no futuro acesso premium; não processa pagamento nem concede acesso. */
+(function(){
+  var btn=document.getElementById('premiumInterest');
+  if(!btn)return;
+  btn.addEventListener('click',function(){
+    var message=encodeURIComponent('Olá! Tenho interesse no acesso pago à Calculadora de Lucro para Revendedores do Conversor Sanba. Gostaria de saber quando estará disponível e quais serão as condições.');
+    window.open('https://wa.me/5582996843269?text='+message,'_blank','noopener,noreferrer');
+  });
 })();
-
-</script>
-</body>
-</html>
