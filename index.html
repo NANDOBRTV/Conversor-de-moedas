@@ -89,6 +89,9 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 .operator-notice{margin:10px 0 14px;padding:12px;background:#f4f7fc;border:1px solid #cbd7ea;border-radius:10px;color:#344563;font-size:12px;line-height:1.5;text-align:left}
 .operator-notice strong{display:block;color:#1e3c72;margin-bottom:4px}
 .operator-notice p{margin:0}
+.footer-operator-notice{margin:18px 0 8px;padding:9px 11px;background:#f8fafc;border:0;border-top:1px solid #e2e8f0;border-radius:0;color:#64748b;font-size:11px;text-align:center}
+.footer-operator-notice strong{color:#475569;margin-bottom:2px}
+.footer-operator-notice p strong{display:inline;color:#475569;margin:0}
 .policy-panel{margin-top:12px;border:1px solid #d7dfeb;border-radius:10px;padding:12px;color:#445066;font-size:12px;line-height:1.55}
 .policy-panel summary{font-weight:800;color:#1e3c72;cursor:pointer;padding:3px}
 .policy-panel h2{font-size:13px;color:#1e3c72;margin:12px 0 4px}
@@ -138,11 +141,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 <div class="card">
   <h1>🪙 Calculadora de Recarga Sanba</h1>
   <p class="sub">Calcule sua recarga de moedas Sanba</p>
-  <div class="operator-notice" role="note">
-    <strong>ℹ️ Atendimento independente</strong>
-    <p>Esta calculadora é operada por um revendedor/operador independente. <strong>Não é um serviço oficial do Sanba</strong> e não representa nem é administrada pelo aplicativo Sanba.</p>
-  </div>
-  
+
   <label for="regionSelect">🌎 País / região</label>
   <select id="regionSelect" aria-label="Selecionar país ou região">
     <option value="BRL">🇧🇷 Brasil — pagamento em reais (BRL)</option>
@@ -247,6 +246,10 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
     </a>
   </div>
   
+  <div class="operator-notice footer-operator-notice" role="note">
+    <strong>ℹ️ Atendimento independente</strong>
+    <p>Esta calculadora é operada por um revendedor/operador independente. <strong>Não é um serviço oficial do Sanba</strong> e não representa nem é administrada pelo aplicativo Sanba.</p>
+  </div>
   <div class="footer-info">
     <div class="license-seal">🛡️ Licença Proprietária © Sanba</div>
     <div class="version">Calculadora independente · v1.3.9 · Atualizada em 23/10/2026</div>
