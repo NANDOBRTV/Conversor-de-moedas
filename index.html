@@ -140,6 +140,16 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 #rateStatus{margin-top:8px;font-weight:700}
 
 
+/* Menu principal com submenu compacto */
+.site-menu-wrap{position:relative;align-self:flex-end;z-index:1200;margin:0 0 12px}
+.project-menu-button{display:block;align-self:auto;margin:0}
+.site-mini-menu{position:absolute;right:0;top:calc(100% + 7px);width:min(270px,calc(100vw - 24px));padding:7px;background:#fff;border:1px solid #dbe3ef;border-radius:13px;box-shadow:0 12px 30px rgba(0,0,0,.24);z-index:1201}
+.site-mini-menu[hidden]{display:none}
+.site-mini-menu a,.site-mini-menu button{display:flex;align-items:center;width:100%;gap:8px;padding:12px 11px;border:0;border-radius:8px;background:#fff;color:#1e3c72;text-align:left;text-decoration:none;font:700 13px system-ui;cursor:pointer}
+.site-mini-menu a:hover,.site-mini-menu button:hover,.site-mini-menu a:focus-visible,.site-mini-menu button:focus-visible{background:#eef3fb;outline:none}
+.site-mini-menu a+a,.site-mini-menu button{margin-top:2px}
+@media(max-width:520px){.site-menu-wrap{margin-right:0}.site-mini-menu{width:min(270px,calc(100vw - 20px))}}
+
 /* Central de relatórios do projeto */
 .project-menu-button{position:static;align-self:flex-end;flex:0 0 auto;margin:0 0 12px;z-index:10;border:1px solid rgba(255,255,255,.55);border-radius:12px;background:#fff;color:#1e3c72;padding:10px 13px;font:800 13px system-ui;box-shadow:0 5px 18px rgba(0,0,0,.2);cursor:pointer}
 .project-menu-button:focus-visible,.project-close:focus-visible,.project-tab:focus-visible{outline:3px solid #ffbf47;outline-offset:3px}
@@ -198,7 +208,15 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 </style>
 </head>
 <body>
-<button type="button" class="project-menu-button" id="openProjectReports" aria-haspopup="dialog" aria-controls="projectReports">⌂ Relatórios</button>
+<div class="site-menu-wrap">
+  <button type="button" class="project-menu-button" id="openSiteMenu" aria-haspopup="true" aria-expanded="false" aria-controls="siteMiniMenu">☰ Menu</button>
+  <nav class="site-mini-menu" id="siteMiniMenu" aria-label="Menu principal" hidden>
+    <a href="./index.html">🪙 Calculadora Sanba</a>
+    <a href="./revendedor.html">👤 Painel do Revendedor</a>
+    <a href="https://github.com/NANDOBRTV/Conversor-de-moedas" target="_blank" rel="noopener noreferrer">💻 Projeto no GitHub ↗</a>
+    <button type="button" id="openProjectReports">📋 Relatórios do projeto</button>
+  </nav>
+</div>
 <div class="card">
   <h1>🪙 Calculadora de Recarga Sanba</h1>
   <p class="sub">Calcule sua recarga de moedas Sanba</p>
@@ -314,7 +332,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   <div class="creator-credit">Desenvolvido por <strong>Fernando Francisco de Lira</strong></div>
   <div class="footer-info">
     <div class="license-seal">🛡️ © Fernando Francisco de Lira · Todos os direitos reservados</div>
-    <div class="version">Calculadora independente · v1.3.20 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.21 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
@@ -322,7 +340,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 <div class="project-overlay" id="projectReports" role="dialog" aria-modal="true" aria-labelledby="projectPanelTitle" aria-hidden="true">
   <section class="project-panel">
     <header class="project-panel-head">
-      <div><h2 id="projectPanelTitle">Central do Projeto</h2><p>Conversor Sanba · relatório de funcionamento, alterações e segurança</p><a href="./revendedor.html" style="display:inline-block;margin-top:8px;color:#0f766e;font-size:13px;font-weight:800;text-decoration:underline;text-underline-offset:3px">Abrir Painel do Revendedor →</a></div>
+      <div><h2 id="projectPanelTitle">Relatórios do Projeto</h2><p>Conversor Sanba · funcionamento, alterações e segurança</p></div>
       <button type="button" class="project-close" id="closeProjectReports" aria-label="Fechar relatórios">×</button>
     </header>
     <nav class="project-tabs" role="tablist" aria-label="Seções dos relatórios">
@@ -595,13 +613,20 @@ attLabels();updateIdHint();
 // Central pública de relatórios: sem dados de clientes ou segredos.
 (function(){
   var overlay=document.getElementById('projectReports');
+  var menuBtn=document.getElementById('openSiteMenu');
+  var miniMenu=document.getElementById('siteMiniMenu');
   var openBtn=document.getElementById('openProjectReports');
   var closeBtn=document.getElementById('closeProjectReports');
   var historyList=document.getElementById('projectHistoryList');
   var historyStatus=document.getElementById('projectHistoryStatus');
   var historyLoaded=false;
+  function closeMenu(){miniMenu.hidden=true;menuBtn.setAttribute('aria-expanded','false');}
+  function toggleMenu(){var show=miniMenu.hidden;miniMenu.hidden=!show;menuBtn.setAttribute('aria-expanded',show?'true':'false');}
   function closePanel(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');openBtn.focus();}
-  function openPanel(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');closeBtn.focus();if(!historyLoaded)loadHistory();}
+  function openPanel(){closeMenu();overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');closeBtn.focus();if(!historyLoaded)loadHistory();}
+  menuBtn.addEventListener('click',toggleMenu);
+  document.addEventListener('click',function(e){if(!e.target.closest('.site-menu-wrap'))closeMenu();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!miniMenu.hidden){closeMenu();menuBtn.focus();}});
   openBtn.addEventListener('click',openPanel);
   closeBtn.addEventListener('click',closePanel);
   overlay.addEventListener('click',function(e){if(e.target===overlay)closePanel();});
