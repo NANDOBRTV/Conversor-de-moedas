@@ -46,7 +46,7 @@ insert into public.reseller_profiles (user_id, username, access_status, plan_nam
 values ('UUID_DO_USUARIO', 'nomeusuario', 'pending', 'premium');
 ```
 
-O nome de usuário deve ter de 3 a 30 caracteres e usar letras, números, ponto, hífen ou sublinhado.
+O nome de usuário deve ter de 3 a 30 caracteres, ser escrito em letras minúsculas e usar letras, números, ponto, hífen ou sublinhado. O login converte o que for digitado para minúsculas.
 
 ## 5. Liberar o Premium após confirmar pagamento
 
