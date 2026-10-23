@@ -216,7 +216,7 @@ function attLabels(){
   document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';
   var custoLocal=custoPorMoeda(moeda);
   document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(MINIMO_MOEDAS*custoLocal,moeda)+'</b>';
-  document.getElementById('info').innerHTML='Preço base: <b>1.500 moedas = R$ 6,00 ou US$ 0,99</b><br>Cada moeda = '+fmtEx(custoLocal,moeda);
+  document.getElementById('info').innerHTML='Preço base: <b>1.500 moedas = '+fmtRd(1500*custoLocal,moeda)+'</b><br>Cada moeda = '+fmtEx(custoLocal,moeda);
 }
 
 function calcC(){
