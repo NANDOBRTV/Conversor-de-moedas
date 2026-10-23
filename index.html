@@ -126,6 +126,10 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 .admin-panel p{margin:8px 0;line-height:1.4}
 .admin-panel label{margin-top:8px}
 .admin-panel input{margin-bottom:4px}
+.remember-row{display:flex;align-items:center;gap:8px;margin:-2px 0 12px;color:#374151;font-size:12px;line-height:1.4}
+.remember-row input{width:18px;height:18px;margin:0;flex:0 0 auto}
+.print-btn{width:100%;margin-top:8px;padding:11px;border:1px solid #475569;border-radius:10px;background:#fff;color:#334155;font:700 13px system-ui;cursor:pointer;min-height:44px}
+@media print{@page{margin:12mm}body{display:block!important;background:#fff!important;padding:0!important;min-height:0!important}body *{visibility:hidden!important}.card{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;padding:0!important;margin:0!important;box-shadow:none!important;border-radius:0!important}.card h1,.mode.active .result.show,.mode.active .result.show *{visibility:visible!important}.card>:not(h1){display:none!important}.mode.active{display:block!important}.mode.active .result.show{display:block!important;position:static!important;background:#fff!important;color:#111!important;border:1px solid #999!important}.mode.active .result.show .tit,.mode.active .result.show .val,.mode.active .result.show .det,.mode.active .result.show .summary{color:#111!important;background:#fff!important}.mode.active .result.show .copy-btn,.mode.active .result.show .print-btn{display:none!important}.mode.active .result.show .summary{border:1px solid #999!important}}
 #rateStatus{margin-top:8px;font-weight:700}
 
 </style>
@@ -153,7 +157,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <label for="userId">🆔 Seu ID <span style="color:#e74c3c">*</span></label>
   <input type="text" id="userId" placeholder="Digite seu ID Sanba" inputmode="numeric" maxlength="8" autocomplete="off" aria-describedby="idHint">
-  <div class="hint" id="idHint">Digite 8 dígitos (ex: 76328158)</div>
+  <div class="hint" id="idHint">Digite 8 dígitos (ex: 76328158)</div><label class="remember-row" for="rememberId"><input type="checkbox" id="rememberId"> Lembrar meu ID somente neste navegador (opcional)</label><div class="hint" id="rememberStatus" role="status" aria-live="polite">Seu ID não será salvo se esta opção ficar desmarcada.</div>
   <div class="id-error" id="idError" role="alert">⚠️ ID inválido! Confira os 8 dígitos antes de continuar.</div>
   
   <div class="tabs" role="tablist" aria-label="Tipo de cálculo">
@@ -165,7 +169,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <div id="modeC" class="mode active">
     <label>Quantidade de moedas</label>
-    <input type="text" id="moedas" inputmode="numeric" placeholder="Ex: 6666" aria-label="Quantidade de moedas Sanba">
+    <input type="text" id="moedas" inputmode="numeric" placeholder="Ex: 6666" aria-label="Quantidade de moedas Sanba" autocomplete="off">
     <div class="minimo" id="minC">Mínimo: <b>1.000 moedas</b></div>
     <div class="erro" id="errC"><span class="err-title">⚠️ Valor abaixo do mínimo!</span><b>Mínimo: 1.000 moedas</b><br><span id="errCMsg"></span></div>
     <div class="result" id="resC">
@@ -173,7 +177,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
       <div class="val" id="valC">—</div>
       <div class="det" id="detC">—</div>
       <div class="summary" id="summaryC"></div>
-      <button type="button" class="copy-btn" id="copyC">📋 Copiar resumo</button>
+      <button type="button" class="copy-btn" id="copyC">📋 Copiar resumo</button><button type="button" class="print-btn" id="printC">🖨️ Imprimir / salvar em PDF</button>
     </div>
     <div class="pgto" id="pgtoC">💳 Para pagar <b id="pgtoCVal">—</b></div>
     <div class="needid" id="needC">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
@@ -182,7 +186,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <div id="modeR" class="mode">
     <label id="lblR">Valor em moeda</label>
-    <input type="text" id="reais" inputmode="decimal" placeholder="Ex: 20,00" aria-label="Valor disponível para comprar moedas">
+    <input type="text" id="reais" inputmode="decimal" placeholder="Ex: 20,00" aria-label="Valor disponível para comprar moedas" autocomplete="off">
     <div class="minimo" id="minR">Mínimo: —</div>
     <div class="erro" id="errR"><span class="err-title">⚠️ Valor abaixo do mínimo!</span><span id="errRMsg"></span></div>
     <div class="result" id="resR">
@@ -190,7 +194,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
       <div class="val" id="valR">—</div>
       <div class="det" id="detR">—</div>
       <div class="summary" id="summaryR"></div>
-      <button type="button" class="copy-btn" id="copyR">📋 Copiar resumo</button>
+      <button type="button" class="copy-btn" id="copyR">📋 Copiar resumo</button><button type="button" class="print-btn" id="printR">🖨️ Imprimir / salvar em PDF</button>
     </div>
     <div class="needid" id="needR">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
     <a id="wppR" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
@@ -255,7 +259,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <div class="footer-info">
     <div class="license-seal">🛡️ Licença Proprietária © Sanba</div>
-    <div class="version">Calculadora independente · v1.3.7 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.8 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
@@ -274,7 +278,9 @@ var WHATSAPP_BRL="5582996843269", WHATSAPP_INTERNACIONAL="584145154287", CUSTO_U
 var PRECOS_SESSAO={BRL:6,USD:0.99,VES:1450};
 function atualizarCustoSessao(){CUSTO_BRL=PRECOS_SESSAO.BRL/1500;CUSTO_USD=PRECOS_SESSAO.USD/1500;CUSTO_VES=PRECOS_SESSAO.VES/1500;}
 function custoPorMoeda(c){if(c==='BRL')return CUSTO_BRL;if(c==='VES')return CUSTO_VES;return CUSTO_USD*(TAXAS[c]||1)}
+// Para adicionar moeda: atualizar MOEDAS, MOEDA_IDS, TAXAS e PRECOS_SESSAO; revisar também a regra de preço e a formatação.
 var MOEDAS={BRL:{f:'🇧🇷',s:'R$',n:'Real'},USD:{f:'🇺🇸',s:'US$',n:'Dólar'},VES:{f:'🇻🇪',s:'Bs',n:'Bolívar venezuelano'}};
+var MOEDA_IDS=['BRL','USD','VES'];
 var TAXAS={USD:1,BRL:5.60,VES:1450/0.99};
 var TZ_MAP={'America/Sao_Paulo':'BRL','America/Bahia':'BRL','America/Recife':'BRL','America/Fortaleza':'BRL','America/Manaus':'BRL','America/Belem':'BRL','America/Cuiaba':'BRL','America/Campo_Grande':'BRL','America/Porto_Velho':'BRL','America/Rio_Branco':'BRL','America/Noronha':'BRL','America/Argentina/Buenos_Aires':'ARS','America/Argentina/Cordoba':'ARS','America/Argentina/Mendoza':'ARS','America/Argentina/Salta':'ARS','America/Argentina/Tucuman':'ARS','America/Argentina/Jujuy':'ARS','America/Argentina/Ushuaia':'ARS','America/La_Paz':'BOB','America/Santiago':'CLP','Pacific/Easter':'CLP','America/Bogota':'COP','America/Caracas':'VES','America/Guayaquil':'USD','Pacific/Galapagos':'USD','America/Guyana':'GYD','America/Asuncion':'PYG','America/Lima':'PEN','America/Paramaribo':'SRD','America/Montevideo':'UYU','America/Belize':'BZD','America/Costa_Rica':'CRC','America/Guatemala':'GTQ','America/Tegucigalpa':'HNL','America/Mexico_City':'MXN','America/Cancun':'MXN','America/Monterrey':'MXN','America/Chihuahua':'MXN','America/Tijuana':'MXN','America/Managua':'NIO','America/Panama':'PAB','America/Havana':'CUP','America/Santo_Domingo':'DOP','America/Port-au-Prince':'HTG','America/Jamaica':'JMD','America/Port_of_Spain':'TTD','America/Nassau':'BSD','America/Barbados':'BBD','America/St_Kitts':'XCD','America/St_Lucia':'XCD','America/Grenada':'XCD','America/Antigua':'XCD'};
 var LANG_MAP={'pt-br':'BRL','pt':'BRL','es-ar':'ARS','es-bo':'BOB','es-cl':'CLP','es-co':'COP','es-ve':'VES','es-ec':'USD','es-py':'PYG','es-pe':'PEN','es-uy':'UYU','es-mx':'MXN','es-gt':'GTQ','es-hn':'HNL','es-ni':'NIO','es-pa':'PAB','es-cr':'CRC','es-do':'DOP','es-cu':'CUP','es-bz':'BZD','en-jm':'JMD','en-tt':'TTD','en-bs':'BSD','en-bb':'BBD','en-bz':'BZD'};
@@ -322,7 +328,7 @@ var sel=document.getElementById('currencySelect');
 var regionSel=document.getElementById('regionSelect');
 // A lista de moedas é recriada sem duplicações.
 sel.innerHTML='';
-['BRL','USD','VES'].forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
+MOEDA_IDS.forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
 regionSel.value=moeda;
 function atualizarIndicadorMoeda(){var d=MOEDAS[moeda];document.getElementById('autoText').innerHTML='Moeda/região selecionada: <b>'+d.f+' '+moeda+' — '+d.n+'</b>';var st=document.getElementById('detectStatus');st.classList.remove('loading');st.textContent='✓ Sugestão de moeda pronta: '+d.f+' '+moeda+'. Você pode alterar manualmente.';}
 atualizarIndicadorMoeda();
@@ -394,7 +400,16 @@ function calcR(){
   wr.href=wpp(msg,moeda);wr.classList.add('show');
 }
 
-userIdEl.addEventListener('input',function(){sanitizeId();updateIdHint();calcC();calcR()});
+var rememberIdEl=document.getElementById('rememberId');var rememberStatus=document.getElementById('rememberStatus');
+function carregarIdSalvo(){try{var salvo=localStorage.getItem('sanba_calculadora_id');if(salvo&&/^\d{8}$/.test(salvo)&&!/^0{8}$/.test(salvo)){userIdEl.value=salvo;rememberIdEl.checked=true;rememberStatus.textContent='ID recuperado do armazenamento local deste navegador.';}}catch(e){rememberStatus.textContent='O navegador não permitiu acessar o armazenamento local.';}}
+function sincronizarIdSalvo(){try{if(rememberIdEl.checked&&isIdValid()){localStorage.setItem('sanba_calculadora_id',getUserId());rememberStatus.textContent='ID salvo somente neste navegador.';}else{localStorage.removeItem('sanba_calculadora_id');rememberStatus.textContent=rememberIdEl.checked?'Digite um ID válido para salvá-lo neste navegador.':'Seu ID não será salvo se esta opção ficar desmarcada.';}}catch(e){rememberStatus.textContent='Não foi possível salvar o ID neste navegador.';}}
+rememberIdEl.addEventListener('change',sincronizarIdSalvo);
+userIdEl.addEventListener('input',function(){sanitizeId();updateIdHint();sincronizarIdSalvo();calcC();calcR()});
+document.getElementById('moedas').addEventListener('input',function(){var v=this.value.replace(/\D/g,'');if(this.value!==v)this.value=v;calcC();});
+document.getElementById('reais').addEventListener('input',function(){var v=this.value.replace(/[^\d.,]/g,'');if(this.value!==v)this.value=v;calcR();});
+document.getElementById('printC').addEventListener('click',function(){if(document.getElementById('resC').classList.contains('show'))window.print();});
+document.getElementById('printR').addEventListener('click',function(){if(document.getElementById('resR').classList.contains('show'))window.print();});
+carregarIdSalvo();
 document.getElementById('wppC').addEventListener('click',function(e){if(!isIdValid()||!this.classList.contains('show')||!this.getAttribute('href')){e.preventDefault();this.removeAttribute('href');calcC();}});
 document.getElementById('wppR').addEventListener('click',function(e){if(!isIdValid()||!this.classList.contains('show')||!this.getAttribute('href')){e.preventDefault();this.removeAttribute('href');calcR();}});
 sel.addEventListener('change',function(e){moeda=e.target.value;regionSel.value=moeda;atualizarIndicadorMoeda();attLabels();calcC();calcR()});
@@ -409,6 +424,8 @@ document.getElementById('copyC').addEventListener('click',function(){var m=num(d
 document.getElementById('copyR').addEventListener('click',function(){var v=num(document.getElementById('reais').value);var custoLocal=custoPorMoeda(moeda);var qtd=Math.floor(v/custoLocal+1e-9);var cobrado=arredondarParaCima(qtd*custoLocal,moeda);while(qtd>0&&cobrado>v+1e-9){qtd--;cobrado=arredondarParaCima(qtd*custoLocal,moeda);}if(!Number.isFinite(v)||qtd<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryR').textContent='Informe um ID válido de 8 dígitos e valor suficiente para pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(qtd)+' moedas\nValor estimado: '+fmtRd(cobrado,moeda)+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryR'));});
 document.getElementById('clearAll').addEventListener('click',function(){
   document.getElementById('userId').value='';
+  if(!rememberIdEl.checked){try{localStorage.removeItem('sanba_calculadora_id');}catch(e){}}
+  else{sincronizarIdSalvo();}
   document.getElementById('moedas').value='';
   document.getElementById('reais').value='';
   ['summaryC','summaryR'].forEach(function(id){document.getElementById(id).textContent='';});
