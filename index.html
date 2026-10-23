@@ -202,16 +202,6 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <p class="info" id="info"></p>
   <p id="taxaStatus" role="status" aria-live="polite" class="important-notice">⚠️ VALOR APENAS DE REFERÊNCIA. Confirme o preço final com o atendimento pelo WhatsApp antes de realizar qualquer pagamento. A recarga é concluída manualmente.</p>
-  <details class="admin-panel">
-    <summary>⚙️ Ajuste de preços (uso administrativo)</summary>
-    <p>Altera somente esta sessão do navegador. Não há autenticação segura neste painel; não o considere protegido para uso público.</p>
-    <label for="rateBRL">Preço por 1.500 moedas — BRL (R$)</label><input id="rateBRL" inputmode="decimal" value="6,00">
-    <label for="rateUSD">Preço por 1.500 moedas — USD (US$)</label><input id="rateUSD" inputmode="decimal" value="0,99">
-    <label for="rateVES">Preço por 1.500 moedas — VES (Bs)</label><input id="rateVES" inputmode="decimal" value="1450,00">
-    <button type="button" id="applyRates" class="copy-btn">Aplicar preços nesta sessão</button>
-    <div id="rateStatus" role="status" aria-live="polite"></div>
-  </details>
-  
   <details class="policy-panel">
     <summary>📋 Regras de atendimento, pagamento e privacidade</summary>
     <h2>1. Quem opera este atendimento</h2>
@@ -259,7 +249,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <div class="footer-info">
     <div class="license-seal">🛡️ Licença Proprietária © Sanba</div>
-    <div class="version">Calculadora independente · v1.3.8 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.9 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
@@ -434,7 +424,6 @@ document.getElementById('clearAll').addEventListener('click',function(){
   document.getElementById('activeModeLabel').textContent='Modo ativo: '+(document.getElementById('tabC').getAttribute('aria-selected')==='true'?'Moedas → Valor':'Valor → Moedas');
   document.getElementById('userId').focus();
 });
-document.getElementById('applyRates').addEventListener('click',function(){var b=num(document.getElementById('rateBRL').value),u=num(document.getElementById('rateUSD').value),v=num(document.getElementById('rateVES').value);if(!(b>0&&u>0&&v>0)){document.getElementById('rateStatus').textContent='Informe preços maiores que zero nos três campos.';return;}PRECOS_SESSAO={BRL:b,USD:u,VES:v};atualizarCustoSessao();attLabels();calcC();calcR();document.getElementById('rateStatus').textContent='Preços aplicados somente nesta sessão. Confirme manualmente antes de cobrar.';});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
 document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');x.setAttribute('aria-selected','false')});t.classList.add('active');t.setAttribute('aria-selected','true');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r');document.getElementById('activeModeLabel').textContent='Modo ativo: '+(m==='c'?'Moedas → Valor':'Valor → Moedas')})});
