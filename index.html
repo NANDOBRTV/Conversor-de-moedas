@@ -95,6 +95,24 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 .policy-panel p,.policy-panel ul{margin:5px 0}
 .policy-panel ul{padding-left:18px}
 .privacy-note{background:#f7f9fc;border-radius:8px;padding:9px;margin-top:8px}
+.clear-btn{width:100%;margin:0 0 10px;padding:12px;border:2px solid #b42318;border-radius:10px;background:#fff;color:#b42318;font:800 14px system-ui;cursor:pointer;min-height:46px}
+.clear-btn:hover{background:#fff0ee}
+.detect-status{font-size:12px;font-weight:800;color:#164e63;background:#ecfeff;border:1px solid #67e8f9;border-radius:8px;padding:9px;margin:0 0 10px;text-align:center}
+.detect-status.loading{color:#854d0e;background:#fffbeb;border-color:#fcd34d}
+.id-error{display:none;color:#991b1b;background:#fff1f2;border:2px solid #e11d48;border-radius:8px;padding:9px;margin:-4px 0 10px;font-size:12px;font-weight:800;text-align:center}
+.id-error.show{display:block}
+.err-title{display:block;font-size:14px;font-weight:900;margin-bottom:3px}
+.tab[data-m="c"]{border-left:3px solid #0f766e}
+.tab[data-m="r"]{border-left:3px solid #6d28d9}
+.tab[data-m="c"].active{background:#075985;color:#fff}
+.tab[data-m="r"].active{background:#6d28d9;color:#fff}
+.region-warning{color:#653c00;background:#fff4d6;border-color:#d99a00;font-weight:700}
+.important-notice{color:#7f1d1d;background:#fff1f2;border-color:#be123c}
+.erro{color:#991b1b;background:#fff1f2;border-color:#be123c;font-weight:700}
+.needid{color:#713f12;background:#fef3c7;border-color:#d97706}
+.hint{color:#52525b}
+.hint.warn{color:#b91c1c}
+.hint.ok{color:#047857}
 .region-warning{font-size:12px;color:#78520b;background:#fff7e6;border:1px solid #f2cc7d;border-radius:9px;padding:10px;margin:-4px 0 10px;line-height:1.4}
 .mini-btn{display:inline-block;width:auto;margin:6px 0 0;padding:7px 10px;border:1px solid #b9c6dd;border-radius:8px;background:#fff;color:#1e3c72;font-size:12px;font-weight:700}
 .active-mode-label{font-size:12px;font-weight:700;color:#1e3c72;background:#eef3fb;border-radius:8px;padding:8px 10px;margin:-6px 0 8px;text-align:center}
@@ -129,24 +147,27 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   </select>
   <label for="currencySelect">💳 Moeda de pagamento</label>
   <select id="currencySelect" aria-label="Alterar moeda de pagamento manualmente"></select>
+  <div class="detect-status loading" id="detectStatus" role="status" aria-live="polite">🔄 Detectando sugestão de moeda...</div>
   <div class="auto-detect show" id="autoDetect">🌎 <span id="autoText"></span> <button type="button" id="changeCurrency" class="mini-btn">Alterar manualmente</button></div>
   <div class="region-warning">A taxa pode variar conforme o país/região. O preço exibido é uma referência; confirme no WhatsApp antes de pagar.</div>
   
   <label for="userId">🆔 Seu ID <span style="color:#e74c3c">*</span></label>
   <input type="text" id="userId" placeholder="Digite seu ID Sanba" inputmode="numeric" maxlength="8" autocomplete="off" aria-describedby="idHint">
   <div class="hint" id="idHint">Digite 8 dígitos (ex: 76328158)</div>
+  <div class="id-error" id="idError" role="alert">⚠️ ID inválido! Confira os 8 dígitos antes de continuar.</div>
   
   <div class="tabs" role="tablist" aria-label="Tipo de cálculo">
     <button class="tab active" role="tab" aria-selected="true" data-m="c" id="tabC">🪙 Moedas → Valor</button>
     <button class="tab" role="tab" aria-selected="false" data-m="r" id="tabR">💵 Valor → Moedas</button>
   </div>
   <div class="active-mode-label" id="activeModeLabel">Modo ativo: Moedas → Valor</div>
+  <button type="button" class="clear-btn" id="clearAll">🧹 Limpar tudo</button>
   
   <div id="modeC" class="mode active">
     <label>Quantidade de moedas</label>
     <input type="text" id="moedas" inputmode="numeric" placeholder="Ex: 6666" aria-label="Quantidade de moedas Sanba">
     <div class="minimo" id="minC">Mínimo: <b>1.000 moedas</b></div>
-    <div class="erro" id="errC">⚠️ <b>Mínimo 1.000 moedas</b><br><span id="errCMsg"></span></div>
+    <div class="erro" id="errC"><span class="err-title">⚠️ Valor abaixo do mínimo!</span><b>Mínimo: 1.000 moedas</b><br><span id="errCMsg"></span></div>
     <div class="result" id="resC">
       <div class="tit">Valor calculado (referência)</div>
       <div class="val" id="valC">—</div>
@@ -163,7 +184,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
     <label id="lblR">Valor em moeda</label>
     <input type="text" id="reais" inputmode="decimal" placeholder="Ex: 20,00" aria-label="Valor disponível para comprar moedas">
     <div class="minimo" id="minR">Mínimo: —</div>
-    <div class="erro" id="errR">⚠️ <b>Valor mínimo</b><br><span id="errRMsg"></span></div>
+    <div class="erro" id="errR"><span class="err-title">⚠️ Valor abaixo do mínimo!</span><span id="errRMsg"></span></div>
     <div class="result" id="resR">
       <div class="tit">Você recebe</div>
       <div class="val" id="valR">—</div>
@@ -234,7 +255,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <div class="footer-info">
     <div class="license-seal">🛡️ Licença Proprietária © Sanba</div>
-    <div class="version">Calculadora independente · v1.3.6 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.7 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
@@ -289,7 +310,8 @@ function sanitizeId(){var v=userIdEl.value.replace(/\D/g,'').slice(0,TAMANHO_ID)
 function getUserId(){return userIdEl.value.trim()}
 function isIdValid(){var id=getUserId();return /^\d{8}$/.test(id)&&!/^0{8}$/.test(id)}
 function updateIdHint(){
-  var id=getUserId(),hint=document.getElementById('idHint');
+  var id=getUserId(),hint=document.getElementById('idHint'),idError=document.getElementById('idError');
+  idError.classList.toggle('show',id.length>0&&!isIdValid());
   if(id.length===0){userIdEl.className='';hint.textContent='Digite '+TAMANHO_ID+' dígitos (ex: 76328158)';hint.className='hint'}
   else if(id.length<TAMANHO_ID){userIdEl.className='invalido';hint.textContent='Faltam '+(TAMANHO_ID-id.length)+' dígito'+(TAMANHO_ID-id.length>1?'s':'');hint.className='hint warn'}
   else if(!isIdValid()){userIdEl.className='invalido';hint.textContent='Este ID não parece válido. Confira os 8 dígitos.';hint.className='hint warn'}
@@ -302,7 +324,7 @@ var regionSel=document.getElementById('regionSelect');
 sel.innerHTML='';
 ['BRL','USD','VES'].forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
 regionSel.value=moeda;
-function atualizarIndicadorMoeda(){var d=MOEDAS[moeda];document.getElementById('autoText').innerHTML='Moeda/região selecionada: <b>'+d.f+' '+moeda+' — '+d.n+'</b>';}
+function atualizarIndicadorMoeda(){var d=MOEDAS[moeda];document.getElementById('autoText').innerHTML='Moeda/região selecionada: <b>'+d.f+' '+moeda+' — '+d.n+'</b>';var st=document.getElementById('detectStatus');st.classList.remove('loading');st.textContent='✓ Sugestão de moeda pronta: '+d.f+' '+moeda+'. Você pode alterar manualmente.';}
 atualizarIndicadorMoeda();
 
 function attLabels(){
@@ -385,6 +407,16 @@ function copiarTexto(texto, statusEl){
 function fallbackCopiar(texto,statusEl){var ta=document.createElement('textarea');ta.value=texto;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{var ok=document.execCommand('copy');statusEl.textContent=ok?'Resumo copiado! Cole no WhatsApp para enviar.':'Não foi possível copiar automaticamente. Selecione e copie o resumo.';}catch(e){statusEl.textContent='Não foi possível copiar automaticamente.';}ta.remove();}
 document.getElementById('copyC').addEventListener('click',function(){var m=num(document.getElementById('moedas').value);if(!Number.isInteger(m)||m<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryC').textContent='Informe um ID válido de 8 dígitos e pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(m)+' moedas\nValor estimado: '+document.getElementById('valC').textContent+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryC'));});
 document.getElementById('copyR').addEventListener('click',function(){var v=num(document.getElementById('reais').value);var custoLocal=custoPorMoeda(moeda);var qtd=Math.floor(v/custoLocal+1e-9);var cobrado=arredondarParaCima(qtd*custoLocal,moeda);while(qtd>0&&cobrado>v+1e-9){qtd--;cobrado=arredondarParaCima(qtd*custoLocal,moeda);}if(!Number.isFinite(v)||qtd<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryR').textContent='Informe um ID válido de 8 dígitos e valor suficiente para pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(qtd)+' moedas\nValor estimado: '+fmtRd(cobrado,moeda)+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryR'));});
+document.getElementById('clearAll').addEventListener('click',function(){
+  document.getElementById('userId').value='';
+  document.getElementById('moedas').value='';
+  document.getElementById('reais').value='';
+  ['summaryC','summaryR'].forEach(function(id){document.getElementById(id).textContent='';});
+  ['rateStatus'].forEach(function(id){document.getElementById(id).textContent='';});
+  updateIdHint();calcC();calcR();
+  document.getElementById('activeModeLabel').textContent='Modo ativo: '+(document.getElementById('tabC').getAttribute('aria-selected')==='true'?'Moedas → Valor':'Valor → Moedas');
+  document.getElementById('userId').focus();
+});
 document.getElementById('applyRates').addEventListener('click',function(){var b=num(document.getElementById('rateBRL').value),u=num(document.getElementById('rateUSD').value),v=num(document.getElementById('rateVES').value);if(!(b>0&&u>0&&v>0)){document.getElementById('rateStatus').textContent='Informe preços maiores que zero nos três campos.';return;}PRECOS_SESSAO={BRL:b,USD:u,VES:v};atualizarCustoSessao();attLabels();calcC();calcR();document.getElementById('rateStatus').textContent='Preços aplicados somente nesta sessão. Confirme manualmente antes de cobrar.';});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
