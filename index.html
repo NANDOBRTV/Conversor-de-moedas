@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Conversor de Moedas - Sanba</title>
+<title>Calculadora de Recarga Sanba</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -13,7 +13,9 @@ h1{font-size:20px;color:#1e3c72;text-align:center;margin-bottom:4px}
 .sub{text-align:center;color:#666;font-size:13px;margin-bottom:16px}
 label{display:block;font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
 select,input{width:100%;padding:13px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;background:#fafafa;outline:none;font-family:inherit;margin-bottom:8px}
-select:focus,input:focus{border-color:#2a5298;background:#fff}\nbutton:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #ffbf47;outline-offset:3px}\nbutton,a,select{ -webkit-tap-highlight-color:transparent }
+select:focus,input:focus{border-color:#2a5298;background:#fff}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #ffbf47;outline-offset:3px}
+button,a,select{ -webkit-tap-highlight-color:transparent }
 #currencySelect{font-weight:600;color:#1e3c72;cursor:pointer}
 #userId{font-size:16px;letter-spacing:2px;font-weight:600;text-align:center}
 #userId.invalido{border-color:#e74c3c;background:#fff5f5}
@@ -58,15 +60,39 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}\nbutton:focus-vis
 .brand-play{width:34px;height:34px;margin-top:4px}
 .brand-slogan{color:#004a59;font-size:15px;font-weight:600;margin-top:6px;letter-spacing:0.5px}
 .footer-info{display:flex;justify-content:space-between;align-items:center;margin-top:15px;font-size:10px;color:#bbb;font-family:monospace}
-.license-seal{display:flex;align-items:center;gap:4px;color:#999;font-weight:600}\n\n@media(max-width:520px){\n body{padding:10px;align-items:flex-start}\n .card{padding:20px 16px;border-radius:16px;margin:auto 0;width:100%}\n h1{font-size:19px}\n .tabs{gap:4px;margin:12px 0}\n .tab{padding:11px 6px;font-size:12px;line-height:1.3}\n .result{padding:16px 12px}\n .result .val{font-size:clamp(22px,7vw,28px)}\n .wpp{min-height:48px;padding:15px 10px}\n .brand-sanba{font-size:40px}\n .footer-info{gap:8px;align-items:flex-start;flex-wrap:wrap}\n .license-seal{flex-wrap:wrap}\n}\n@media(max-width:360px){\n .card{padding:17px 12px}\n .tab{font-size:11px}\n .brand-sanba{font-size:35px}\n .brand-play{width:29px;height:29px}\n .info{font-size:11px}\n}\n@media(prefers-reduced-motion:reduce){\n *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}\n}
+.license-seal{display:flex;align-items:center;gap:4px;color:#999;font-weight:600}
+
+@media(max-width:520px){
+ body{padding:10px;align-items:flex-start}
+ .card{padding:20px 16px;border-radius:16px;margin:auto 0;width:100%}
+ h1{font-size:19px}
+ .tabs{gap:4px;margin:12px 0}
+ .tab{padding:11px 6px;font-size:12px;line-height:1.3}
+ .result{padding:16px 12px}
+ .result .val{font-size:clamp(22px,7vw,28px)}
+ .wpp{min-height:48px;padding:15px 10px}
+ .brand-sanba{font-size:40px}
+ .footer-info{gap:8px;align-items:flex-start;flex-wrap:wrap}
+ .license-seal{flex-wrap:wrap}
+}
+@media(max-width:360px){
+ .card{padding:17px 12px}
+ .tab{font-size:11px}
+ .brand-sanba{font-size:35px}
+ .brand-play{width:29px;height:29px}
+ .info{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
 </style>
 </head>
 <body>
 <div class="card">
-  <h1>🪙 Conversor de Moedas</h1>
-  <p class="sub">América Latina — escolha e converta</p>
+  <h1>🪙 Calculadora de Recarga Sanba</h1>
+  <p class="sub">Calcule sua recarga de moedas Sanba</p>
   
-  <label for="currencySelect">💱 Moeda</label>
+  <label for="currencySelect">💳 Moeda de pagamento</label>
   <select id="currencySelect"></select>
   <div class="auto-detect" id="autoDetect">🌎 <span id="autoText"></span></div>
   
@@ -109,7 +135,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}\nbutton:focus-vis
   </div>
   
   <p class="info" id="info"></p>
-  <p id="taxaStatus" role="status" aria-live="polite" style="font-size:11px;color:#777;text-align:center;margin-top:8px;line-height:1.45">Valores calculados com preços de referência configurados. Confirme o valor final pelo WhatsApp antes de pagar; a recarga é atendida manualmente.</p>
+  <p id="taxaStatus" role="status" aria-live="polite" style="font-size:11px;color:#777;text-align:center;margin-top:8px;line-height:1.45">Esta é uma calculadora de recarga Sanba, não um conversor de câmbio. Os preços são referências; confirme o valor final e conclua a compra manualmente pelo WhatsApp.</p>
   
   <div class="brand-footer">
     <div class="pix-text">
@@ -127,7 +153,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}\nbutton:focus-vis
   
   <div class="footer-info">
     <div class="license-seal">🛡️ Licença Proprietária © Sanba</div>
-    <div class="version">v1.3.3</div>
+    <div class="version">v1.3.4</div>
   </div>
 </div>
 
@@ -188,14 +214,16 @@ function updateIdHint(){
 }
 
 var sel=document.getElementById('currencySelect');
-Object.keys(MOEDAS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
-if(detectada&&MOEDAS[detectada]){var d=MOEDAS[detectada];document.getElementById('autoText').innerHTML='Moeda detectada: <b>'+d.f+' '+detectada+' — '+d.n+'</b>';document.getElementById('autoDetect').classList.add('show')}
+// Garante uma única opção por moeda mesmo se a inicialização for repetida.
+sel.innerHTML='';
+['BRL','USD','VES'].forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
+if(detectada&&MOEDAS[detectada]){var d=MOEDAS[detectada];document.getElementById('autoText').innerHTML='Sugestão de moeda de pagamento: <b>'+d.f+' '+detectada+' — '+d.n+'</b>';document.getElementById('autoDetect').classList.add('show')}
 
 function attLabels(){
   var c=MOEDAS[moeda];
-  document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;
-  document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';
-  document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';
+  document.getElementById('tabC').textContent='🪙 Moedas → Valor';
+  document.getElementById('tabR').textContent='💵 Valor → Moedas';
+  document.getElementById('lblR').textContent='Quanto deseja pagar em '+c.n+' ('+c.s+')?';
   var custoLocal=custoPorMoeda(moeda);
   document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(MINIMO_MOEDAS*custoLocal,moeda)+'</b>';
   document.getElementById('info').innerHTML='Preço base: <b>1.500 moedas = '+fmtRd(1500*custoLocal,moeda)+'</b><br>Cada moeda = '+fmtEx(custoLocal,moeda);
