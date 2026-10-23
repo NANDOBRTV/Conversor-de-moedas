@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self' https://wa.me">
 <title>Calculadora de Recarga Sanba</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
 <style>
@@ -182,7 +184,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
     </div>
     <div class="pgto" id="pgtoC">💳 Para pagar <b id="pgtoCVal">—</b></div>
     <div class="needid" id="needC">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
-    <a id="wppC" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
+    <a id="wppC" class="wpp" href="#" target="_blank" rel="noopener noreferrer">📱 Comprar pelo WhatsApp</a>
   </div>
   
   <div id="modeR" class="mode">
@@ -198,7 +200,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
       <button type="button" class="copy-btn" id="copyR">📋 Copiar resumo</button><button type="button" class="print-btn" id="printR">🖨️ Imprimir / salvar em PDF</button>
     </div>
     <div class="needid" id="needR">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
-    <a id="wppR" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
+    <a id="wppR" class="wpp" href="#" target="_blank" rel="noopener noreferrer">📱 Comprar pelo WhatsApp</a>
   </div>
   
   <p class="info" id="info"></p>
@@ -255,7 +257,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   <div class="creator-credit">Desenvolvido por <strong>Fernando Francisco de Lira</strong></div>
   <div class="footer-info">
     <div class="license-seal">🛡️ © Fernando Francisco de Lira · Todos os direitos reservados</div>
-    <div class="version">Calculadora independente · v1.3.12 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.13 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
@@ -303,7 +305,7 @@ document.getElementById('linkSanba').addEventListener('click',function(e){
     window.location.href='intent://#Intent;package=com.vixual.sanba;scheme=https;end';
     setTimeout(function(){window.location.href='https://play.google.com/store/apps/details?id=com.vixual.sanba';},2500);
   } else {
-    window.open('https://play.google.com/store/apps/details?id=com.vixual.sanba','_blank');
+    window.open('https://play.google.com/store/apps/details?id=com.vixual.sanba','_blank','noopener,noreferrer');
   }
 });
 
