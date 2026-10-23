@@ -98,12 +98,12 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 <p class="info" id="info"></p>
 <div class="brand-footer">
   <div class="pix-text"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.646 9.173l-3.03-3.03a1.003 1.003 0 00-1.414 0l-3.03 3.03a1 1 0 001.414 1.414L12 10.086l2.232 2.232-2.232 2.232-2.232-2.232-2.232 2.232 3.03 3.03a1.003 1.003 0 001.414 0l3.03-3.03a1 1 0 000-1.414l-2.232-2.232 2.232-2.232 2.232 2.232a1 1 0 001.414-1.414z"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z"/></svg>Aceitamos pagamentos via Pix</div>
-  <a href="https://play.google.com/store/apps/details?id=com.vixual.sanba" target="_blank" class="brand-link">
+  <a href="#" id="linkSanba" class="brand-link">
     <div class="brand-logo"><span class="brand-sanba">Sanba</span><svg class="brand-play" viewBox="0 0 24 24"><defs><linearGradient id="gradPlay" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff007f" /><stop offset="100%" stop-color="#8a2be2" /></linearGradient></defs><path d="M 8 5 Q 8 4 9 4 L 19 11 Q 20 12 19 13 L 9 20 Q 8 20 8 19 Z" fill="url(#gradPlay)" stroke="url(#gradPlay)" stroke-width="2" stroke-linejoin="round"/></svg></div>
     <div class="brand-slogan">Conoce, juega y conecta</div>
   </a>
 </div>
-<div class="version">v1.1.0</div>
+<div class="version">v1.2.0</div>
 </div>
 
 <script>
@@ -122,6 +122,25 @@ function fmtRd(v,c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',c
 function fmtM(v){if(Math.abs(v-Math.round(v))<.0001)return fmtN.format(Math.round(v))+' moedas';var s=v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');var p=s.split('.');return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(p[1]?','+p[1]:'')+' moedas'}
 function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg)}
 
+// NOVO: Lógica para abrir o App ou Play Store
+document.getElementById('linkSanba').addEventListener('click', function(e) {
+    e.preventDefault();
+    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    if (/android/i.test(userAgent)) {
+        // Tenta abrir o app direto (requer que o app tenha Intent configurado)
+        window.location.href = 'intent://#Intent;package=com.vixual.sanba;scheme=https;end';
+        
+        // Fallback: Se o app não abrir em 2.5 segundos, vai para a Play Store
+        setTimeout(function() {
+            window.location.href = 'https://play.google.com/store/apps/details?id=com.vixual.sanba';
+        }, 2500);
+    } else {
+        // Se for iOS ou PC, abre a Play Store em nova aba
+        window.open('https://play.google.com/store/apps/details?id=com.vixual.sanba', '_blank');
+    }
+});
+
 var userIdEl=document.getElementById('userId');
 function sanitizeId(){var v=userIdEl.value.replace(/\D/g,'').slice(0,TAMANHO_ID);if(userIdEl.value!==v)userIdEl.value=v;return v}
 function getUserId(){return userIdEl.value.trim()}
@@ -134,7 +153,16 @@ if(detectada&&MOEDAS[detectada]){var d=MOEDAS[detectada];document.getElementById
 
 function paraLocal(valorBRL){return valorBRL*(TAXAS[moeda]/TAXAS['BRL'])}
 
-function attLabels(){var c=MOEDAS[moeda];document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';var custoLocal=paraLocal(CUSTO_BRL);document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(MINIMO_MOEDAS*custoLocal,moeda)+'</b>';if(moeda==='BRL'){document.getElementById('info').innerHTML='Preço base: <b>1 moeda = R$ 0,0045</b>'}else{document.getElementById('info').innerHTML='Preço base: <b>1 moeda = R$ 0,0045</b><br>(Convertido: '+fmtEx(custoLocal,moeda)+')'}}
+// CORRIGIDO: Agora mostra o Preço Base já na moeda escolhida
+function attLabels(){
+    var c=MOEDAS[moeda];
+    document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;
+    document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';
+    document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';
+    var custoLocal=paraLocal(CUSTO_BRL);
+    document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(MINIMO_MOEDAS*custoLocal,moeda)+'</b>';
+    document.getElementById('info').innerHTML='Preço base: <b>1 moeda = ' + fmtEx(custoLocal, moeda) + '</b>';
+}
 
 function calcC(){var m=num(document.getElementById('moedas').value);var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('brlC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');if(!(m>0))return;if(m<MINIMO_MOEDAS){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MINIMO_MOEDAS-m)+'</b> moedas';return}
 var custoLocal=paraLocal(CUSTO_BRL);var exato=m*custoLocal;var exatoBRL=m*CUSTO_BRL;
@@ -161,4 +189,4 @@ attLabels();updateIdHint();
 fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()}).then(function(d){if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='USD'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR()}}).catch(function(){});
 </script>
 </body>
-  </html>
+</html>
