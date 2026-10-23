@@ -55,5 +55,28 @@ a{color:inherit}.wrap{max-width:1060px;margin:auto;padding:22px 16px 42px}.top{d
   </div>
   <footer class="foot">Conversor Sanba · Área do revendedor em desenvolvimento.<br>O painel não é um serviço oficial do aplicativo Sanba.</footer>
 </main>
+
+<script>
+(function(){
+  const form = document.getElementById('resellerLoginForm');
+  const password = document.getElementById('password');
+  const toggle = document.getElementById('togglePassword');
+  const message = document.getElementById('loginMessage');
+  if (!form || !password || !toggle || !message) return;
+  toggle.addEventListener('click', function(){
+    const visible = password.type === 'password';
+    password.type = visible ? 'text' : 'password';
+    toggle.textContent = visible ? 'Ocultar' : 'Mostrar';
+    toggle.setAttribute('aria-label', visible ? 'Ocultar senha' : 'Mostrar senha');
+    toggle.setAttribute('aria-pressed', String(visible));
+  });
+  form.addEventListener('submit', function(event){
+    event.preventDefault();
+    message.textContent = 'A tela está pronta, mas a autenticação ainda não foi conectada. Nenhum dado foi enviado ou salvo. Para liberar o acesso real, é necessário integrar um serviço seguro de login.';
+    message.classList.add('visible');
+    password.value = '';
+  });
+})();
+</script>
 </body>
 </html>
