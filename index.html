@@ -85,6 +85,22 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+.region-warning{font-size:12px;color:#78520b;background:#fff7e6;border:1px solid #f2cc7d;border-radius:9px;padding:10px;margin:-4px 0 10px;line-height:1.4}
+.mini-btn{display:inline-block;width:auto;margin:6px 0 0;padding:7px 10px;border:1px solid #b9c6dd;border-radius:8px;background:#fff;color:#1e3c72;font-size:12px;font-weight:700}
+.active-mode-label{font-size:12px;font-weight:700;color:#1e3c72;background:#eef3fb;border-radius:8px;padding:8px 10px;margin:-6px 0 8px;text-align:center}
+.tab.active{background:#1e3c72;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.16)}
+.summary{margin-top:10px;background:#f0fff9;border:1px solid #00b894;border-radius:9px;padding:10px;color:#125c4d;font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.copy-btn{width:100%;margin-top:10px;padding:12px;border:0;border-radius:10px;background:#1e3c72;color:#fff;font:700 14px system-ui;cursor:pointer;min-height:46px}
+.copy-btn:active{transform:scale(.99)}
+.important-notice{font-size:13px;color:#7b341e;background:#fff0e8;border:2px solid #f0a078;border-radius:12px;padding:13px;text-align:center;font-weight:800;margin-top:12px;line-height:1.5}
+.admin-panel{margin-top:12px;border:1px dashed #bbb;border-radius:10px;padding:10px;font-size:12px;color:#666}
+.admin-panel summary{font-weight:700;cursor:pointer;color:#444;padding:4px}
+.admin-panel p{margin:8px 0;line-height:1.4}
+.admin-panel label{margin-top:8px}
+.admin-panel input{margin-bottom:4px}
+#rateStatus{margin-top:8px;font-weight:700}
+
 </style>
 </head>
 <body>
@@ -92,18 +108,26 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   <h1>🪙 Calculadora de Recarga Sanba</h1>
   <p class="sub">Calcule sua recarga de moedas Sanba</p>
   
+  <label for="regionSelect">🌎 País / região</label>
+  <select id="regionSelect" aria-label="Selecionar país ou região">
+    <option value="BRL">🇧🇷 Brasil — pagamento em reais (BRL)</option>
+    <option value="USD">🇺🇸 Internacional — dólar (USD)</option>
+    <option value="VES">🇻🇪 Venezuela — bolívares (VES)</option>
+  </select>
   <label for="currencySelect">💳 Moeda de pagamento</label>
-  <select id="currencySelect"></select>
-  <div class="auto-detect" id="autoDetect">🌎 <span id="autoText"></span></div>
+  <select id="currencySelect" aria-label="Alterar moeda de pagamento manualmente"></select>
+  <div class="auto-detect show" id="autoDetect">🌎 <span id="autoText"></span> <button type="button" id="changeCurrency" class="mini-btn">Alterar manualmente</button></div>
+  <div class="region-warning">A taxa pode variar conforme o país/região. O preço exibido é uma referência; confirme no WhatsApp antes de pagar.</div>
   
   <label for="userId">🆔 Seu ID <span style="color:#e74c3c">*</span></label>
   <input type="text" id="userId" placeholder="Digite seu ID Sanba" inputmode="numeric" maxlength="8" autocomplete="off" aria-describedby="idHint">
   <div class="hint" id="idHint">Digite 8 dígitos (ex: 76328158)</div>
   
-  <div class="tabs">
-    <button class="tab active" data-m="c" id="tabC">🪙 Moedas → Moeda</button>
-    <button class="tab" data-m="r" id="tabR">💵 Moeda → Moedas</button>
+  <div class="tabs" role="tablist" aria-label="Tipo de cálculo">
+    <button class="tab active" role="tab" aria-selected="true" data-m="c" id="tabC">🪙 Moedas → Valor</button>
+    <button class="tab" role="tab" aria-selected="false" data-m="r" id="tabR">💵 Valor → Moedas</button>
   </div>
+  <div class="active-mode-label" id="activeModeLabel">Modo ativo: Moedas → Valor</div>
   
   <div id="modeC" class="mode active">
     <label>Quantidade de moedas</label>
@@ -114,6 +138,8 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
       <div class="tit">Valor calculado (referência)</div>
       <div class="val" id="valC">—</div>
       <div class="det" id="detC">—</div>
+      <div class="summary" id="summaryC"></div>
+      <button type="button" class="copy-btn" id="copyC">📋 Copiar resumo</button>
     </div>
     <div class="pgto" id="pgtoC">💳 Para pagar <b id="pgtoCVal">—</b></div>
     <div class="needid" id="needC">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
@@ -129,13 +155,24 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
       <div class="tit">Você recebe</div>
       <div class="val" id="valR">—</div>
       <div class="det" id="detR">—</div>
+      <div class="summary" id="summaryR"></div>
+      <button type="button" class="copy-btn" id="copyR">📋 Copiar resumo</button>
     </div>
     <div class="needid" id="needR">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
     <a id="wppR" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
   </div>
   
   <p class="info" id="info"></p>
-  <p id="taxaStatus" role="status" aria-live="polite" style="font-size:11px;color:#777;text-align:center;margin-top:8px;line-height:1.45">Esta é uma calculadora de recarga Sanba, não um conversor de câmbio. Os preços são referências; confirme o valor final e conclua a compra manualmente pelo WhatsApp.</p>
+  <p id="taxaStatus" role="status" aria-live="polite" class="important-notice">⚠️ VALOR APENAS DE REFERÊNCIA. Confirme o preço final com o atendimento pelo WhatsApp antes de realizar qualquer pagamento. A recarga é concluída manualmente.</p>
+  <details class="admin-panel">
+    <summary>⚙️ Ajuste de preços (uso administrativo)</summary>
+    <p>Altera somente esta sessão do navegador. Não há autenticação segura neste painel; não o considere protegido para uso público.</p>
+    <label for="rateBRL">Preço por 1.500 moedas — BRL (R$)</label><input id="rateBRL" inputmode="decimal" value="6,00">
+    <label for="rateUSD">Preço por 1.500 moedas — USD (US$)</label><input id="rateUSD" inputmode="decimal" value="0,99">
+    <label for="rateVES">Preço por 1.500 moedas — VES (Bs)</label><input id="rateVES" inputmode="decimal" value="1450,00">
+    <button type="button" id="applyRates" class="copy-btn">Aplicar preços nesta sessão</button>
+    <div id="rateStatus" role="status" aria-live="polite"></div>
+  </details>
   
   <div class="brand-footer">
     <div class="pix-text">
@@ -153,7 +190,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <div class="footer-info">
     <div class="license-seal">🛡️ Licença Proprietária © Sanba</div>
-    <div class="version">v1.3.4</div>
+    <div class="version">v1.3.5</div>
   </div>
 </div>
 
@@ -169,6 +206,8 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 })();
 
 var WHATSAPP_BRL="5582996843269", WHATSAPP_INTERNACIONAL="584145154287", CUSTO_USD=0.99/1500, CUSTO_BRL=6/1500, CUSTO_VES=1450/1500, MINIMO_MOEDAS=1000, TAMANHO_ID=8;
+var PRECOS_SESSAO={BRL:6,USD:0.99,VES:1450};
+function atualizarCustoSessao(){CUSTO_BRL=PRECOS_SESSAO.BRL/1500;CUSTO_USD=PRECOS_SESSAO.USD/1500;CUSTO_VES=PRECOS_SESSAO.VES/1500;}
 function custoPorMoeda(c){if(c==='BRL')return CUSTO_BRL;if(c==='VES')return CUSTO_VES;return CUSTO_USD*(TAXAS[c]||1)}
 var MOEDAS={BRL:{f:'🇧🇷',s:'R$',n:'Real'},USD:{f:'🇺🇸',s:'US$',n:'Dólar'},VES:{f:'🇻🇪',s:'Bs',n:'Bolívar venezuelano'}};
 var TAXAS={USD:1,BRL:5.60,VES:1450/0.99};
@@ -214,10 +253,13 @@ function updateIdHint(){
 }
 
 var sel=document.getElementById('currencySelect');
-// Garante uma única opção por moeda mesmo se a inicialização for repetida.
+var regionSel=document.getElementById('regionSelect');
+// A lista de moedas é recriada sem duplicações.
 sel.innerHTML='';
 ['BRL','USD','VES'].forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
-if(detectada&&MOEDAS[detectada]){var d=MOEDAS[detectada];document.getElementById('autoText').innerHTML='Sugestão de moeda de pagamento: <b>'+d.f+' '+detectada+' — '+d.n+'</b>';document.getElementById('autoDetect').classList.add('show')}
+regionSel.value=moeda;
+function atualizarIndicadorMoeda(){var d=MOEDAS[moeda];document.getElementById('autoText').innerHTML='Moeda selecionada: <b>'+d.f+' '+moeda+' — '+d.n+'</b>';}
+atualizarIndicadorMoeda();
 
 function attLabels(){
   var c=MOEDAS[moeda];
@@ -242,7 +284,8 @@ function calcC(){
   
   var p=arredondarParaCima(exato,moeda);
   document.getElementById('valC').textContent=fmtRd(p,moeda);
-  document.getElementById('detC').textContent=fmtN.format(m)+' moedas × taxa de referência = '+fmtEx(exato,moeda)+' antes do arredondamento; valor exibido para cobrança: '+fmtRd(p,moeda);
+  document.getElementById('detC').textContent=fmtN.format(m)+' moedas × preço de referência; valor estimado: '+fmtRd(p,moeda);
+  document.getElementById('summaryC').textContent='ID: '+(isIdValid()?getUserId():'não informado/ inválido')+' | '+fmtN.format(m)+' moedas = '+fmtRd(p,moeda)+' (referência)';
   rc.classList.add('show');
   
   if(Math.abs(exato-p)>1e-9){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
@@ -269,7 +312,8 @@ function calcR(){
   while(qtd>0&&valorCobrado>v+1e-9){qtd--;valorCobrado=arredondarParaCima(qtd*custoLocal,moeda)}
   if(qtd<MINIMO_MOEDAS){er.classList.add('show');var minV=arredondarParaCima(MINIMO_MOEDAS*custoLocal,moeda);document.getElementById('errRMsg').innerHTML='O valor mínimo para receber '+fmtN.format(MINIMO_MOEDAS)+' moedas é <b>'+fmtRd(minV,moeda)+'</b>';return}
   document.getElementById('valR').textContent=fmtM(qtd);
-  document.getElementById('detR').textContent='Orçamento: '+fmtRd(v,moeda)+' · custo das moedas inteiras: '+fmtRd(valorCobrado,moeda);
+  document.getElementById('detR').textContent='Orçamento: '+fmtRd(v,moeda)+' · custo estimado das moedas: '+fmtRd(valorCobrado,moeda);
+  document.getElementById('summaryR').textContent='ID: '+(isIdValid()?getUserId():'não informado/ inválido')+' | '+fmtM(qtd)+' = '+fmtRd(valorCobrado,moeda)+' (referência)';
   rr.classList.add('show');
   
 
@@ -287,10 +331,20 @@ function calcR(){
 userIdEl.addEventListener('input',function(){sanitizeId();updateIdHint();calcC();calcR()});
 document.getElementById('wppC').addEventListener('click',function(e){if(!isIdValid()||!this.classList.contains('show')||!this.getAttribute('href')){e.preventDefault();this.removeAttribute('href');calcC();}});
 document.getElementById('wppR').addEventListener('click',function(e){if(!isIdValid()||!this.classList.contains('show')||!this.getAttribute('href')){e.preventDefault();this.removeAttribute('href');calcR();}});
-sel.addEventListener('change',function(e){moeda=e.target.value;document.getElementById('autoDetect').classList.remove('show');attLabels();calcC();calcR()});
+sel.addEventListener('change',function(e){moeda=e.target.value;regionSel.value=moeda;atualizarIndicadorMoeda();attLabels();calcC();calcR()});
+regionSel.addEventListener('change',function(e){moeda=e.target.value;sel.value=moeda;atualizarIndicadorMoeda();attLabels();calcC();calcR()});
+document.getElementById('changeCurrency').addEventListener('click',function(){sel.focus();sel.scrollIntoView({behavior:'smooth',block:'center'})});
+function copiarTexto(texto, statusEl){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(texto).then(function(){statusEl.textContent='Resumo copiado! Cole no WhatsApp para enviar.'}).catch(function(){fallbackCopiar(texto,statusEl)});}
+  else fallbackCopiar(texto,statusEl);
+}
+function fallbackCopiar(texto,statusEl){var ta=document.createElement('textarea');ta.value=texto;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{var ok=document.execCommand('copy');statusEl.textContent=ok?'Resumo copiado! Cole no WhatsApp para enviar.':'Não foi possível copiar automaticamente. Selecione e copie o resumo.';}catch(e){statusEl.textContent='Não foi possível copiar automaticamente.';}ta.remove();}
+document.getElementById('copyC').addEventListener('click',function(){var m=num(document.getElementById('moedas').value);if(!Number.isInteger(m)||m<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryC').textContent='Informe um ID válido de 8 dígitos e pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\\nQuantidade: '+fmtN.format(m)+' moedas\\nValor estimado: '+document.getElementById('valC').textContent+'\\nMoeda/região: '+moeda+'\\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryC'));});
+document.getElementById('copyR').addEventListener('click',function(){var v=num(document.getElementById('reais').value);var custoLocal=custoPorMoeda(moeda);var qtd=Math.floor(v/custoLocal+1e-9);var cobrado=arredondarParaCima(qtd*custoLocal,moeda);while(qtd>0&&cobrado>v+1e-9){qtd--;cobrado=arredondarParaCima(qtd*custoLocal,moeda);}if(!Number.isFinite(v)||qtd<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryR').textContent='Informe um ID válido de 8 dígitos e valor suficiente para pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\\nQuantidade: '+fmtN.format(qtd)+' moedas\\nValor estimado: '+fmtRd(cobrado,moeda)+'\\nMoeda/região: '+moeda+'\\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryR'));});
+document.getElementById('applyRates').addEventListener('click',function(){var b=num(document.getElementById('rateBRL').value),u=num(document.getElementById('rateUSD').value),v=num(document.getElementById('rateVES').value);if(!(b>0&&u>0&&v>0)){document.getElementById('rateStatus').textContent='Informe preços maiores que zero nos três campos.';return;}PRECOS_SESSAO={BRL:b,USD:u,VES:v};atualizarCustoSessao();attLabels();calcC();calcR();document.getElementById('rateStatus').textContent='Preços aplicados somente nesta sessão. Confirme manualmente antes de cobrar.';});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
-document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});t.classList.add('active');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r')})});
+document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');x.setAttribute('aria-selected','false')});t.classList.add('active');t.setAttribute('aria-selected','true');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r');document.getElementById('activeModeLabel').textContent='Modo ativo: '+(m==='c'?'Moedas → Valor':'Valor → Moedas')})});
 
 attLabels();updateIdHint();
 // Os valores comerciais são definidos pelas configurações do conversor.\n// A confirmação final do preço e o pagamento acontecem manualmente pelo WhatsApp.
