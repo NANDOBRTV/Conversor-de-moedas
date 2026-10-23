@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column}
+.card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column;position:relative}
 h1{font-size:20px;color:#1e3c72;text-align:center;margin-bottom:4px}
 .sub{text-align:center;color:#666;font-size:13px;margin-bottom:16px}
 label{display:block;font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
@@ -51,9 +51,12 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 .brand-footer{margin-top:24px;padding-top:20px;border-top:1px dashed #e0e0e0;text-align:center}
 .pix-text{display:inline-flex;align-items:center;gap:6px;background:#e6f7f5;color:#009688;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.5px}
 .brand-logo{display:flex;align-items:center;justify-content:center;gap:6px}
-.brand-samba{font-family:'Arial Black', Impact, system-ui, sans-serif;font-size:44px;font-weight:900;letter-spacing:-2px;line-height:1;background:linear-gradient(90deg, #ff007f 0%, #ff7f00 25%, #ffd700 45%, #00bfff 65%, #8a2be2 85%, #ff007f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-right:4px}
+.brand-sanba{font-family:'Arial Black', Impact, system-ui, sans-serif;font-size:44px;font-weight:900;letter-spacing:-2px;line-height:1;background:linear-gradient(90deg, #ff007f 0%, #ff7f00 25%, #ffd700 45%, #00bfff 65%, #8a2be2 85%, #ff007f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-right:4px}
 .brand-play{width:34px;height:34px;margin-top:4px}
 .brand-slogan{color:#004a59;font-size:15px;font-weight:600;margin-top:6px;letter-spacing:0.5px}
+
+/* NOVO: Estilo da Versão */
+.version{text-align:right;font-size:10px;color:#bbb;margin-top:15px;font-family:monospace}
 </style>
 </head>
 <body>
@@ -114,11 +117,15 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
   </div>
   
   <div class="brand-logo">
-    <span class="brand-samba">Samba</span>
+    <span class="brand-sanba">Sanba</span>
     <svg class="brand-play" viewBox="0 0 24 24"><defs><linearGradient id="gradPlay" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff007f" /><stop offset="100%" stop-color="#8a2be2" /></linearGradient></defs><path d="M 8 5 Q 8 4 9 4 L 19 11 Q 20 12 19 13 L 9 20 Q 8 20 8 19 Z" fill="url(#gradPlay)" stroke="url(#gradPlay)" stroke-width="2" stroke-linejoin="round"/></svg>
   </div>
   <div class="brand-slogan">Conoce, juega y conecta</div>
 </div>
+
+<!-- Versão no canto -->
+<div class="version">v1.0.0</div>
+
 </div>
 
 <script>
@@ -190,12 +197,10 @@ if(detectada && MOEDAS[detectada]){
   document.getElementById('autoDetect').classList.add('show');
 }
 
-// Função para calcular o valor em BRL baseado no valor da moeda local
 function paraBRL(valorLocal) {
     return valorLocal / (TAXAS[moeda] / TAXAS['BRL']);
 }
 
-// Função para calcular o valor local baseado no custo em BRL
 function paraLocal(valorBRL) {
     return valorBRL * (TAXAS[moeda] / TAXAS['BRL']);
 }
@@ -207,7 +212,6 @@ function attLabels(){
   document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';
   
   var custoLocal = paraLocal(CUSTO_BRL);
-  
   document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(MINIMO_MOEDAS*custoLocal,moeda)+'</b>';
   
   if (moeda === 'BRL') {
@@ -225,9 +229,8 @@ function calcC(){
   if(m<MINIMO_MOEDAS){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MINIMO_MOEDAS-m)+'</b> moedas';return}
   
   var custoLocal = paraLocal(CUSTO_BRL);
-  
   var exato = m * custoLocal;
-  var exatoBRL = m * CUSTO_BRL; // O valor real em reais é a quantidade de moedas * 0.0045
+  var exatoBRL = m * CUSTO_BRL; 
   
   document.getElementById('valC').textContent=fmtEx(exato,moeda);
   document.getElementById('detC').textContent=fmtN.format(m)+' × '+fmtEx(custoLocal,moeda)+' = '+fmtEx(exato,moeda);
@@ -236,7 +239,6 @@ function calcC(){
   var p=Math.round(exato*100)/100;
   if(Math.abs(exato-p)>.0001){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
   
-  // Mostra o equivalente em reais (para você, vendedor)
   if(moeda!=='BRL'){
     bc.classList.add('show');
     document.getElementById('brlCVal').textContent=fmtEx(exatoBRL,'BRL');
@@ -266,7 +268,6 @@ function calcR(){
   document.getElementById('detR').textContent=fmtRd(v,moeda)+' ÷ '+fmtEx(custoLocal,moeda)+' = '+fmtM(mf);
   rr.classList.add('show');
   
-  // Calcula o equivalente em BRL (para você, vendedor)
   var vBRL = mf * CUSTO_BRL;
   if(moeda!=='BRL'){
     br.classList.add('show');
@@ -291,7 +292,6 @@ document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click'
 attLabels();
 updateIdHint();
 
-// Busca a API para obter as taxas de câmbio reais e fazer a conversão bancária
 fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()}).then(function(d){
   if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='USD'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR()}
 }).catch(function(){});
