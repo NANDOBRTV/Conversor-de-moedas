@@ -85,7 +85,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
     <div class="minimo" id="minC">Mínimo: <b>1.000 moedas</b></div>
     <div class="erro" id="errC">⚠️ <b>Mínimo 1.000 moedas</b><br><span id="errCMsg"></span></div>
     <div class="result" id="resC">
-      <div class="tit">Valor exato</div>
+      <div class="tit">Valor calculado (referência)</div>
       <div class="val" id="valC">—</div>
       <div class="det" id="detC">—</div>
     </div>
@@ -233,11 +233,11 @@ function calcC(){
   
   var p=arredondarParaCima(exato,moeda);
   document.getElementById('valC').textContent=fmtRd(p,moeda);
-  document.getElementById('detC').textContent=fmtN.format(m)+' × '+fmtEx(custoLocal,moeda)+' = '+fmtEx(exato,moeda);
+  document.getElementById('detC').textContent=fmtN.format(m)+' moedas × taxa de referência = '+fmtEx(exato,moeda)+' antes do arredondamento; valor exibido para cobrança: '+fmtRd(p,moeda);
   rc.classList.add('show');
   
   if(Math.abs(exato-p)>1e-9){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
-  if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtEx(exatoBRL,'BRL')}
+  if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtRd(p/TAXAS[moeda]*TAXAS['BRL'],'BRL')}
   if(!isIdValid()){nc.classList.add('show');return}
   
   var msg='Olá! Vim pelo site.\n\n🪙 *Recarga:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
