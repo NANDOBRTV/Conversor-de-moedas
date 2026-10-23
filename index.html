@@ -662,28 +662,7 @@ attLabels();updateIdHint();
 
 // Os valores comerciais são definidos pelas configurações do conversor.\n// A confirmação final do preço e o pagamento acontecem manualmente pelo WhatsApp.
 
-/* Calculadora de margem: não modifica os preços nem a lógica de recarga existente. */
-(function(){
-  var ids=['profitCoins','profitCost','profitSale','profitFee','profitFixedFee','profitExtra'];
-  var el={};ids.forEach(function(id){el[id]=document.getElementById(id);});
-  var results=document.getElementById('profitResults');
-  function money(v){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number.isFinite(v)?v:0);}
-  function value(id){var raw=String(el[id].value).trim();if(raw==='')return NaN;var n=Number(raw);return Number.isFinite(n)?n:NaN;}
-  function set(id,v){document.getElementById(id).textContent=v;}
-  function calculate(){
-    var coins=value('profitCoins'),cost=value('profitCost'),sale=value('profitSale'),fee=value('profitFee'),fixed=value('profitFixedFee'),extra=value('profitExtra');
-    results.classList.remove('show');
-    if(!(coins>0)||!Number.isFinite(coins)||!Number.isInteger(coins)||!(cost>=0)||!Number.isFinite(cost)||!(sale>0)||!Number.isFinite(sale)||!(fee>=0&&fee<100)||!Number.isFinite(fee)||!(fixed>=0)||!Number.isFinite(fixed)||!(extra>=0)||!Number.isFinite(extra)){
-      set('profitStatus','Confira os campos: informe quantidade inteira, custo e preço de venda válidos, e taxa entre 0% e menos de 100%.');
-      results.classList.add('show');
-      document.getElementById('profitMainResult').classList.add('loss');
-      set('profitValue','Verifique os dados');
-      ['profitNetRevenue','profitTotalCost','profitBreakEven','profitPerThousand','profitTarget10','profitTarget20','profitTarget30'].forEach(function(id){set(id,'—');});
-      return;
-    }
-    var rate=fee/100,totalCost=cost+extra,net=sale*(1-rate)-fixed,profit=net-totalCost;
-    var breakEven=(totalCost+fixed)/(1-rate);
-    function target(markup){retu
+
 /* Interesse no futuro acesso premium; não processa pagamento nem concede acesso. */
 (function(){
   var btn=document.getElementById('premiumInterest');
@@ -693,3 +672,6 @@ attLabels();updateIdHint();
     window.open('https://wa.me/5582996843269?text='+message,'_blank','noopener,noreferrer');
   });
 })();
+</script>
+</body>
+</html>
