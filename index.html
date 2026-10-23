@@ -111,6 +111,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
   </div>
   
   <p class="info" id="info"></p>
+  <p id="taxaStatus" role="status" aria-live="polite" style="font-size:11px;color:#777;text-align:center;margin-top:8px;line-height:1.45">Taxas de referência. O preço comercial do Sanba deve ser confirmado antes da recarga.</p>
   
   <div class="brand-footer">
     <div class="pix-text">
@@ -176,6 +177,8 @@ var detectada=detectarMoeda(), moeda=detectada, fmtN=new Intl.NumberFormat('pt-B
 function num(v){v=String(v).replace(/[^\d.,-]/g,'');if(!v)return NaN;if(v.indexOf(',')>-1)v=v.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(v))v=v.replace(/\./g,'');var n=parseFloat(v);return isNaN(n)?NaN:n}
 function fmtEx(v,c){var s=MOEDAS[c].s;if(v===0)return s+' 0,00';var t=v.toFixed(10).replace(/0+$/,'').replace(/\.$/,'');if(t.indexOf('.')<0)t+='.00';var p=t.split('.');var d=p[1]||'00';if(d.length===1)d+='0';return s+' '+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+','+d}
 function fmtRd(v,c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',currency:c}).format(v)}catch(e){return MOEDAS[c].s+' '+v.toFixed(2).replace('.',',')}}
+function casasMoeda(c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',currency:c}).resolvedOptions().maximumFractionDigits}catch(e){return 2}}
+function arredondarParaCima(v,c){var fator=Math.pow(10,casasMoeda(c));return Math.ceil(v*fator-1e-9)/fator}
 function fmtM(v){if(Math.abs(v-Math.round(v))<.0001)return fmtN.format(Math.round(v))+' moedas';var s=v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');var p=s.split('.');return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(p[1]?','+p[1]:'')+' moedas'}
 function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg)}
 
@@ -220,6 +223,7 @@ function calcC(){
   var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('brlC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');
   rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');
   if(!(m>0))return;
+  if(!Number.isInteger(m)){ec.classList.add('show');document.getElementById('errCMsg').textContent='Informe uma quantidade inteira de moedas, sem casas decimais.';return}
   if(m<MINIMO_MOEDAS){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MINIMO_MOEDAS-m)+'</b> moedas';return}
   
   var custoLocal=CUSTO_USD*TAXAS[moeda];
@@ -227,12 +231,12 @@ function calcC(){
   var exatoUSD=m*CUSTO_USD;
   var exatoBRL=exatoUSD*TAXAS['BRL'];
   
-  document.getElementById('valC').textContent=fmtEx(exato,moeda);
+  var p=arredondarParaCima(exato,moeda);
+  document.getElementById('valC').textContent=fmtRd(p,moeda);
   document.getElementById('detC').textContent=fmtN.format(m)+' × '+fmtEx(custoLocal,moeda)+' = '+fmtEx(exato,moeda);
   rc.classList.add('show');
   
-  var p=Math.round(exato*100)/100;
-  if(Math.abs(exato-p)>.0001){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
+  if(Math.abs(exato-p)>1e-9){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
   if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtEx(exatoBRL,'BRL')}
   if(!isIdValid()){nc.classList.add('show');return}
   
@@ -249,23 +253,21 @@ function calcR(){
   if(!(v>0))return;
   
   var custoLocal=CUSTO_USD*TAXAS[moeda];
-  var mq=v/custoLocal;
-  
-  if(mq<MINIMO_MOEDAS-.01){er.classList.add('show');var minV=MINIMO_MOEDAS*custoLocal;document.getElementById('errRMsg').innerHTML='Faltam <b>'+fmtRd(minV-v,moeda)+'</b>';return}
-  
-  var mi=Math.round(mq),inteira=Math.abs(mq-mi)<.0001,mf=inteira?mi:mq;
-  document.getElementById('valR').textContent=fmtM(mf);
-  document.getElementById('detR').textContent=fmtRd(v,moeda)+' ÷ '+fmtEx(custoLocal,moeda)+' = '+fmtM(mf);
+  var qtd=Math.floor(v/custoLocal+1e-9);
+  var valorCobrado=arredondarParaCima(qtd*custoLocal,moeda);
+  while(qtd>0&&valorCobrado>v+1e-9){qtd--;valorCobrado=arredondarParaCima(qtd*custoLocal,moeda)}
+  if(qtd<MINIMO_MOEDAS){er.classList.add('show');var minV=arredondarParaCima(MINIMO_MOEDAS*custoLocal,moeda);document.getElementById('errRMsg').innerHTML='O valor mínimo para receber '+fmtN.format(MINIMO_MOEDAS)+' moedas é <b>'+fmtRd(minV,moeda)+'</b>';return}
+  document.getElementById('valR').textContent=fmtM(qtd);
+  document.getElementById('detR').textContent='Orçamento: '+fmtRd(v,moeda)+' · custo das moedas inteiras: '+fmtRd(valorCobrado,moeda);
   rr.classList.add('show');
   
-  var vUSD=mf*CUSTO_USD;
+  var vUSD=qtd*CUSTO_USD;
   var vBRL=vUSD*TAXAS['BRL'];
   if(moeda!=='BRL'){br.classList.add('show');document.getElementById('brlRVal').textContent=fmtRd(vBRL,'BRL')}
   
   if(!isIdValid()){nr.classList.add('show');return}
   
-  var qtd=inteira?mi:Math.floor(mf);
-  var msg='Olá! Vim pelo site.\n\n💵 *Recarga:* '+fmtRd(v,moeda)+'\n🪙 *Moedas:* '+fmtN.format(qtd)+'\n';
+  var msg='Olá! Vim pelo site.\n\n💵 *Valor calculado:* '+fmtRd(valorCobrado,moeda)+'\n🪙 *Moedas:* '+fmtN.format(qtd)+'\n';
   if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(vBRL,'BRL')+'\n';
   msg+='🆔 *ID:* '+getUserId()+'\n\nQuero recarregar!';
   wr.href=wpp(msg);wr.classList.add('show');
@@ -278,9 +280,13 @@ document.getElementById('reais').addEventListener('input',calcR);
 document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});t.classList.add('active');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r')})});
 
 attLabels();updateIdHint();
-fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()}).then(function(d){
-  if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='USD'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR()}
-}).catch(function(){});
+fetch('https://open.er-api.com/v6/latest/USD').then(function(r){if(!r.ok)throw new Error('Falha HTTP');return r.json()}).then(function(d){
+  if(!d||!d.rates)throw new Error('Resposta sem taxas');
+  Object.keys(MOEDAS).forEach(function(k){if(k!=='USD'&&Number.isFinite(d.rates[k])&&d.rates[k]>0)TAXAS[k]=d.rates[k]});
+  var atualizado=d.time_last_update_utc?' Atualização da fonte: '+d.time_last_update_utc+'.':'';
+  document.getElementById('taxaStatus').textContent='Taxas de câmbio de referência atualizadas.'+atualizado+' Não são um preço oficial do Sanba; confirme o valor comercial antes de cobrar.';
+  attLabels();calcC();calcR()
+}).catch(function(){document.getElementById('taxaStatus').textContent='Não foi possível atualizar as taxas. O cálculo usa taxas pré-configuradas e pode estar desatualizado; confirme o preço antes de cobrar.'});
 </script>
 </body>
 </html>
