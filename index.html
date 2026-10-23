@@ -203,16 +203,14 @@ function attLabels(){
 
 function calcC(){
   var m=num(document.getElementById('moedas').value);
-  var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('brlC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');
-  rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');wc.removeAttribute('href');
+  var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');
+  rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');wc.removeAttribute('href');
   if(!(m>0))return;
   if(!Number.isInteger(m)){ec.classList.add('show');document.getElementById('errCMsg').textContent='Informe uma quantidade inteira de moedas, sem casas decimais.';return}
   if(m<MINIMO_MOEDAS){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MINIMO_MOEDAS-m)+'</b> moedas';return}
   
   var custoLocal=custoPorMoeda(moeda);
   var exato=m*custoLocal;
-  var exatoUSD=m*CUSTO_USD;
-  var exatoBRL=m*CUSTO_BRL;
   
   var p=arredondarParaCima(exato,moeda);
   document.getElementById('valC').textContent=fmtRd(p,moeda);
@@ -220,7 +218,6 @@ function calcC(){
   rc.classList.add('show');
   
   if(Math.abs(exato-p)>1e-9){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
-  if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtRd(exatoBRL,'BRL')}
   if(!isIdValid()){nc.classList.add('show');return}
   
   var msg;
@@ -234,8 +231,8 @@ function calcC(){
 
 function calcR(){
   var v=num(document.getElementById('reais').value);
-  var rr=document.getElementById('resR'),er=document.getElementById('errR'),br=document.getElementById('brlR'),wr=document.getElementById('wppR'),nr=document.getElementById('needR');
-  rr.classList.remove('show');er.classList.remove('show');br.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');wr.removeAttribute('href');
+  var rr=document.getElementById('resR'),er=document.getElementById('errR'),wr=document.getElementById('wppR'),nr=document.getElementById('needR');
+  rr.classList.remove('show');er.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');wr.removeAttribute('href');
   if(!(v>0))return;
   
   var custoLocal=custoPorMoeda(moeda);
@@ -247,10 +244,7 @@ function calcR(){
   document.getElementById('detR').textContent='Orçamento: '+fmtRd(v,moeda)+' · custo das moedas inteiras: '+fmtRd(valorCobrado,moeda);
   rr.classList.add('show');
   
-  var vUSD=qtd*CUSTO_USD;
-  var vBRL=qtd*CUSTO_BRL;
-  if(moeda!=='BRL'){br.classList.add('show');document.getElementById('brlRVal').textContent=fmtRd(vBRL,'BRL')}
-  
+
   if(!isIdValid()){nr.classList.add('show');return}
   
   var msg;
