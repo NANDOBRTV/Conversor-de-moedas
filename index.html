@@ -32,11 +32,14 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 .minimo b{color:#2a5298}
 .erro{background:#ffecec;border:2px solid #e74c3c;color:#c0392b;border-radius:10px;padding:12px;text-align:center;font-size:13px;margin-bottom:12px;display:none}
 .erro.show{display:block}
-.result{background:linear-gradient(135deg,#00b894,#00a383);color:#fff;border-radius:14px;padding:20px 16px;text-align:center;display:none}
+
+/* MELHORIA NA CAIXA VERDE */
+.result{background:linear-gradient(135deg,#00b894,#00a383);color:#fff;border-radius:14px;padding:18px 16px;text-align:center;display:none;margin-bottom:10px}
 .result.show{display:block}
 .result .tit{font-size:11px;opacity:.9;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.result .val{font-size:34px;font-weight:800;line-height:1;word-break:break-all}
-.result .det{margin-top:10px;font-size:11px;opacity:.92;font-family:monospace;background:rgba(255,255,255,.15);padding:6px 10px;border-radius:6px;display:inline-block}
+.result .val{font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-0.5px;word-break:normal;overflow-wrap:break-word}
+.result .det{margin-top:12px;font-size:11px;opacity:.95;font-family:monospace;background:rgba(255,255,255,.15);padding:8px 10px;border-radius:8px;display:inline-block;max-width:100%;word-break:normal;overflow-wrap:break-word}
+
 .pgto{margin-top:10px;background:#fff7e6;border:2px dashed #f5a623;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#8a6d1c;display:none}
 .pgto.show{display:block}
 .pgto b{display:block;color:#b87800;font-size:18px;margin-top:3px}
@@ -103,7 +106,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
     <div class="brand-slogan">Conoce, juega y conecta</div>
   </a>
 </div>
-<div class="version">v1.2.0</div>
+<div class="version">v1.2.1</div>
 </div>
 
 <script>
@@ -122,21 +125,13 @@ function fmtRd(v,c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',c
 function fmtM(v){if(Math.abs(v-Math.round(v))<.0001)return fmtN.format(Math.round(v))+' moedas';var s=v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');var p=s.split('.');return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(p[1]?','+p[1]:'')+' moedas'}
 function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg)}
 
-// NOVO: Lógica para abrir o App ou Play Store
 document.getElementById('linkSanba').addEventListener('click', function(e) {
     e.preventDefault();
     var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    
     if (/android/i.test(userAgent)) {
-        // Tenta abrir o app direto (requer que o app tenha Intent configurado)
         window.location.href = 'intent://#Intent;package=com.vixual.sanba;scheme=https;end';
-        
-        // Fallback: Se o app não abrir em 2.5 segundos, vai para a Play Store
-        setTimeout(function() {
-            window.location.href = 'https://play.google.com/store/apps/details?id=com.vixual.sanba';
-        }, 2500);
+        setTimeout(function() { window.location.href = 'https://play.google.com/store/apps/details?id=com.vixual.sanba'; }, 2500);
     } else {
-        // Se for iOS ou PC, abre a Play Store em nova aba
         window.open('https://play.google.com/store/apps/details?id=com.vixual.sanba', '_blank');
     }
 });
@@ -153,7 +148,6 @@ if(detectada&&MOEDAS[detectada]){var d=MOEDAS[detectada];document.getElementById
 
 function paraLocal(valorBRL){return valorBRL*(TAXAS[moeda]/TAXAS['BRL'])}
 
-// CORRIGIDO: Agora mostra o Preço Base já na moeda escolhida
 function attLabels(){
     var c=MOEDAS[moeda];
     document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;
@@ -189,4 +183,4 @@ attLabels();updateIdHint();
 fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()}).then(function(d){if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='USD'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR()}}).catch(function(){});
 </script>
 </body>
-</html>
+  </html>
