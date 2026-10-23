@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Conversor de Moedas - América Latina</title>
+<title>Conversor de Moedas - Samba</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column}
 h1{font-size:20px;color:#1e3c72;text-align:center;margin-bottom:4px}
 .sub{text-align:center;color:#666;font-size:13px;margin-bottom:16px}
 label{display:block;font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
@@ -42,26 +42,20 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 .pgto b{display:block;color:#b87800;font-size:18px;margin-top:3px}
 .brl{margin-top:10px;background:#eef3fb;border:1px dashed #b9c6dd;border-radius:10px;padding:10px;text-align:center;font-size:13px;color:#2a5298;display:none}
 .brl.show{display:block}
-.wpp{display:none;width:100%;margin-top:12px;padding:15px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;text-align:center;box-shadow:0 6px 18px rgba(37,211,102,.35)}
-.wpp.show{display:block}
 .needid{display:none;margin-top:12px;background:#fff3cd;border:2px solid #ffc107;color:#856404;border-radius:10px;padding:12px;text-align:center;font-size:13px;font-weight:600}
 .needid.show{display:block}
+.wpp{display:none;width:100%;margin-top:12px;padding:15px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;text-align:center;box-shadow:0 6px 18px rgba(37,211,102,.35)}
+.wpp.show{display:block}
 .info{text-align:center;color:#666;font-size:12px;margin-top:14px;line-height:1.5}
 .info b{color:#2a5298}
-.rates-section{margin-top:24px;border-top:2px dashed #e0e0e0;padding-top:20px}
-.rates-title{font-size:16px;font-weight:700;color:#1e3c72;margin-bottom:12px}
-.rates-table{width:100%;border-collapse:collapse;font-size:12px}
-.rates-table th{background:#f0f3f8;color:#2a5298;padding:8px 6px;text-align:left;border-bottom:2px solid #d0d8e8;font-weight:700}
-.rates-table td{padding:8px 6px;border-bottom:1px solid #eee;color:#333}
-.rates-table tr:hover td{background:#f9fbff}
-.rates-table .moeda-cell{font-weight:600;color:#1e3c72}
-.rates-table .taxa-cell{font-family:monospace;font-size:11px;color:#555}
-.cross-box{background:#f7f9fc;border-radius:10px;padding:14px;margin-top:16px}
-.cross-box label{font-size:10px;margin-bottom:4px}
-.cross-selects{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.cross-selects select{margin-bottom:0;font-size:14px;padding:10px}
-.cross-result{text-align:center;font-size:15px;color:#1e3c72;font-weight:700;margin-top:10px;padding:10px;background:#fff;border-radius:8px;border:1px solid #e0e0e0}
-.cross-result small{display:block;font-size:11px;color:#888;font-weight:400;margin-top:3px}
+
+/* ===== RODAPÉ E LOGO SAMBA ===== */
+.brand-footer{margin-top:24px;padding-top:20px;border-top:1px dashed #e0e0e0;text-align:center}
+.pix-text{display:inline-flex;align-items:center;gap:6px;background:#e6f7f5;color:#009688;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.5px}
+.brand-logo{display:flex;align-items:center;justify-content:center;gap:6px}
+.brand-samba{font-family:'Arial Black', Impact, system-ui, sans-serif;font-size:44px;font-weight:900;letter-spacing:-2px;line-height:1;background:linear-gradient(90deg, #ff007f 0%, #ff7f00 25%, #ffd700 45%, #00bfff 65%, #8a2be2 85%, #ff007f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-right:4px}
+.brand-play{width:34px;height:34px;margin-top:4px}
+.brand-slogan{color:#004a59;font-size:15px;font-weight:600;margin-top:6px;letter-spacing:0.5px}
 </style>
 </head>
 <body>
@@ -93,7 +87,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
   <div class="det" id="detC">—</div>
 </div>
 <div class="pgto" id="pgtoC">💳 Para pagar <b id="pgtoCVal">—</b></div>
-<div class="brl" id="brlC">💡 Em reais: <b id="brlCVal">—</b></div>
+<div class="brl" id="usdC">💡 Em dólar: <b id="usdCVal">—</b></div>
 <div class="needid" id="needC">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
 <a id="wppC" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
 </div>
@@ -108,89 +102,72 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
   <div class="val" id="valR">—</div>
   <div class="det" id="detR">—</div>
 </div>
-<div class="brl" id="brlR">💡 Em reais: <b id="brlRVal">—</b></div>
+<div class="brl" id="usdR">💡 Em dólar: <b id="usdRVal">—</b></div>
 <div class="needid" id="needR">⚠️ Digite seu ID (8 dígitos) para liberar a compra</div>
 <a id="wppR" class="wpp" href="#" target="_blank">📱 Comprar pelo WhatsApp</a>
 </div>
 
 <p class="info" id="info"></p>
 
-<div class="rates-section">
-  <div class="rates-title">📊 Taxas de conversão</div>
-  <table class="rates-table" id="ratesTable">
-    <thead><tr><th>Moeda</th><th>1 BRL →</th><th>1 Moeda → BRL</th></tr></thead>
-    <tbody id="ratesBody"><tr><td colspan="3" style="text-align:center;color:#999">Carregando...</td></tr></tbody>
-  </table>
-  <div class="cross-box">
-    <div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;margin-bottom:8px">🔄 Converter entre moedas</div>
-    <div class="cross-selects">
-      <div><label>De</label><select id="crossFrom"></select></div>
-      <div><label>Para</label><select id="crossTo"></select></div>
-    </div>
-    <div class="cross-result" id="crossResult">—</div>
+<!-- ===== RODAPÉ COM AVISO PIX E LOGO ===== -->
+<div class="brand-footer">
+  <div class="pix-text">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.646 9.173l-3.03-3.03a1.003 1.003 0 00-1.414 0l-3.03 3.03a1 1 0 001.414 1.414L12 10.086l2.232 2.232-2.232 2.232-2.232-2.232-2.232 2.232 3.03 3.03a1.003 1.003 0 001.414 0l3.03-3.03a1 1 0 000-1.414l-2.232-2.232 2.232-2.232 2.232 2.232a1 1 0 001.414-1.414z"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z"/></svg>
+    Aceitamos pagamentos via Pix
   </div>
+  
+  <div class="brand-logo">
+    <span class="brand-samba">Samba</span>
+    <svg class="brand-play" viewBox="0 0 24 24"><defs><linearGradient id="gradPlay" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff007f" /><stop offset="100%" stop-color="#8a2be2" /></linearGradient></defs><path d="M 8 5 Q 8 4 9 4 L 19 11 Q 20 12 19 13 L 9 20 Q 8 20 8 19 Z" fill="url(#gradPlay)" stroke="url(#gradPlay)" stroke-width="2" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="brand-slogan">Conoce, juega y conecta</div>
 </div>
 </div>
 
 <script>
-var WHATSAPP="5582996843269";
-var REF_MOEDAS=1500,REF_PRECO=6.00,MIN=1000;
-var CUSTO=REF_PRECO/REF_MOEDAS;
-var ID_LENGTH=8;
+/* ============================================================
+   ⚙️ CONFIGURAÇÃO
+   ============================================================ */
+var WHATSAPP        = "5582996843269";
+var REF_MOEDAS      = 1500;
+var REF_PRECO       = 1.00; 
+var MINIMO_MOEDAS   = 1000;
+var TAMANHO_ID      = 8;
+/* ============================================================ */
 
-var MOEDAS={
-ARS:{f:'🇦🇷',s:'ARS$',n:'Peso Argentino'},BOB:{f:'🇧🇴',s:'Bs',n:'Boliviano'},
-BRL:{f:'🇧🇷',s:'R$',n:'Real'},CLP:{f:'🇨🇱',s:'CLP$',n:'Peso Chileno'},
-COP:{f:'🇨🇴',s:'COP$',n:'Peso Colombiano'},USD:{f:'🇺🇸',s:'US$',n:'Dólar'},
-GYD:{f:'🇬🇾',s:'GY$',n:'Dólar Guianense'},PYG:{f:'🇵🇾',s:'₲',n:'Guarani'},
-PEN:{f:'🇵🇪',s:'S/',n:'Sol'},SRD:{f:'🇸🇷',s:'SR$',n:'Dólar Surinamês'},
-UYU:{f:'🇺🇾',s:'$U',n:'Peso Uruguaio'},VES:{f:'🇻🇪',s:'Bs.S',n:'Bolívar'},
-EUR:{f:'🇪🇺',s:'€',n:'Euro'},BZD:{f:'🇧🇿',s:'BZ$',n:'Dólar Belize'},
-CRC:{f:'🇨🇷',s:'₡',n:'Colón CR'},GTQ:{f:'🇬🇹',s:'Q',n:'Quetzal'},
-HNL:{f:'🇭🇳',s:'L',n:'Lempira'},MXN:{f:'🇲🇽',s:'MX$',n:'Peso Mexicano'},
-NIO:{f:'🇳🇮',s:'C$',n:'Córdoba'},PAB:{f:'🇵🇦',s:'B/.',n:'Balboa'},
-CUP:{f:'🇨🇺',s:'CUP$',n:'Peso Cubano'},DOP:{f:'🇩🇴',s:'RD$',n:'Peso Dominicano'},
-HTG:{f:'🇭🇹',s:'G',n:'Gourde'},JMD:{f:'🇯🇲',s:'J$',n:'Dólar Jamaicano'},
-TTD:{f:'🇹🇹',s:'TT$',n:'Dólar Trinidad'},BSD:{f:'🇧🇸',s:'B$',n:'Dólar Bahamas'},
-BBD:{f:'🇧🇧',s:'Bds$',n:'Dólar Barbados'},XCD:{f:'🌎',s:'EC$',n:'Dólar Caribe Leste'}
+var CUSTO = REF_PRECO / REF_MOEDAS;
+
+var MOEDAS = {
+  ARS:{f:'🇦🇷',s:'ARS$',n:'Peso Argentino'},BOB:{f:'🇧🇴',s:'Bs',n:'Boliviano'},
+  BRL:{f:'🇧🇷',s:'R$',n:'Real'},CLP:{f:'🇨🇱',s:'CLP$',n:'Peso Chileno'},
+  COP:{f:'🇨🇴',s:'COP$',n:'Peso Colombiano'},USD:{f:'🇺🇸',s:'US$',n:'Dólar'},
+  GYD:{f:'🇬🇾',s:'GY$',n:'Dólar Guianense'},PYG:{f:'🇵🇾',s:'₲',n:'Guarani'},
+  PEN:{f:'🇵🇪',s:'S/',n:'Sol'},SRD:{f:'🇸🇷',s:'SR$',n:'Dólar Surinamês'},
+  UYU:{f:'🇺🇾',s:'$U',n:'Peso Uruguaio'},VES:{f:'🇻🇪',s:'Bs.S',n:'Bolívar'},
+  EUR:{f:'🇪🇺',s:'€',n:'Euro'},BZD:{f:'🇧🇿',s:'BZ$',n:'Dólar Belize'},
+  CRC:{f:'🇨🇷',s:'₡',n:'Colón CR'},GTQ:{f:'🇬🇹',s:'Q',n:'Quetzal'},
+  HNL:{f:'🇭🇳',s:'L',n:'Lempira'},MXN:{f:'🇲🇽',s:'MX$',n:'Peso Mexicano'},
+  NIO:{f:'🇳🇮',s:'C$',n:'Córdoba'},PAB:{f:'🇵🇦',s:'B/.',n:'Balboa'},
+  CUP:{f:'🇨🇺',s:'CUP$',n:'Peso Cubano'},DOP:{f:'🇩🇴',s:'RD$',n:'Peso Dominicano'},
+  HTG:{f:'🇭🇹',s:'G',n:'Gourde'},JMD:{f:'🇯🇲',s:'J$',n:'Dólar Jamaicano'},
+  TTD:{f:'🇹🇹',s:'TT$',n:'Dólar Trinidad'},BSD:{f:'🇧🇸',s:'B$',n:'Dólar Bahamas'},
+  BBD:{f:'🇧🇧',s:'Bds$',n:'Dólar Barbados'},XCD:{f:'🌎',s:'EC$',n:'Dólar Caribe Leste'}
 };
 
-var TAXAS={BRL:1,ARS:170,BOB:1.2,CLP:160,COP:800,USD:.17,GYD:35,PYG:1200,PEN:.65,SRD:6.5,UYU:6.5,VES:.0001,EUR:.16,BZD:.34,CRC:90,GTQ:1.3,HNL:4.2,MXN:3,NIO:6.1,PAB:.17,CUP:5,DOP:10,HTG:22,JMD:26,TTD:1.2,BSD:.17,BBD:.34,XCD:.46};
+var TAXAS={USD:1,BRL:5.60,ARS:880,BOB:6.90,CLP:950,COP:4000,GYD:209,PYG:7300,PEN:3.70,SRD:35,UYU:39,VES:36,EUR:0.92,BZD:2,CRC:520,GTQ:7.8,HNL:24.7,MXN:17,NIO:36.8,PAB:1,CUP:24,DOP:58,HTG:132,JMD:155,TTD:6.8,BSD:1,BBD:2,XCD:2.70};
 
-// ===== DETECÇÃO AUTOMÁTICA =====
-var TZ_MAP={
-'America/Sao_Paulo':'BRL','America/Bahia':'BRL','America/Recife':'BRL','America/Fortaleza':'BRL','America/Manaus':'BRL','America/Belem':'BRL','America/Cuiaba':'BRL','America/Campo_Grande':'BRL','America/Porto_Velho':'BRL','America/Rio_Branco':'BRL','America/Noronha':'BRL','America/Araguaina':'BRL','America/Maceio':'BRL','America/Santarem':'BRL','America/Boa_Vista':'BRL',
-'America/Argentina/Buenos_Aires':'ARS','America/Argentina/Cordoba':'ARS','America/Argentina/Mendoza':'ARS','America/Argentina/Salta':'ARS','America/Argentina/Tucuman':'ARS','America/Argentina/Jujuy':'ARS','America/Argentina/Ushuaia':'ARS','America/Argentina/San_Juan':'ARS','America/Argentina/La_Rioja':'ARS','America/Argentina/Rio_Gallegos':'ARS','America/Argentina/Catamarca':'ARS','America/Argentina/San_Luis':'ARS',
-'America/La_Paz':'BOB','America/Santiago':'CLP','Pacific/Easter':'CLP','America/Bogota':'COP',
-'America/Caracas':'VES','America/Guayaquil':'USD','Pacific/Galapagos':'USD','America/Guyana':'GYD',
-'America/Asuncion':'PYG','America/Lima':'PEN','America/Paramaribo':'SRD','America/Montevideo':'UYU',
-'America/Belize':'BZD','America/Costa_Rica':'CRC','America/Guatemala':'GTQ','America/Tegucigalpa':'HNL',
-'America/Mexico_City':'MXN','America/Cancun':'MXN','America/Monterrey':'MXN','America/Chihuahua':'MXN','America/Hermosillo':'MXN','America/Mazatlan':'MXN','America/Tijuana':'MXN','America/Merida':'MXN',
-'America/Managua':'NIO','America/Panama':'PAB','America/Havana':'CUP','America/Santo_Domingo':'DOP',
-'America/Port-au-Prince':'HTG','America/Jamaica':'JMD','America/Port_of_Spain':'TTD','America/Nassau':'BSD',
-'America/Barbados':'BBD','America/St_Kitts':'XCD','America/St_Lucia':'XCD','America/St_Vincent':'XCD',
-'America/Grenada':'XCD','America/Dominica':'XCD','America/Antigua':'XCD','America/Guadeloupe':'XCD','America/Martinique':'XCD'
-};
-var LANG_MAP={'pt-br':'BRL','pt':'BRL','es-ar':'ARS','es-bo':'BOB','es-cl':'CLP','es-co':'COP','es-ve':'VES','es-ec':'USD','es-py':'PYG','es-pe':'PEN','es-uy':'UYU','es-mx':'MXN','es-gt':'GTQ','es-hn':'HNL','es-ni':'NIO','es-pa':'PAB','es-cr':'CRC','es-do':'DOP','es-cu':'CUP','es-bz':'BZD','es-sv':'USD','en-jm':'JMD','en-tt':'TTD','en-bs':'BSD','en-bb':'BBD','en-bz':'BZD'};
+var TZ_MAP={'America/Sao_Paulo':'BRL','America/Bahia':'BRL','America/Recife':'BRL','America/Fortaleza':'BRL','America/Manaus':'BRL','America/Belem':'BRL','America/Cuiaba':'BRL','America/Campo_Grande':'BRL','America/Porto_Velho':'BRL','America/Rio_Branco':'BRL','America/Noronha':'BRL','America/Argentina/Buenos_Aires':'ARS','America/Argentina/Cordoba':'ARS','America/Argentina/Mendoza':'ARS','America/Argentina/Salta':'ARS','America/Argentina/Tucuman':'ARS','America/Argentina/Jujuy':'ARS','America/Argentina/Ushuaia':'ARS','America/La_Paz':'BOB','America/Santiago':'CLP','Pacific/Easter':'CLP','America/Bogota':'COP','America/Caracas':'VES','America/Guayaquil':'USD','Pacific/Galapagos':'USD','America/Guyana':'GYD','America/Asuncion':'PYG','America/Lima':'PEN','America/Paramaribo':'SRD','America/Montevideo':'UYU','America/Belize':'BZD','America/Costa_Rica':'CRC','America/Guatemala':'GTQ','America/Tegucigalpa':'HNL','America/Mexico_City':'MXN','America/Cancun':'MXN','America/Monterrey':'MXN','America/Chihuahua':'MXN','America/Tijuana':'MXN','America/Managua':'NIO','America/Panama':'PAB','America/Havana':'CUP','America/Santo_Domingo':'DOP','America/Port-au-Prince':'HTG','America/Jamaica':'JMD','America/Port_of_Spain':'TTD','America/Nassau':'BSD','America/Barbados':'BBD','America/St_Kitts':'XCD','America/St_Lucia':'XCD','America/Grenada':'XCD','America/Antigua':'XCD'};
+var LANG_MAP={'pt-br':'BRL','pt':'BRL','es-ar':'ARS','es-bo':'BOB','es-cl':'CLP','es-co':'COP','es-ve':'VES','es-ec':'USD','es-py':'PYG','es-pe':'PEN','es-uy':'UYU','es-mx':'MXN','es-gt':'GTQ','es-hn':'HNL','es-ni':'NIO','es-pa':'PAB','es-cr':'CRC','es-do':'DOP','es-cu':'CUP','es-bz':'BZD','en-jm':'JMD','en-tt':'TTD','en-bs':'BSD','en-bb':'BBD','en-bz':'BZD'};
 
 function detectarMoeda(){
-  try{
-    var tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';
-    if(TZ_MAP[tz])return TZ_MAP[tz];
-  }catch(e){}
-  try{
-    var lang=(navigator.language||'').toLowerCase();
-    if(LANG_MAP[lang])return LANG_MAP[lang];
-    var base=lang.split('-')[0];
-    if(LANG_MAP[base])return LANG_MAP[base];
-  }catch(e){}
-  return 'BRL';
+  try{var tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';if(TZ_MAP[tz])return TZ_MAP[tz]}catch(e){}
+  try{var lang=(navigator.language||'').toLowerCase();if(LANG_MAP[lang])return LANG_MAP[lang];var base=lang.split('-')[0];if(LANG_MAP[base])return LANG_MAP[base]}catch(e){}
+  return 'USD';
 }
-// ===============================
 
-var detected=detectarMoeda();
-var moeda=detected;
-var fmtN=new Intl.NumberFormat('pt-BR');
+var detectada = detectarMoeda();
+var moeda = detectada;
+var fmtN = new Intl.NumberFormat('pt-BR');
 
 function num(v){v=String(v).replace(/[^\d.,-]/g,'');if(!v)return NaN;if(v.indexOf(',')>-1)v=v.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(v))v=v.replace(/\./g,'');var n=parseFloat(v);return isNaN(n)?NaN:n}
 function fmtEx(v,c){var s=MOEDAS[c].s;if(v===0)return s+' 0,00';var t=v.toFixed(10).replace(/0+$/,'').replace(/\.$/,'');if(t.indexOf('.')<0)t+='.00';var p=t.split('.');var d=p[1]||'00';if(d.length===1)d+='0';return s+' '+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+','+d}
@@ -198,110 +175,96 @@ function fmtRd(v,c){try{return new Intl.NumberFormat('pt-BR',{style:'currency',c
 function fmtM(v){if(Math.abs(v-Math.round(v))<.0001)return fmtN.format(Math.round(v))+' moedas';var s=v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');var p=s.split('.');return p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(p[1]?','+p[1]:'')+' moedas'}
 function wpp(msg){return 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg)}
 
-var userIdEl=document.getElementById('userId');
-function sanitizeId(){var v=userIdEl.value.replace(/\D/g,'').slice(0,ID_LENGTH);if(userIdEl.value!==v)userIdEl.value=v;return v}
+var userIdEl = document.getElementById('userId');
+function sanitizeId(){var v=userIdEl.value.replace(/\D/g,'').slice(0,TAMANHO_ID);if(userIdEl.value!==v)userIdEl.value=v;return v}
 function getUserId(){return userIdEl.value.trim()}
-function isIdValid(){return getUserId().length===ID_LENGTH}
+function isIdValid(){return getUserId().length===TAMANHO_ID}
 function updateIdHint(){
   var id=getUserId(),hint=document.getElementById('idHint');
-  if(id.length===0){userIdEl.className='';hint.textContent='Digite 8 dígitos (ex: 76328158)';hint.className='hint'}
-  else if(id.length<ID_LENGTH){userIdEl.className='invalido';hint.textContent='Faltam '+(ID_LENGTH-id.length)+' dígito'+(ID_LENGTH-id.length>1?'s':'')+' (ex: 76328158)';hint.className='hint warn'}
+  if(id.length===0){userIdEl.className='';hint.textContent='Digite '+TAMANHO_ID+' dígitos (ex: 76328158)';hint.className='hint'}
+  else if(id.length<TAMANHO_ID){userIdEl.className='invalido';hint.textContent='Faltam '+(TAMANHO_ID-id.length)+' dígito'+(TAMANHO_ID-id.length>1?'s':'');hint.className='hint warn'}
   else{userIdEl.className='valido';hint.textContent='✓ ID válido';hint.className='hint ok'}
 }
 
 var sel=document.getElementById('currencySelect');
 Object.keys(MOEDAS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
 
-// Mostra aviso da moeda detectada
-if(detected && MOEDAS[detected]){
-  var d=MOEDAS[detected];
-  document.getElementById('autoText').innerHTML='Moeda detectada: <b>'+d.f+' '+detected+' — '+d.n+'</b>';
+if(detectada && MOEDAS[detectada]){
+  var d=MOEDAS[detectada];
+  document.getElementById('autoText').innerHTML='Moeda detectada: <b>'+d.f+' '+detectada+' — '+d.n+'</b>';
   document.getElementById('autoDetect').classList.add('show');
 }
 
-var crossFrom=document.getElementById('crossFrom'),crossTo=document.getElementById('crossTo');
-Object.keys(MOEDAS).forEach(function(k){
-  var o1=document.createElement('option');o1.value=k;o1.textContent=MOEDAS[k].f+' '+k;if(k==='USD')o1.selected=true;crossFrom.appendChild(o1);
-  var o2=document.createElement('option');o2.value=k;o2.textContent=MOEDAS[k].f+' '+k;if(k==='EUR')o2.selected=true;crossTo.appendChild(o2);
-});
-
-function attLabels(){var c=MOEDAS[moeda];document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';var minV=MIN*CUSTO*TAXAS[moeda];document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(minV,moeda)+'</b>';document.getElementById('info').innerHTML='Referência: <b>'+fmtN.format(REF_MOEDAS)+' moedas = '+fmtRd(REF_PRECO,'BRL')+'</b><br>cada moeda = '+fmtEx(CUSTO*TAXAS[moeda],moeda)}
-
-function calcC(){var m=num(document.getElementById('moedas').value);
-var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('brlC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');
-rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');
-if(!(m>0))return;
-if(m<MIN){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MIN-m)+'</b> moedas';return}
-var custo=CUSTO*TAXAS[moeda],exato=m*custo,exatoBRL=m*CUSTO;
-document.getElementById('valC').textContent=fmtEx(exato,moeda);
-document.getElementById('detC').textContent=fmtN.format(m)+' × '+fmtEx(custo,moeda)+' = '+fmtEx(exato,moeda);
-rc.classList.add('show');
-var p=Math.round(exato*100)/100;
-if(Math.abs(exato-p)>.0001){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
-if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtEx(exatoBRL,'BRL')}
-if(!isIdValid()){nc.classList.add('show');return}
-var id=getUserId();
-var msg='Olá! Vim pelo site.\n\n🪙 *Recarga:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
-if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(Math.round(exatoBRL*100)/100,'BRL')+'\n';
-msg+='🆔 *ID:* '+id+'\n\nQuero recarregar!';
-wc.href=wpp(msg);wc.classList.add('show')}
-
-function calcR(){var v=num(document.getElementById('reais').value);
-var rr=document.getElementById('resR'),er=document.getElementById('errR'),br=document.getElementById('brlR'),wr=document.getElementById('wppR'),nr=document.getElementById('needR');
-rr.classList.remove('show');er.classList.remove('show');br.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');
-if(!(v>0))return;
-var custo=CUSTO*TAXAS[moeda],mq=v/custo;
-if(mq<MIN-.01){er.classList.add('show');var minV=MIN*custo;document.getElementById('errRMsg').innerHTML='Faltam <b>'+fmtRd(minV-v,moeda)+'</b>';return}
-var mi=Math.round(mq),inteira=Math.abs(mq-mi)<.0001,mf=inteira?mi:mq;
-document.getElementById('valR').textContent=fmtM(mf);
-document.getElementById('detR').textContent=fmtRd(v,moeda)+' ÷ '+fmtEx(custo,moeda)+' = '+fmtM(mf);
-rr.classList.add('show');
-var vBRL=v/TAXAS[moeda];
-if(moeda!=='BRL'){br.classList.add('show');document.getElementById('brlRVal').textContent=fmtRd(vBRL,'BRL')}
-if(!isIdValid()){nr.classList.add('show');return}
-var id=getUserId();
-var qtd=inteira?mi:Math.floor(mf);
-var msg='Olá! Vim pelo site.\n\n💵 *Recarga:* '+fmtRd(v,moeda)+'\n🪙 *Moedas:* '+fmtN.format(qtd)+'\n';
-if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(vBRL,'BRL')+'\n';
-msg+='🆔 *ID:* '+id+'\n\nQuero recarregar!';
-wr.href=wpp(msg);wr.classList.add('show')}
-
-function renderRatesTable(){
-  var tbody=document.getElementById('ratesBody');tbody.innerHTML='';
-  Object.keys(MOEDAS).sort(function(a,b){return a.localeCompare(b)}).forEach(function(k){
-    var tr=document.createElement('tr');
-    tr.innerHTML='<td class="moeda-cell">'+MOEDAS[k].f+' '+k+'</td><td class="taxa-cell">'+(TAXAS[k]||0).toFixed(4)+'</td><td class="taxa-cell">'+(1/TAXAS[k]).toFixed(4)+' BRL</td>';
-    tbody.appendChild(tr);
-  });
+function attLabels(){
+  var c=MOEDAS[moeda];
+  document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;
+  document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';
+  document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';
+  document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(MINIMO_MOEDAS*CUSTO*TAXAS[moeda],moeda)+'</b>';
+  document.getElementById('info').innerHTML='Referência: <b>'+fmtN.format(REF_MOEDAS)+' moedas = US$ 1,00</b><br>cada moeda = '+fmtEx(CUSTO*TAXAS[moeda],moeda);
 }
 
-function calcCross(){
-  var de=crossFrom.value,para=crossTo.value;if(!de||!para)return;
-  var taxa=TAXAS[para]/TAXAS[de];
-  document.getElementById('crossResult').innerHTML='1 '+de+' = <b>'+taxa.toFixed(4)+' '+para+'</b><small>1 '+para+' = '+(1/taxa).toFixed(4)+' '+de+'</small>';
+function calcC(){
+  var m=num(document.getElementById('moedas').value);
+  var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('usdC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');
+  rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');
+  if(!(m>0))return;
+  if(m<MINIMO_MOEDAS){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MINIMO_MOEDAS-m)+'</b> moedas';return}
+  
+  var custoMoeda=CUSTO*TAXAS[moeda],exato=m*custoMoeda,exatoUSD=m*CUSTO;
+  document.getElementById('valC').textContent=fmtEx(exato,moeda);
+  document.getElementById('detC').textContent=fmtN.format(m)+' × '+fmtEx(custoMoeda,moeda)+' = '+fmtEx(exato,moeda);
+  rc.classList.add('show');
+  
+  var p=Math.round(exato*100)/100;
+  if(Math.abs(exato-p)>.0001){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
+  if(moeda!=='USD'){bc.classList.add('show');document.getElementById('usdCVal').textContent=fmtEx(exatoUSD,'USD')}
+  
+  if(!isIdValid()){nc.classList.add('show');return}
+  
+  var msg='Olá! Vim pelo site.\n\n🪙 *Recarga:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
+  if(moeda!=='USD')msg+='💡 *Em dólar:* '+fmtRd(Math.round(exatoUSD*100)/100,'USD')+'\n';
+  msg+='🆔 *ID:* '+getUserId()+'\n\nQuero recarregar!';
+  wc.href=wpp(msg);wc.classList.add('show');
 }
-crossFrom.addEventListener('change',calcCross);
-crossTo.addEventListener('change',calcCross);
+
+function calcR(){
+  var v=num(document.getElementById('reais').value);
+  var rr=document.getElementById('resR'),er=document.getElementById('errR'),br=document.getElementById('usdR'),wr=document.getElementById('wppR'),nr=document.getElementById('needR');
+  rr.classList.remove('show');er.classList.remove('show');br.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');
+  if(!(v>0))return;
+  var custoMoeda=CUSTO*TAXAS[moeda],mq=v/custoMoeda;
+  if(mq<MINIMO_MOEDAS-.01){er.classList.add('show');var minV=MINIMO_MOEDAS*custoMoeda;document.getElementById('errRMsg').innerHTML='Faltam <b>'+fmtRd(minV-v,moeda)+'</b>';return}
+  
+  var mi=Math.round(mq),inteira=Math.abs(mq-mi)<.0001,mf=inteira?mi:mq;
+  document.getElementById('valR').textContent=fmtM(mf);
+  document.getElementById('detR').textContent=fmtRd(v,moeda)+' ÷ '+fmtEx(custoMoeda,moeda)+' = '+fmtM(mf);
+  rr.classList.add('show');
+  
+  var vUSD=v/TAXAS[moeda];
+  if(moeda!=='USD'){br.classList.add('show');document.getElementById('usdRVal').textContent=fmtRd(vUSD,'USD')}
+  
+  if(!isIdValid()){nr.classList.add('show');return}
+  
+  var qtd=inteira?mi:Math.floor(mf);
+  var msg='Olá! Vim pelo site.\n\n💵 *Recarga:* '+fmtRd(v,moeda)+'\n🪙 *Moedas:* '+fmtN.format(qtd)+'\n';
+  if(moeda!=='USD')msg+='💡 *Em dólar:* '+fmtRd(vUSD,'USD')+'\n';
+  msg+='🆔 *ID:* '+getUserId()+'\n\nQuero recarregar!';
+  wr.href=wpp(msg);wr.classList.add('show');
+}
 
 userIdEl.addEventListener('input',function(){sanitizeId();updateIdHint();calcC();calcR()});
-
-// Ao trocar a moeda manualmente, esconde o aviso de detecção
-sel.addEventListener('change',function(e){
-  moeda=e.target.value;
-  document.getElementById('autoDetect').classList.remove('show');
-  attLabels();calcC();calcR();
-});
-
+sel.addEventListener('change',function(e){moeda=e.target.value;document.getElementById('autoDetect').classList.remove('show');attLabels();calcC();calcR()});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
-
 document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});t.classList.add('active');var m=t.dataset.m;document.getElementById('modeC').classList.toggle('active',m==='c');document.getElementById('modeR').classList.toggle('active',m==='r')})});
 
 attLabels();
 updateIdHint();
-calcCross();
 
-fetch('https://open.er-api.com/v6/latest/BRL').then(function(r){return r.json()}).then(function(d){if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='BRL'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR();renderRatesTable();calcCross()}}).catch(function(){renderRatesTable();calcCross()});
+fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()}).then(function(d){
+  if(d&&d.rates){Object.keys(MOEDAS).forEach(function(k){if(k!=='USD'&&d.rates[k]>0)TAXAS[k]=d.rates[k]});attLabels();calcC();calcR()}
+}).catch(function(){});
 </script>
 </body>
-</html>
+  </html>
