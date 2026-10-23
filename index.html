@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪙</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px}
 .card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column;position:relative}
 h1{font-size:20px;color:#1e3c72;text-align:center;margin-bottom:4px}
 .sub{text-align:center;color:#666;font-size:13px;margin-bottom:16px}
@@ -141,7 +141,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 
 
 /* Central de relatórios do projeto */
-.project-menu-button{position:fixed;top:12px;right:12px;z-index:1000;border:1px solid rgba(255,255,255,.55);border-radius:12px;background:#fff;color:#1e3c72;padding:10px 13px;font:800 13px system-ui;box-shadow:0 5px 18px rgba(0,0,0,.2);cursor:pointer}
+.project-menu-button{position:static;align-self:flex-end;flex:0 0 auto;margin:0 0 12px;z-index:10;border:1px solid rgba(255,255,255,.55);border-radius:12px;background:#fff;color:#1e3c72;padding:10px 13px;font:800 13px system-ui;box-shadow:0 5px 18px rgba(0,0,0,.2);cursor:pointer}
 .project-menu-button:focus-visible,.project-close:focus-visible,.project-tab:focus-visible{outline:3px solid #ffbf47;outline-offset:3px}
 .project-overlay{position:fixed;inset:0;z-index:1100;background:rgba(8,20,44,.68);padding:16px;display:none;align-items:flex-start;justify-content:center;overflow:auto}
 .project-overlay.open{display:flex}
@@ -161,7 +161,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 .project-history{list-style:none;padding:0!important;margin:10px 0!important}.project-history li{padding:10px 0;border-bottom:1px solid #e5eaf1}.project-history strong{display:block;color:#1e3c72}.project-history small{display:block;color:#64748b;margin-top:3px}.project-history a{color:#1d4ed8;font-size:12px;font-weight:700}
 .project-refresh{border:1px solid #cbd5e1;background:#fff;color:#1e3c72;border-radius:8px;padding:8px 10px;font:700 12px system-ui;cursor:pointer}
 .project-panel-foot{border-top:1px solid #e5eaf1;padding:10px 20px;color:#64748b;font-size:11px;line-height:1.45}
-@media(max-width:520px){.project-menu-button{top:8px;right:8px;padding:9px 10px;font-size:12px}.project-panel-head{padding:15px}.project-panel-body{padding:14px}.project-tabs{padding:8px}.project-kpis{grid-template-columns:1fr 1fr}.project-kpi{padding:10px}.project-panel{max-height:calc(100vh - 18px)}.project-overlay{padding:9px}}
+@media(max-width:520px){.project-menu-button{padding:9px 10px;font-size:12px}.project-panel-head{padding:15px}.project-panel-body{padding:14px}.project-tabs{padding:8px}.project-kpis{grid-template-columns:1fr 1fr}.project-kpi{padding:10px}.project-panel{max-height:calc(100vh - 18px)}.project-overlay{padding:9px}}
 </style>
 </head>
 <body>
@@ -281,7 +281,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   <div class="creator-credit">Desenvolvido por <strong>Fernando Francisco de Lira</strong></div>
   <div class="footer-info">
     <div class="license-seal">🛡️ © Fernando Francisco de Lira · Todos os direitos reservados</div>
-    <div class="version">Calculadora independente · v1.3.15 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.16 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
