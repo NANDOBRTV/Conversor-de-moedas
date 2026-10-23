@@ -258,7 +258,7 @@ var regionSel=document.getElementById('regionSelect');
 sel.innerHTML='';
 ['BRL','USD','VES'].forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=MOEDAS[k].f+' '+k+' — '+MOEDAS[k].n;if(k===moeda)o.selected=true;sel.appendChild(o)});
 regionSel.value=moeda;
-function atualizarIndicadorMoeda(){var d=MOEDAS[moeda];document.getElementById('autoText').innerHTML='Moeda selecionada: <b>'+d.f+' '+moeda+' — '+d.n+'</b>';}
+function atualizarIndicadorMoeda(){var d=MOEDAS[moeda];document.getElementById('autoText').innerHTML='Moeda/região selecionada: <b>'+d.f+' '+moeda+' — '+d.n+'</b>';}
 atualizarIndicadorMoeda();
 
 function attLabels(){
@@ -293,7 +293,7 @@ function calcC(){
   
   var msg;
   if(moeda==='BRL'){
-    msg='Olá! Vim pelo site do Conversor Sanba.\n\n🪙 *Quantidade:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor a pagar:* '+fmtRd(p,moeda)+'\n🆔 *ID Sanba:* '+getUserId()+'\n\nQuero fazer essa recarga. Pode me ajudar?';
+    msg='Olá! Vim pelo site da Calculadora de Recarga Sanba.\n\n🪙 *Quantidade:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor a pagar:* '+fmtRd(p,moeda)+'\n🆔 *ID Sanba:* '+getUserId()+'\n\nQuero fazer essa recarga. Pode me ajudar?';
   }else{
     msg='¡Hola! Vengo del sitio web del Conversor Sanba.\n\n🪙 *Cantidad:* '+fmtN.format(Math.round(m))+' monedas\n💰 *Total a pagar:* '+fmtRd(p,moeda)+'\n🆔 *ID de Sanba:* '+getUserId()+'\n\nQuiero realizar esta recarga. ¿Me pueden ayudar?';
   }
@@ -321,7 +321,7 @@ function calcR(){
   
   var msg;
   if(moeda==='BRL'){
-    msg='Olá! Vim pelo site do Conversor Sanba.\n\n💰 *Valor a pagar:* '+fmtRd(valorCobrado,moeda)+'\n🪙 *Quantidade:* '+fmtN.format(qtd)+' moedas\n🆔 *ID Sanba:* '+getUserId()+'\n\nQuero fazer essa recarga. Pode me ajudar?';
+    msg='Olá! Vim pelo site da Calculadora de Recarga Sanba.\n\n💰 *Valor a pagar:* '+fmtRd(valorCobrado,moeda)+'\n🪙 *Quantidade:* '+fmtN.format(qtd)+' moedas\n🆔 *ID Sanba:* '+getUserId()+'\n\nQuero fazer essa recarga. Pode me ajudar?';
   }else{
     msg='¡Hola! Vengo del sitio web del Conversor Sanba.\n\n💰 *Monto a pagar:* '+fmtRd(valorCobrado,moeda)+'\n🪙 *Cantidad:* '+fmtN.format(qtd)+' monedas\n🆔 *ID de Sanba:* '+getUserId()+'\n\nQuiero realizar esta recarga. ¿Me pueden ayudar?';
   }
@@ -339,8 +339,8 @@ function copiarTexto(texto, statusEl){
   else fallbackCopiar(texto,statusEl);
 }
 function fallbackCopiar(texto,statusEl){var ta=document.createElement('textarea');ta.value=texto;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{var ok=document.execCommand('copy');statusEl.textContent=ok?'Resumo copiado! Cole no WhatsApp para enviar.':'Não foi possível copiar automaticamente. Selecione e copie o resumo.';}catch(e){statusEl.textContent='Não foi possível copiar automaticamente.';}ta.remove();}
-document.getElementById('copyC').addEventListener('click',function(){var m=num(document.getElementById('moedas').value);if(!Number.isInteger(m)||m<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryC').textContent='Informe um ID válido de 8 dígitos e pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\\nQuantidade: '+fmtN.format(m)+' moedas\\nValor estimado: '+document.getElementById('valC').textContent+'\\nMoeda/região: '+moeda+'\\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryC'));});
-document.getElementById('copyR').addEventListener('click',function(){var v=num(document.getElementById('reais').value);var custoLocal=custoPorMoeda(moeda);var qtd=Math.floor(v/custoLocal+1e-9);var cobrado=arredondarParaCima(qtd*custoLocal,moeda);while(qtd>0&&cobrado>v+1e-9){qtd--;cobrado=arredondarParaCima(qtd*custoLocal,moeda);}if(!Number.isFinite(v)||qtd<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryR').textContent='Informe um ID válido de 8 dígitos e valor suficiente para pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\\nQuantidade: '+fmtN.format(qtd)+' moedas\\nValor estimado: '+fmtRd(cobrado,moeda)+'\\nMoeda/região: '+moeda+'\\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryR'));});
+document.getElementById('copyC').addEventListener('click',function(){var m=num(document.getElementById('moedas').value);if(!Number.isInteger(m)||m<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryC').textContent='Informe um ID válido de 8 dígitos e pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(m)+' moedas\nValor estimado: '+document.getElementById('valC').textContent+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryC'));});
+document.getElementById('copyR').addEventListener('click',function(){var v=num(document.getElementById('reais').value);var custoLocal=custoPorMoeda(moeda);var qtd=Math.floor(v/custoLocal+1e-9);var cobrado=arredondarParaCima(qtd*custoLocal,moeda);while(qtd>0&&cobrado>v+1e-9){qtd--;cobrado=arredondarParaCima(qtd*custoLocal,moeda);}if(!Number.isFinite(v)||qtd<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryR').textContent='Informe um ID válido de 8 dígitos e valor suficiente para pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(qtd)+' moedas\nValor estimado: '+fmtRd(cobrado,moeda)+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryR'));});
 document.getElementById('applyRates').addEventListener('click',function(){var b=num(document.getElementById('rateBRL').value),u=num(document.getElementById('rateUSD').value),v=num(document.getElementById('rateVES').value);if(!(b>0&&u>0&&v>0)){document.getElementById('rateStatus').textContent='Informe preços maiores que zero nos três campos.';return;}PRECOS_SESSAO={BRL:b,USD:u,VES:v};atualizarCustoSessao();attLabels();calcC();calcR();document.getElementById('rateStatus').textContent='Preços aplicados somente nesta sessão. Confirme manualmente antes de cobrar.';});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
