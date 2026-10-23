@@ -241,9 +241,7 @@ function calcC(){
   if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtRd(exatoBRL,'BRL')}
   if(!isIdValid()){nc.classList.add('show');return}
   
-  var msg='Olá! Vim pelo site.\n\n🪙 *Recarga:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
-  if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(Math.round(exatoBRL*100)/100,'BRL')+'\n';
-  msg+='🆔 *ID:* '+getUserId()+'\n\nQuero recarregar!';
+  var msg='Olá! Vim pelo site do Conversor Sanba.\n\n🪙 *Quantidade:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor a pagar:* '+fmtRd(p,moeda)+'\n🆔 *ID Sanba:* '+getUserId()+'\n\nQuero fazer essa recarga. Pode me ajudar?';
   wc.href=wpp(msg,moeda);wc.classList.add('show');
 }
 
@@ -268,9 +266,7 @@ function calcR(){
   
   if(!isIdValid()){nr.classList.add('show');return}
   
-  var msg='Olá! Vim pelo site.\n\n💵 *Valor calculado:* '+fmtRd(valorCobrado,moeda)+'\n🪙 *Moedas:* '+fmtN.format(qtd)+'\n';
-  if(moeda!=='BRL')msg+='💡 *Em reais:* '+fmtRd(vBRL,'BRL')+'\n';
-  msg+='🆔 *ID:* '+getUserId()+'\n\nQuero recarregar!';
+  var msg='Olá! Vim pelo site do Conversor Sanba.\n\n💰 *Valor a pagar:* '+fmtRd(valorCobrado,moeda)+'\n🪙 *Quantidade:* '+fmtN.format(qtd)+' moedas\n🆔 *ID Sanba:* '+getUserId()+'\n\nQuero fazer essa recarga. Pode me ajudar?';
   wr.href=wpp(msg,moeda);wr.classList.add('show');
 }
 
