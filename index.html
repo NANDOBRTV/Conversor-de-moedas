@@ -162,6 +162,33 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 .project-refresh{border:1px solid #cbd5e1;background:#fff;color:#1e3c72;border-radius:8px;padding:8px 10px;font:700 12px system-ui;cursor:pointer}
 .project-panel-foot{border-top:1px solid #e5eaf1;padding:10px 20px;color:#64748b;font-size:11px;line-height:1.45}
 @media(max-width:520px){.project-menu-button{padding:9px 10px;font-size:12px}.project-panel-head{padding:15px}.project-panel-body{padding:14px}.project-tabs{padding:8px}.project-kpis{grid-template-columns:1fr 1fr}.project-kpi{padding:10px}.project-panel{max-height:calc(100vh - 18px)}.project-overlay{padding:9px}}
+
+/* Ferramenta gratuita de margem para revendedores — independente da calculadora principal */
+.profit-card{width:100%;max-width:480px;margin:0 0 20px;background:#fff;border-radius:18px;padding:22px;box-shadow:0 12px 36px rgba(0,0,0,.2);color:#263449}
+.profit-card h2{font-size:19px;color:#1e3c72;margin:0 0 6px}
+.profit-intro{font-size:12px;color:#64748b;line-height:1.5;margin-bottom:14px}
+.profit-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.profit-field label{display:block;font-size:11px;font-weight:800;color:#475569;margin:0 0 5px;text-transform:none;letter-spacing:0}
+.profit-field input{margin:0;padding:11px;border:1px solid #cbd5e1;background:#f8fafc;font-size:15px}
+.profit-field.full{grid-column:1/-1}
+.profit-calc-btn{width:100%;margin-top:12px;padding:13px;border:0;border-radius:10px;background:#0f766e;color:#fff;font:800 14px system-ui;cursor:pointer}
+.profit-results{display:none;margin-top:14px}
+.profit-results.show{display:block}
+.profit-main-result{padding:14px;border-radius:12px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;text-align:center}
+.profit-main-result.loss{background:#fff1f2;border-color:#fecdd3;color:#9f1239}
+.profit-main-result small{display:block;font-size:11px;font-weight:700}
+.profit-main-result strong{display:block;font-size:27px;line-height:1.3;overflow-wrap:anywhere}
+.profit-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.profit-stat{background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:10px}
+.profit-stat span{display:block;font-size:10px;color:#64748b}
+.profit-stat strong{display:block;font-size:14px;color:#1e293b;overflow-wrap:anywhere}
+.profit-targets{margin-top:12px;border:1px solid #dbe4f0;border-radius:10px;padding:11px}
+.profit-targets h3{font-size:13px;color:#1e3c72;margin-bottom:7px}
+.profit-target-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid #e2e8f0}
+.profit-target-row:last-child{border-bottom:0}
+.profit-target-row strong{text-align:right}
+.profit-note{font-size:11px;color:#64748b;line-height:1.5;margin-top:12px}
+@media(max-width:360px){.profit-card{padding:16px 12px}.profit-fields{grid-template-columns:1fr}.profit-field.full{grid-column:auto}.profit-main-result strong{font-size:24px}}
 </style>
 </head>
 <body>
@@ -281,9 +308,62 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   <div class="creator-credit">Desenvolvido por <strong>Fernando Francisco de Lira</strong></div>
   <div class="footer-info">
     <div class="license-seal">🛡️ © Fernando Francisco de Lira · Todos os direitos reservados</div>
-    <div class="version">Calculadora independente · v1.3.16 · Atualizada em 23/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.17 · Atualizada em 23/10/2026</div>
   </div>
 </div>
+
+
+<section class="profit-card" aria-labelledby="profitTitle">
+  <h2 id="profitTitle">📈 Calculadora de lucro do revendedor</h2>
+  <p class="profit-intro">Descubra quanto sobra em uma venda, incluindo taxa percentual e despesas extras. Esta ferramenta é independente do preço estimado na calculadora de recarga.</p>
+  <div class="profit-fields">
+    <div class="profit-field">
+      <label for="profitCoins">Moedas compradas no lote</label>
+      <input id="profitCoins" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 1600" value="1600">
+    </div>
+    <div class="profit-field">
+      <label for="profitCost">Custo do lote (R$)</label>
+      <input id="profitCost" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 8,00">
+    </div>
+    <div class="profit-field">
+      <label for="profitSale">Preço de venda do lote (R$)</label>
+      <input id="profitSale" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 12,00">
+    </div>
+    <div class="profit-field">
+      <label for="profitFee">Taxa da venda (%)</label>
+      <input id="profitFee" type="number" min="0" max="99.99" step="0.01" inputmode="decimal" placeholder="Ex.: 20" value="0">
+    </div>
+    <div class="profit-field">
+      <label for="profitFixedFee">Taxa fixa por venda (R$)</label>
+      <input id="profitFixedFee" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Se não houver, deixe 0" value="0">
+    </div>
+    <div class="profit-field">
+      <label for="profitExtra">Outras despesas (R$)</label>
+      <input id="profitExtra" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: transporte" value="0">
+    </div>
+  </div>
+  <button class="profit-calc-btn" id="calculateProfit" type="button">Calcular lucro e preço mínimo</button>
+  <div class="profit-results" id="profitResults" aria-live="polite">
+    <div class="profit-main-result" id="profitMainResult">
+      <small>Lucro estimado por lote</small>
+      <strong id="profitValue">R$ 0,00</strong>
+      <span id="profitStatus">Preencha os valores para calcular.</span>
+    </div>
+    <div class="profit-breakdown">
+      <div class="profit-stat"><span>Receita após taxa percentual</span><strong id="profitNetRevenue">—</strong></div>
+      <div class="profit-stat"><span>Custo total com despesas</span><strong id="profitTotalCost">—</strong></div>
+      <div class="profit-stat"><span>Preço mínimo para não perder</span><strong id="profitBreakEven">—</strong></div>
+      <div class="profit-stat"><span>Lucro por 1.000 moedas</span><strong id="profitPerThousand">—</strong></div>
+    </div>
+    <div class="profit-targets">
+      <h3>Preços sugeridos para cada meta de lucro</h3>
+      <div class="profit-target-row"><span>10% acima do custo total</span><strong id="profitTarget10">—</strong></div>
+      <div class="profit-target-row"><span>20% acima do custo total</span><strong id="profitTarget20">—</strong></div>
+      <div class="profit-target-row"><span>30% acima do custo total</span><strong id="profitTarget30">—</strong></div>
+    </div>
+  </div>
+  <p class="profit-note">Estimativa local: os valores digitados não são enviados nem salvos pelo site. Inclua todos os custos e confirme as taxas reais do seu meio de pagamento. O preço mínimo considera as taxas informadas, mas não garante venda nem lucro.</p>
+</section>
 
 <div class="project-overlay" id="projectReports" role="dialog" aria-modal="true" aria-labelledby="projectPanelTitle" aria-hidden="true">
   <section class="project-panel">
@@ -304,7 +384,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <h3>Resumo do projeto</h3>
         <p>Calculadora independente para estimar recargas Sanba e preparar o pedido para atendimento manual pelo WhatsApp. Ela não é um serviço oficial do Sanba.</p>
         <div class="project-kpis">
-          <div class="project-kpi"><span>Versão publicada no código</span><strong>v1.3.15</strong></div>
+          <div class="project-kpi"><span>Versão publicada no código</span><strong>v1.3.17</strong></div>
           <div class="project-kpi"><span>Última atualização deste arquivo</span><strong>23/10/2026</strong></div>
           <div class="project-kpi"><span>Processamento de pagamento</span><strong>Manual via WhatsApp</strong></div>
           <div class="project-kpi"><span>Tipo de hospedagem</span><strong>Site estático</strong></div>
@@ -316,6 +396,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <h3>Funções existentes</h3>
         <ul>
           <li>Dois modos de cálculo: moedas para valor e valor disponível para moedas.</li>
+          <li>Calculadora separada de lucro do revendedor, com taxa percentual, taxa fixa, despesas, ponto de equilíbrio e metas de preço.</li>
           <li>Seleção de região/moeda: Brasil (BRL), internacional (USD) e Venezuela (VES).</li>
           <li>Validação do ID Sanba com 8 dígitos numéricos.</li>
           <li>Opção para lembrar o ID somente no armazenamento local deste navegador.</li>
@@ -359,6 +440,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <ul>
           <li>Testes reais em Android e desktop, incluindo cálculo, moeda, validação e links do WhatsApp.</li>
           <li>Revisão independente das fórmulas e dos arredondamentos dos preços.</li>
+          <li>Medir o tráfego com uma ferramenta gratuita de estatísticas, depois de configurar a conta com consentimento e política de privacidade adequados.</li>
           <li>Adicionar testes automatizados para cálculos e validação, se a estrutura do projeto permitir.</li>
           <li>Revisar periodicamente a política CSP e as dependências externas.</li>
           <li>Se futuramente precisar de um painel administrativo privado, usar autenticação e um serviço de servidor; apenas esconder um botão não protege informações.</li>
@@ -609,6 +691,46 @@ attLabels();updateIdHint();
 })();
 
 // Os valores comerciais são definidos pelas configurações do conversor.\n// A confirmação final do preço e o pagamento acontecem manualmente pelo WhatsApp.
+
+/* Calculadora de margem: não modifica os preços nem a lógica de recarga existente. */
+(function(){
+  var ids=['profitCoins','profitCost','profitSale','profitFee','profitFixedFee','profitExtra'];
+  var el={};ids.forEach(function(id){el[id]=document.getElementById(id);});
+  var results=document.getElementById('profitResults');
+  function money(v){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number.isFinite(v)?v:0);}
+  function value(id){var raw=String(el[id].value).trim();if(raw==='')return NaN;var n=Number(raw);return Number.isFinite(n)?n:NaN;}
+  function set(id,v){document.getElementById(id).textContent=v;}
+  function calculate(){
+    var coins=value('profitCoins'),cost=value('profitCost'),sale=value('profitSale'),fee=value('profitFee'),fixed=value('profitFixedFee'),extra=value('profitExtra');
+    results.classList.remove('show');
+    if(!(coins>0)||!Number.isFinite(coins)||!Number.isInteger(coins)||!(cost>=0)||!Number.isFinite(cost)||!(sale>0)||!Number.isFinite(sale)||!(fee>=0&&fee<100)||!Number.isFinite(fee)||!(fixed>=0)||!Number.isFinite(fixed)||!(extra>=0)||!Number.isFinite(extra)){
+      set('profitStatus','Confira os campos: informe quantidade inteira, custo e preço de venda válidos, e taxa entre 0% e menos de 100%.');
+      results.classList.add('show');
+      document.getElementById('profitMainResult').classList.add('loss');
+      set('profitValue','Verifique os dados');
+      ['profitNetRevenue','profitTotalCost','profitBreakEven','profitPerThousand','profitTarget10','profitTarget20','profitTarget30'].forEach(function(id){set(id,'—');});
+      return;
+    }
+    var rate=fee/100,totalCost=cost+extra,net=sale*(1-rate)-fixed,profit=net-totalCost;
+    var breakEven=(totalCost+fixed)/(1-rate);
+    function target(markup){return (totalCost*(1+markup)+fixed)/(1-rate);}
+    var main=document.getElementById('profitMainResult');
+    main.classList.toggle('loss',profit<0);
+    set('profitValue',money(profit));
+    set('profitStatus',profit<0?'Prejuízo estimado neste lote.':profit===0?'Você está no ponto de equilíbrio.':'Lucro estimado antes de eventuais custos não informados.');
+    set('profitNetRevenue',money(net));
+    set('profitTotalCost',money(totalCost));
+    set('profitBreakEven',money(breakEven));
+    set('profitPerThousand',money(profit/coins*1000));
+    set('profitTarget10',money(target(.10)));
+    set('profitTarget20',money(target(.20)));
+    set('profitTarget30',money(target(.30)));
+    results.classList.add('show');
+  }
+  document.getElementById('calculateProfit').addEventListener('click',calculate);
+  ids.forEach(function(id){el[id].addEventListener('input',function(){if(results.classList.contains('show'))calculate();});});
+})();
+
 </script>
 </body>
 </html>
