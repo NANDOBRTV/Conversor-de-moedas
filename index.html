@@ -86,6 +86,15 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
+.operator-notice{margin:10px 0 14px;padding:12px;background:#f4f7fc;border:1px solid #cbd7ea;border-radius:10px;color:#344563;font-size:12px;line-height:1.5;text-align:left}
+.operator-notice strong{display:block;color:#1e3c72;margin-bottom:4px}
+.operator-notice p{margin:0}
+.policy-panel{margin-top:12px;border:1px solid #d7dfeb;border-radius:10px;padding:12px;color:#445066;font-size:12px;line-height:1.55}
+.policy-panel summary{font-weight:800;color:#1e3c72;cursor:pointer;padding:3px}
+.policy-panel h2{font-size:13px;color:#1e3c72;margin:12px 0 4px}
+.policy-panel p,.policy-panel ul{margin:5px 0}
+.policy-panel ul{padding-left:18px}
+.privacy-note{background:#f7f9fc;border-radius:8px;padding:9px;margin-top:8px}
 .region-warning{font-size:12px;color:#78520b;background:#fff7e6;border:1px solid #f2cc7d;border-radius:9px;padding:10px;margin:-4px 0 10px;line-height:1.4}
 .mini-btn{display:inline-block;width:auto;margin:6px 0 0;padding:7px 10px;border:1px solid #b9c6dd;border-radius:8px;background:#fff;color:#1e3c72;font-size:12px;font-weight:700}
 .active-mode-label{font-size:12px;font-weight:700;color:#1e3c72;background:#eef3fb;border-radius:8px;padding:8px 10px;margin:-6px 0 8px;text-align:center}
@@ -107,6 +116,10 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 <div class="card">
   <h1>🪙 Calculadora de Recarga Sanba</h1>
   <p class="sub">Calcule sua recarga de moedas Sanba</p>
+  <div class="operator-notice" role="note">
+    <strong>ℹ️ Atendimento independente</strong>
+    <p>Esta calculadora é operada por um revendedor/operador independente. <strong>Não é um serviço oficial do Sanba</strong> e não representa nem é administrada pelo aplicativo Sanba.</p>
+  </div>
   
   <label for="regionSelect">🌎 País / região</label>
   <select id="regionSelect" aria-label="Selecionar país ou região">
@@ -174,6 +187,37 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
     <div id="rateStatus" role="status" aria-live="polite"></div>
   </details>
   
+  <details class="policy-panel">
+    <summary>📋 Regras de atendimento, pagamento e privacidade</summary>
+    <h2>1. Quem opera este atendimento</h2>
+    <p>O atendimento é realizado manualmente por um operador independente. Esta calculadora não é oficial do Sanba, não é mantida pelo Sanba e não implica parceria ou aprovação do aplicativo.</p>
+    <h2>2. Prazo e horário de atendimento</h2>
+    <ul>
+      <li>O atendimento é feito pelo WhatsApp e depende da disponibilidade do operador; não há garantia de atendimento imediato ou 24 horas por dia.</li>
+      <li>O prazo estimado para processar a recarga será informado no WhatsApp antes do pagamento. O prazo só começa a contar após a confirmação do pagamento e dos dados do pedido.</li>
+      <li>Se houver atraso ou indisponibilidade, aguarde a resposta do operador antes de enviar outro pagamento.</li>
+    </ul>
+    <h2>3. Forma de pagamento</h2>
+    <ul>
+      <li>No Brasil, o pagamento poderá ser feito via Pix, conforme as instruções confirmadas pelo operador.</li>
+      <li>Para USD ou VES, confirme no WhatsApp quais formas de pagamento estão disponíveis antes de pagar.</li>
+      <li>Não faça pagamentos com base apenas no valor exibido nesta calculadora. Confira o valor final, a moeda, a quantidade de moedas e o destinatário com o operador.</li>
+      <li>Envie o comprovante somente pelo canal de atendimento indicado. Nunca compartilhe senhas, códigos de autenticação ou dados de acesso à sua conta.</li>
+    </ul>
+    <h2>4. O que acontece depois de enviar o pedido</h2>
+    <ul>
+      <li>Ao tocar em “Comprar pelo WhatsApp”, será aberta uma conversa com uma mensagem pré-preenchida com o ID Sanba, a quantidade desejada e o valor estimado.</li>
+      <li>O operador conferirá os dados, confirmará o preço final e informará a forma de pagamento e o prazo previsto.</li>
+      <li>A recarga só será encaminhada após a confirmação manual do pedido e do pagamento. Guarde o comprovante e a conversa até a conclusão.</li>
+      <li>Se o ID estiver incorreto, avise o operador antes do pagamento para evitar erros na entrega.</li>
+    </ul>
+    <h2>5. Dados e privacidade</h2>
+    <p>A calculadora usa o ID digitado para preparar o resumo e a mensagem de pedido no seu dispositivo. Ela não envia o ID automaticamente para um banco de dados próprio; o ID será compartilhado com o operador quando você enviar a mensagem pelo WhatsApp. O WhatsApp processa os dados conforme as próprias políticas de privacidade.</p>
+    <p class="privacy-note">Informe somente os dados necessários para a recarga. Não digite senhas ou códigos secretos. Se você não enviar a mensagem, o ID não é enviado ao operador por esta calculadora. O histórico local do navegador e o próprio WhatsApp podem manter registros conforme as configurações de cada serviço.</p>
+    <h2>6. Preço, erros e confirmação</h2>
+    <p><strong>O valor calculado não é garantido até a confirmação manual do operador.</strong> Taxas, disponibilidade e condições podem mudar. O pedido só estará confirmado quando o operador validar os detalhes pelo WhatsApp.</p>
+  </details>
+
   <div class="brand-footer">
     <div class="pix-text">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.646 9.173l-3.03-3.03a1.003 1.003 0 00-1.414 0l-3.03 3.03a1 1 0 001.414 1.414L12 10.086l2.232 2.232-2.232 2.232-2.232-2.232-2.232 2.232 3.03 3.03a1.003 1.003 0 001.414 0l3.03-3.03a1 1 0 000-1.414l-2.232-2.232 2.232-2.232 2.232 2.232a1 1 0 001.414-1.414z"/><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z"/></svg>
@@ -190,7 +234,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   
   <div class="footer-info">
     <div class="license-seal">🛡️ Licença Proprietária © Sanba</div>
-    <div class="version">v1.3.5</div>
+    <div class="version">Calculadora independente · v1.3.6 · Atualizada em 23/10/2026</div>
   </div>
 </div>
 
