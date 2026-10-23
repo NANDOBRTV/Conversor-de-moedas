@@ -134,32 +134,15 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
 </div>
 
 <script>
-// PROTEÇÃO DE DOMÍNIO E ANTI-DEVTOOLS
-!function(){
-  // Bloqueia se não for o seu domínio
-  if(window.location.hostname!=="nandobrtv.github.io" && window.location.hostname!=="localhost" && window.location.hostname!=="127.0.0.1"){
-    document.body.innerHTML="<div style='text-align:center;padding:50px;font-family:sans-serif;'><h1>Acesso Negado</h1><p>Este código é de propriedade exclusiva da Sanba.</p></div>";
+// Restrição de domínio para evitar cópias acidentais hospedadas em outros domínios.
+// Isso não substitui controles de segurança no servidor.
+(function(){
+  var host=window.location.hostname;
+  if(host!=="nandobrtv.github.io" && host!=="localhost" && host!=="127.0.0.1"){
+    document.body.innerHTML="<div style='text-align:center;padding:50px;font-family:sans-serif;'><h1>Acesso indisponível</h1><p>Abra o Conversor Sanba pelo site oficial.</p></div>";
     throw new Error("Unauthorized domain");
   }
-  
-  // Bloqueia atalhos
-  document.onkeydown=function(e){
-    if(e.keyCode===123 || (e.ctrlKey&&e.shiftKey&&(e.keyCode===73||e.keyCode===74||e.keyCode===67)) || (e.ctrlKey&&(e.keyCode===85||e.keyCode===83))){
-      return false;
-    }
-  };
-  
-  // Detecta se o DevTools abriu e pisca a tela
-  setInterval(function(){
-    var start=performance.now();
-    debugger;
-    var end=performance.now();
-    if(end-start>100){ window.location.href="about:blank"; }
-  }, 1000);
-  
-  // Limpa o console
-  setInterval(function(){ console.clear(); }, 1000);
-}();
+})();
 
 var WHATSAPP_BRL="5582996843269", WHATSAPP_INTERNACIONAL="584145154287", CUSTO_USD=0.99/1500, CUSTO_BRL=6/1500, CUSTO_VES=1450/1500, MINIMO_MOEDAS=1000, TAMANHO_ID=8;
 function custoPorMoeda(c){if(c==='BRL')return CUSTO_BRL;if(c==='VES')return CUSTO_VES;return CUSTO_USD*(TAXAS[c]||1)}
@@ -197,12 +180,13 @@ document.getElementById('linkSanba').addEventListener('click',function(e){
 var userIdEl=document.getElementById('userId');
 function sanitizeId(){var v=userIdEl.value.replace(/\D/g,'').slice(0,TAMANHO_ID);if(userIdEl.value!==v)userIdEl.value=v;return v}
 function getUserId(){return userIdEl.value.trim()}
-function isIdValid(){return getUserId().length===TAMANHO_ID}
+function isIdValid(){var id=getUserId();return /^\d{8}$/.test(id)&&!/^0{8}$/.test(id)}
 function updateIdHint(){
   var id=getUserId(),hint=document.getElementById('idHint');
   if(id.length===0){userIdEl.className='';hint.textContent='Digite '+TAMANHO_ID+' dígitos (ex: 76328158)';hint.className='hint'}
   else if(id.length<TAMANHO_ID){userIdEl.className='invalido';hint.textContent='Faltam '+(TAMANHO_ID-id.length)+' dígito'+(TAMANHO_ID-id.length>1?'s':'');hint.className='hint warn'}
-  else{userIdEl.className='valido';hint.textContent='✓ ID válido';hint.className='hint ok'}
+  else if(!isIdValid()){userIdEl.className='invalido';hint.textContent='Este ID não parece válido. Confira os 8 dígitos.';hint.className='hint warn'}
+  else{userIdEl.className='valido';hint.textContent='✓ Formato do ID válido';hint.className='hint ok'}
 }
 
 var sel=document.getElementById('currencySelect');
@@ -222,7 +206,7 @@ function attLabels(){
 function calcC(){
   var m=num(document.getElementById('moedas').value);
   var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),bc=document.getElementById('brlC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');
-  rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');
+  rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');bc.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');wc.removeAttribute('href');
   if(!(m>0))return;
   if(!Number.isInteger(m)){ec.classList.add('show');document.getElementById('errCMsg').textContent='Informe uma quantidade inteira de moedas, sem casas decimais.';return}
   if(m<MINIMO_MOEDAS){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MINIMO_MOEDAS-m)+'</b> moedas';return}
@@ -253,7 +237,7 @@ function calcC(){
 function calcR(){
   var v=num(document.getElementById('reais').value);
   var rr=document.getElementById('resR'),er=document.getElementById('errR'),br=document.getElementById('brlR'),wr=document.getElementById('wppR'),nr=document.getElementById('needR');
-  rr.classList.remove('show');er.classList.remove('show');br.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');
+  rr.classList.remove('show');er.classList.remove('show');br.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');wr.removeAttribute('href');
   if(!(v>0))return;
   
   var custoLocal=custoPorMoeda(moeda);
@@ -281,6 +265,8 @@ function calcR(){
 }
 
 userIdEl.addEventListener('input',function(){sanitizeId();updateIdHint();calcC();calcR()});
+document.getElementById('wppC').addEventListener('click',function(e){if(!isIdValid()||!this.classList.contains('show')||!this.getAttribute('href')){e.preventDefault();this.removeAttribute('href');calcC();}});
+document.getElementById('wppR').addEventListener('click',function(e){if(!isIdValid()||!this.classList.contains('show')||!this.getAttribute('href')){e.preventDefault();this.removeAttribute('href');calcR();}});
 sel.addEventListener('change',function(e){moeda=e.target.value;document.getElementById('autoDetect').classList.remove('show');attLabels();calcC();calcR()});
 document.getElementById('moedas').addEventListener('input',calcC);
 document.getElementById('reais').addEventListener('input',calcR);
