@@ -28,7 +28,7 @@ Deno.serve(async (req: Request) => {
     return json({ error: "Pedido inválido." }, 400);
   }
 
-  const username = typeof body.username === "string" ? body.username.trim() : "";
+  const username = typeof body.username === "string" ? body.username.trim().toLowerCase() : "";
   const password = typeof body.password === "string" ? body.password : "";
   if (!/^[A-Za-z0-9_.-]{3,30}$/.test(username) || password.length < 1 || password.length > 128) {
     return json({ error: "Usuário ou senha inválidos." }, 400);
@@ -49,7 +49,7 @@ Deno.serve(async (req: Request) => {
     const { data: profile, error: profileError } = await admin
       .from("reseller_profiles")
       .select("user_id")
-      .ilike("username", username)
+      .eq("username", username)
       .maybeSingle();
 
     if (profileError || !profile) {
