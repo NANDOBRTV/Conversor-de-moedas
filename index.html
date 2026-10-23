@@ -161,7 +161,7 @@ select:focus,input:focus{border-color:#2a5298;background:#fff}
   setInterval(function(){ console.clear(); }, 1000);
 }();
 
-var WHATSAPP="5582996843269", CUSTO_USD=1.10/1500, MINIMO_MOEDAS=1000, TAMANHO_ID=8;
+var WHATSAPP="5582996843269", CUSTO_USD=0.99/1500, CUSTO_BRL=6/1500, MINIMO_MOEDAS=1000, TAMANHO_ID=8;\nfunction custoPorMoeda(c){return c==='BRL'?CUSTO_BRL:CUSTO_USD*(TAXAS[c]||1)}
 var MOEDAS={ARS:{f:'🇦🇷',s:'ARS$',n:'Peso Argentino'},BOB:{f:'🇧🇴',s:'Bs',n:'Boliviano'},BRL:{f:'🇧🇷',s:'R$',n:'Real'},CLP:{f:'🇨🇱',s:'CLP$',n:'Peso Chileno'},COP:{f:'🇨🇴',s:'COP$',n:'Peso Colombiano'},USD:{f:'🇺🇸',s:'US$',n:'Dólar'},GYD:{f:'🇬🇾',s:'GY$',n:'Dólar Guianense'},PYG:{f:'🇵🇾',s:'₲',n:'Guarani'},PEN:{f:'🇵🇪',s:'S/',n:'Sol'},SRD:{f:'🇸🇷',s:'SR$',n:'Dólar Surinamês'},UYU:{f:'🇺🇾',s:'$U',n:'Peso Uruguaio'},VES:{f:'🇻🇪',s:'Bs.S',n:'Bolívar'},EUR:{f:'🇪🇺',s:'€',n:'Euro'},BZD:{f:'🇧🇿',s:'BZ$',n:'Dólar Belize'},CRC:{f:'🇨🇷',s:'₡',n:'Colón CR'},GTQ:{f:'🇬🇹',s:'Q',n:'Quetzal'},HNL:{f:'🇭🇳',s:'L',n:'Lempira'},MXN:{f:'🇲🇽',s:'MX$',n:'Peso Mexicano'},NIO:{f:'🇳🇮',s:'C$',n:'Córdoba'},PAB:{f:'🇵🇦',s:'B/.',n:'Balboa'},CUP:{f:'🇨🇺',s:'CUP$',n:'Peso Cubano'},DOP:{f:'🇩🇴',s:'RD$',n:'Peso Dominicano'},HTG:{f:'🇭🇹',s:'G',n:'Gourde'},JMD:{f:'🇯🇲',s:'J$',n:'Dólar Jamaicano'},TTD:{f:'🇹🇹',s:'TT$',n:'Dólar Trinidad'},BSD:{f:'🇧🇸',s:'B$',n:'Dólar Bahamas'},BBD:{f:'🇧🇧',s:'Bds$',n:'Dólar Barbados'},XCD:{f:'🌎',s:'EC$',n:'Dólar Caribe Leste'}};
 var TAXAS={USD:1,BRL:5.60,ARS:880,BOB:6.90,CLP:950,COP:4000,GYD:209,PYG:7300,PEN:3.70,SRD:35,UYU:39,VES:36,EUR:0.92,BZD:2,CRC:520,GTQ:7.8,HNL:24.7,MXN:17,NIO:36.8,PAB:1,CUP:24,DOP:58,HTG:132,JMD:155,TTD:6.8,BSD:1,BBD:2,XCD:2.70};
 var TZ_MAP={'America/Sao_Paulo':'BRL','America/Bahia':'BRL','America/Recife':'BRL','America/Fortaleza':'BRL','America/Manaus':'BRL','America/Belem':'BRL','America/Cuiaba':'BRL','America/Campo_Grande':'BRL','America/Porto_Velho':'BRL','America/Rio_Branco':'BRL','America/Noronha':'BRL','America/Argentina/Buenos_Aires':'ARS','America/Argentina/Cordoba':'ARS','America/Argentina/Mendoza':'ARS','America/Argentina/Salta':'ARS','America/Argentina/Tucuman':'ARS','America/Argentina/Jujuy':'ARS','America/Argentina/Ushuaia':'ARS','America/La_Paz':'BOB','America/Santiago':'CLP','Pacific/Easter':'CLP','America/Bogota':'COP','America/Caracas':'VES','America/Guayaquil':'USD','Pacific/Galapagos':'USD','America/Guyana':'GYD','America/Asuncion':'PYG','America/Lima':'PEN','America/Paramaribo':'SRD','America/Montevideo':'UYU','America/Belize':'BZD','America/Costa_Rica':'CRC','America/Guatemala':'GTQ','America/Tegucigalpa':'HNL','America/Mexico_City':'MXN','America/Cancun':'MXN','America/Monterrey':'MXN','America/Chihuahua':'MXN','America/Tijuana':'MXN','America/Managua':'NIO','America/Panama':'PAB','America/Havana':'CUP','America/Santo_Domingo':'DOP','America/Port-au-Prince':'HTG','America/Jamaica':'JMD','America/Port_of_Spain':'TTD','America/Nassau':'BSD','America/Barbados':'BBD','America/St_Kitts':'XCD','America/St_Lucia':'XCD','America/Grenada':'XCD','America/Antigua':'XCD'};
@@ -213,9 +213,9 @@ function attLabels(){
   document.getElementById('tabC').textContent='🪙 Moedas → '+c.s;
   document.getElementById('tabR').textContent='💵 '+c.s+' → Moedas';
   document.getElementById('lblR').textContent='Valor em '+c.n+' ('+c.s+')';
-  var custoLocal=CUSTO_USD*TAXAS[moeda];
+  var custoLocal=custoPorMoeda(moeda);
   document.getElementById('minR').innerHTML='Mínimo: <b>'+fmtRd(MINIMO_MOEDAS*custoLocal,moeda)+'</b>';
-  document.getElementById('info').innerHTML='Preço base: <b>1.500 moedas = US$ 1,10</b><br>Cada moeda = '+fmtEx(custoLocal,moeda);
+  document.getElementById('info').innerHTML='Preço base: <b>1.500 moedas = R$ 6,00 ou US$ 0,99</b><br>Cada moeda = '+fmtEx(custoLocal,moeda);
 }
 
 function calcC(){
@@ -237,7 +237,7 @@ function calcC(){
   rc.classList.add('show');
   
   if(Math.abs(exato-p)>1e-9){pc.classList.add('show');document.getElementById('pgtoCVal').textContent=fmtRd(p,moeda)}
-  if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtRd(p/TAXAS[moeda]*TAXAS['BRL'],'BRL')}
+  if(moeda!=='BRL'){bc.classList.add('show');document.getElementById('brlCVal').textContent=fmtRd(exatoBRL,'BRL')}
   if(!isIdValid()){nc.classList.add('show');return}
   
   var msg='Olá! Vim pelo site.\n\n🪙 *Recarga:* '+fmtN.format(Math.round(m))+' moedas\n💰 *Valor:* '+fmtRd(p,moeda)+'\n';
