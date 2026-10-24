@@ -17,11 +17,14 @@ input:focus{box-shadow:0 0 0 4px #67e8f91c}
 @media(max-width:600px){.wrap{padding:13px 11px 30px}.hero{padding:18px;border-radius:16px}.panel{padding:16px;border-radius:15px}.nav a,button{padding:10px 11px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
+
+.site-footer{margin:18px 0 0;padding:14px 4px 0;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.6;text-align:center}
 </style></head><body><main class="wrap">
 <header><div class="brand">SANBA <span>• Administração de pedidos</span></div><div class="nav"><a href="./revendedor.html">← Painel</a><a href="./cliente.html">Área do Cliente</a></div></header>
 <section class="panel hero"><div class="muted">CONTROLE ADMINISTRATIVO</div><h1>Pedidos do checkout</h1><p class="muted">Os pedidos são salvos automaticamente antes de o cliente abrir o WhatsApp. Confira o pagamento manualmente antes de aprovar o acesso.</p></section>
 <section class="panel" id="loginPanel"><h2>Entrar como administrador</h2><p class="muted">Use a conta que tem o nível Desenvolvedor. A autorização é validada novamente no servidor.</p><form id="loginForm"><label class="field"><span>Nome de usuário</span><input id="username" required autocomplete="username"></label><label class="field"><span>Senha</span><input id="password" type="password" required autocomplete="current-password"></label><button class="primary" id="loginBtn">Entrar</button><div class="msg" id="loginMsg" role="status"></div></form></section>
 <section class="panel hidden" id="ordersPanel"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h2 style="margin:0">Pedidos recebidos</h2><p class="muted">Aprovar libera o plano na conta do cliente. Rejeitar mantém o acesso bloqueado.</p></div><button id="refreshBtn">Atualizar lista</button></div><div class="msg" id="listMsg" role="status"></div><div id="ordersList" class="list" style="margin-top:14px"></div><div class="actions" style="margin-top:14px"><button id="logoutBtn">Sair</button></div></section>
+<footer class="site-footer">Conversor Sanba · Painel administrativo.<br>Confira o pagamento antes de aprovar um pedido. A aprovação libera o acesso do cliente.</footer>
 </main><script src="./supabase-config.js"></script><script type="module">
 import{createClient}from'https://esm.sh/@supabase/supabase-js@2';const cfg=window.SANBA_SUPABASE_CONFIG||{};const sb=cfg.url&&cfg.anonKey?createClient(cfg.url,cfg.anonKey):null;const $=id=>document.getElementById(id);let currentSession=null;
 function msg(id,t,kind=''){const e=$(id);e.textContent=t;e.className='msg show'+(kind?' '+kind:'')}function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
