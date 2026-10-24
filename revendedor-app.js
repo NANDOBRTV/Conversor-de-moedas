@@ -207,12 +207,7 @@ async function showSignedIn(session) {
   currentProfile = profile;
   $('settingsMenuToggle').style.display = 'inline-flex';
   if ($('adminOrdersLink')) $('adminOrdersLink').style.display = profile.membership_tier === 'developer' ? 'inline-flex' : 'none';
-  const inviteAdminPanel = $('resellerInviteAdminPanel');
-  if (inviteAdminPanel) {
-    inviteAdminPanel.hidden = profile.membership_tier !== 'developer' || !accessIsActive(profile);
-    $('quickInviteLink').hidden = inviteAdminPanel.hidden;
-    if (!inviteAdminPanel.hidden) loadResellerAdminData();
-  }
+  $('quickInviteLink').hidden = profile.membership_tier !== 'developer' || !accessIsActive(profile);
   const rechargePanel = $('rechargeOrdersPanel');
   if (rechargePanel) {
     const canUseOrders = accessIsActive(profile);
@@ -301,8 +296,6 @@ $('quickSettingsLink').addEventListener('click', () => {
 });
 $('quickInviteLink').addEventListener('click', () => {
   setQuickMenu(false);
-  const panel = $('resellerInviteAdminPanel');
-  if (panel && !panel.hidden) panel.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
 $('settingsMenuClose').addEventListener('click', () => setSettingsMenu(false));
