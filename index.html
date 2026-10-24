@@ -355,10 +355,10 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <h3>Resumo do projeto</h3>
         <p>Calculadora independente para estimar recargas Sanba e preparar o pedido para atendimento manual pelo WhatsApp. Ela não é um serviço oficial do Sanba.</p>
         <div class="project-kpis">
-          <div class="project-kpi"><span>Versão publicada no código</span><strong>v1.3.20</strong></div>
-          <div class="project-kpi"><span>Última atualização deste arquivo</span><strong>23/10/2026</strong></div>
-          <div class="project-kpi"><span>Processamento de pagamento</span><strong>Manual via WhatsApp</strong></div>
-          <div class="project-kpi"><span>Tipo de hospedagem</span><strong>Site estático</strong></div>
+          <div class="project-kpi"><span>Versão registrada anteriormente</span><strong>v1.3.20</strong></div>
+          <div class="project-kpi"><span>Relatório atualizado em</span><strong>24/10/2026</strong></div>
+          <div class="project-kpi"><span>Calculadora e pedidos</span><strong>WhatsApp manual</strong></div>
+          <div class="project-kpi"><span>Serviços conectados</span><strong>GitHub + Supabase</strong></div>
         </div>
         <div class="project-callout">Este painel é um relatório público de transparência. Ele não acessa pedidos, pagamentos ou dados privados dos visitantes.</div>
         <p><strong>Fonte da lista de alterações:</strong> histórico público de commits do repositório GitHub. A lista depende da disponibilidade da API do GitHub.</p>
@@ -367,7 +367,10 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
         <h3>Funções existentes</h3>
         <ul>
           <li>Dois modos de cálculo: moedas para valor e valor disponível para moedas.</li>
-          <li>Link para o Painel do Revendedor em página separada; login e acesso Premium ainda em preparação.</li>
+          <li>Painel do Revendedor em página separada (<code>revendedor.html</code>), integrado ao Supabase para autenticação e consulta do perfil.</li>
+          <li>Planos de revendedor: Comum, Ouro (R$ 9,90 por 30 dias) e Diamante (R$ 49,90 pagamento único); ativação e atendimento continuam manuais conforme o fluxo definido.</li>
+          <li>Funções Supabase publicadas: <code>login-by-username</code>, <code>create-checkout</code> e <code>mercadopago-webhook</code>.</li>
+          <li>Configuração pública do Supabase separada em <code>supabase-config.js</code>; nenhuma chave secreta deve ficar no código do navegador.</li>
           <li>Seleção de região/moeda: Brasil (BRL), internacional (USD) e Venezuela (VES).</li>
           <li>Validação do ID Sanba com 8 dígitos numéricos.</li>
           <li>Opção para lembrar o ID somente no armazenamento local deste navegador.</li>
@@ -385,8 +388,16 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
           <li>Links de WhatsApp em nova aba usam proteções contra acesso à janela de origem.</li>
           <li>Validação do ID e dos valores antes de preparar um pedido.</li>
           <li>O ID só fica salvo neste navegador se a pessoa ativar a opção de lembrá-lo.</li>
+          <li>No Supabase, RLS está ativado nas tabelas <code>reseller_profiles</code> e <code>payment_orders</code>, com políticas para cada usuário consultar apenas os próprios registros.</li>
+          <li>Privilégios das tabelas foram restringidos e as políticas foram ajustadas para usar <code>(select auth.uid())</code>.</li>
+          <li>Os registros do Supabase mostraram respostas HTTP 200 para login por nome de usuário, autenticação e consulta do perfil do revendedor.</li>
         </ul>
         <div class="project-callout"><strong>Limitações importantes:</strong> por ser um site estático, os cálculos e parte do código são visíveis no navegador. A restrição de domínio não substitui autenticação nem segurança de servidor. Este painel não é privado e não deve exibir senhas, chaves, tokens ou dados de clientes.</div>
+        <ul>
+          <li><strong>Alerta ainda pendente:</strong> a proteção do Supabase contra senhas conhecidas em vazamentos está desativada e precisa ser habilitada nas configurações de autenticação.</li>
+          <li><strong>Pagamentos:</strong> a presença das funções de checkout e webhook não comprova que uma compra completa funciona. Não há pedidos registrados na tabela de pagamentos nem evidência recente de execução do checkout/webhook.</li>
+          <li>As credenciais secretas do Mercado Pago devem existir somente nos secrets das Edge Functions do Supabase, nunca no GitHub ou no navegador.</li>
+        </ul>
         <p>Os preços são estimativas editáveis no código e não são uma confirmação automática de pagamento. A confirmação e a recarga continuam manuais pelo WhatsApp.</p>
       </section>
       <section class="project-section" data-project-section="history" hidden>
@@ -398,20 +409,27 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
       </section>
       <section class="project-section" data-project-section="tests" hidden>
         <h3>Situação dos testes</h3>
-        <p><span class="project-status">Verificação manual pendente</span></p>
+        <p><span class="project-status">Parcialmente verificado — teste completo pendente</span></p>
         <ul>
-          <li>O código foi atualizado no repositório, mas não foi executado um teste real em vários celulares e navegadores nesta alteração.</li>
-          <li>É necessário conferir os dois modos de cálculo, as três moedas/regiões, IDs inválidos, copiar resumo, impressão e abertura do WhatsApp.</li>
-          <li>Também é necessário testar o painel de relatórios, a carga do histórico e o layout em telas pequenas.</li>
+          <li><strong>Confirmado por registros reais:</strong> login por nome de usuário, autenticação Supabase e consulta do perfil do revendedor responderam HTTP 200.</li>
+          <li><strong>Confirmado por inspeção:</strong> <code>supabase-config.js</code> existe no repositório e o painel do revendedor carrega essa configuração.</li>
+          <li><strong>Confirmado por inspeção:</strong> as três Edge Functions estão publicadas/ativas, com verificação JWT habilitada em <code>create-checkout</code>; o webhook é configurado para receber chamadas externas.</li>
+          <li><strong>Banco de dados:</strong> foram encontrados 3 perfis de revendedor (2 Comum e 1 Desenvolvedor) e nenhum pedido de pagamento registrado na consulta realizada.</li>
+          <li><strong>Ainda não comprovado:</strong> compra ponta a ponta, confirmação do webhook, liberação automática de plano, cálculos em todos os cenários e testes visuais em vários aparelhos.</li>
+          <li><strong>Limitação da auditoria:</strong> não foi possível abrir o site em um navegador visual automatizado nesta verificação; portanto, não se declara aprovação visual.</li>
         </ul>
-        <div class="project-callout">Para manter o relatório confiável, esta página não marca recursos como “testados” sem que os testes tenham sido realmente executados.</div>
+        <div class="project-callout">O relatório diferencia verificações por código/logs de testes completos com usuário. Não faça pagamentos reais para testar sem autorização explícita; prefira o ambiente de teste do Mercado Pago.</div>
       </section>
       <section class="project-section" data-project-section="roadmap" hidden>
         <h3>Próximas melhorias recomendadas</h3>
         <ul>
           <li>Testes reais em Android e desktop, incluindo cálculo, moeda, validação e links do WhatsApp.</li>
           <li>Revisão independente das fórmulas e dos arredondamentos dos preços.</li>
-          <li>Implementar autenticação e controle de acesso no servidor antes de liberar a ferramenta premium paga.</li>
+          <li>Habilitar a proteção do Supabase contra senhas vazadas e revisar as opções de segurança da autenticação.</li>
+          <li>Configurar e verificar com segurança os secrets <code>MERCADOPAGO_ACCESS_TOKEN</code> e <code>MERCADOPAGO_WEBHOOK_SECRET</code> nas Edge Functions, sem expô-los no código.</li>
+          <li>Executar uma compra de teste do Mercado Pago e confirmar o ciclo completo: checkout, webhook assinado, validação de valor/moeda/status e atualização do plano.</li>
+          <li>Testar a renovação/expiração dos planos Ouro e Diamante e o fluxo manual pelo WhatsApp.</li>
+          <li>Testes reais em Android e desktop, incluindo cálculo, moedas, validação, cópia, impressão, WhatsApp e layout responsivo.</li>
           <li>Adicionar testes automatizados para cálculos e validação, se a estrutura do projeto permitir.</li>
           <li>Revisar periodicamente a política CSP e as dependências externas.</li>
           <li>Se futuramente precisar de um painel administrativo privado, usar autenticação e um serviço de servidor; apenas esconder um botão não protege informações.</li>
