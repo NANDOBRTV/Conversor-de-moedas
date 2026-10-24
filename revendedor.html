@@ -265,11 +265,11 @@ function renderHistory() {
 }
 function membershipTier(profile) {
   const tier = String(profile?.membership_tier || 'common').toLowerCase();
-  return ['common','gold','diamond'].includes(tier) ? tier : 'common';
+  return ['common','gold','diamond','developer'].includes(tier) ? tier : 'common';
 }
 function tierLabel(profile) {
   const tier = membershipTier(profile);
-  return tier === 'diamond' ? 'Diamante' : tier === 'gold' ? 'Ouro' : 'Comum';
+  return tier === 'developer' ? 'Desenvolvedor' : tier === 'diamond' ? 'Diamante' : tier === 'gold' ? 'Ouro' : 'Comum';
 }
 function applyAccessUI(profile) {
   const tier = membershipTier(profile);
@@ -279,8 +279,8 @@ function applyAccessUI(profile) {
   document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => {
     el.style.display = active ? '' : 'none';
   });
-  $('copyResults').style.display = tier === 'diamond' ? '' : 'none';
-  $('downloadResults').style.display = tier === 'diamond' ? '' : 'none';
+  $('copyResults').style.display = (tier === 'diamond' || tier === 'developer') ? '' : 'none';
+  $('downloadResults').style.display = (tier === 'diamond' || tier === 'developer') ? '' : 'none';
   if (active) {
     loginCard.style.display = 'none';
     form.style.display = '';
@@ -311,7 +311,7 @@ function renderAccount(profile) {
   $('statAccess').style.color = active ? '#047857' : '#9f1239';
   if (!active) {
     if (tier === 'common') message(accountMessage, 'Você está no plano Comum. Escolha uma opção de compra para solicitar o upgrade para Premium.', 'error');
-    else message(accountMessage, 'Sua conta foi autenticada, mas o acesso Ouro/Diamante não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
+    else message(accountMessage, 'Sua conta foi autenticada, mas o acesso do plano não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
 }
 async function showSignedIn(session) {
