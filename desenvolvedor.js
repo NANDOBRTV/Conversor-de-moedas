@@ -27,14 +27,14 @@ async function loadRevenueSummary(){
   const {data,error}=await sb.functions.invoke("manage-revenue-orders",{body:{action:"list_orders"}});
   if(error||!data||data.error)throw new Error(data?.error||error?.message||"Não foi possível carregar o relatório.");
   const orders=data.orders||[];
-  const paid=orders.filter(o=>["payment_confirmed","in_progress","delivered"].includes(o.status));
+  const paid=orders.filter(o=>["payment_confirmed","in_progress","delivered","refunded"].includes(o.status));
   const refunded=orders.filter(o=>o.status==="refunded");
   const pending=orders.filter(o=>o.status==="pending");
   const paidTotal=paid.reduce((s,o)=>s+Number(o.amount||0),0);
   const refundTotal=refunded.reduce((s,o)=>s+Number(o.amount||0),0);
   const net=paidTotal-refundTotal;
   const items=[
-   ["Receita confirmada",paidTotal,"Pagamentos verificados manualmente"],
+   ["Pagamentos confirmados (bruto)",paidTotal,"Inclui pedidos posteriormente reembolsados"],
    ["Pedidos aguardando",pending.length,"Não contabilizados como receita"],
    ["Em execução / entregues",orders.filter(o=>["in_progress","delivered"].includes(o.status)).length,"Pedidos já pagos"],
    ["Reembolsos registrados",refundTotal,"Valor marcado como reembolsado"],
