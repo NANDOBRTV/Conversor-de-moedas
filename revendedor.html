@@ -87,7 +87,7 @@
         <button class="btn btn-dark login-submit" type="submit" id="registerSubmit">Criar minha conta</button>
         <div class="login-message error" id="registerMessage" role="status" aria-live="polite"></div>
       </form>
-      <p class="footnote">Use um e-mail válido. O acesso pago é liberado depois que o pagamento do plano escolhido for confirmado manualmente.</p>
+      <p class="footnote">Use um e-mail válido. O acesso pago é liberado automaticamente após a confirmação segura do pagamento pelo Mercado Pago.</p>
       <p class="footnote">Já tem conta? Toque em <strong>Entrar</strong>.</p>
     </div>
   </section>
@@ -161,7 +161,7 @@
       <div id="historyEmpty" class="history-empty">Você ainda não salvou nenhum cálculo. Faça uma simulação e toque em “Salvar cálculo”.</div>
       <ul id="historyList" class="history-list"></ul>
     </section>
-    <div class="notice"><strong>Importante:</strong> os cálculos são estimativas e não confirmam o preço oficial do Sanba nem a conclusão de uma recarga. A compra e o pagamento continuam sendo combinados manualmente pelo WhatsApp. O histórico é local e não sincroniza entre aparelhos.</div>
+    <div class="notice"><strong>Importante:</strong> os cálculos são estimativas e não confirmam o preço oficial do Sanba nem a conclusão de uma recarga. Os pagamentos dos planos Ouro e Diamante são feitos no checkout do Mercado Pago; a liberação depende da confirmação segura do provedor. O histórico é local e não sincroniza entre aparelhos.</div>
   </section>
 
   <div class="login-message" id="accountMessage" role="status" aria-live="polite"></div>
@@ -289,7 +289,7 @@ function applyAccessUI(profile) {
   } else {
     loginCard.style.display = 'none';
     form.style.display = 'none';
-    $('loginIntro').textContent = 'Sua conta existe, mas ainda não tem acesso ativo. Escolha um plano na área Minha conta e fale com o suporte para confirmar o pagamento e liberar o acesso.';
+    $('loginIntro').textContent = 'Sua conta existe, mas ainda não tem acesso ativo. Escolha um plano na área Minha conta e conclua o pagamento no Mercado Pago.';
   }
   dashboard.style.display = 'block';
 }
@@ -310,7 +310,7 @@ function renderAccount(profile) {
   $('statAccess').textContent = active ? tierLabel(profile) : tier === 'common' ? 'Comum' : 'Pendente';
   $('statAccess').style.color = active ? '#047857' : '#9f1239';
   if (!active) {
-    if (tier === 'common') message(accountMessage, 'Você está no plano Comum. Escolha uma opção de compra para solicitar o upgrade para Premium.', 'error');
+    if (tier === 'common') message(accountMessage, 'Você está no plano Comum. Escolha Ouro ou Diamante e pague pelo checkout seguro para ativar seu acesso.', 'error');
     else message(accountMessage, 'Sua conta foi autenticada, mas o acesso do plano não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
 }
@@ -399,7 +399,7 @@ $('registerForm').addEventListener('submit', async event => {
       message(registerMessage, 'Conta criada! Seu acesso está pendente até você solicitar um plano e o pagamento ser confirmado.', 'success');
       await showSignedIn(data.session);
     } else {
-      message(registerMessage, 'Cadastro recebido. Se o Supabase exigir confirmação, abra o e-mail enviado e confirme o endereço. Depois entre com seu nome de usuário e senha. O painel pago será liberado após a confirmação do pagamento.', 'success');
+      message(registerMessage, 'Cadastro recebido. Se o Supabase exigir confirmação, abra o e-mail enviado e confirme o endereço. Depois entre com seu nome de usuário e senha. O painel pago será liberado automaticamente após a confirmação segura do pagamento.', 'success');
     }
   } catch (error) {
     const raw = String(error && error.message || '');
