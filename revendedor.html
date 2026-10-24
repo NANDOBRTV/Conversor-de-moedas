@@ -199,8 +199,8 @@ body.invite-mode #loginCard #loginView { display:none; }
     <section class="quick-menu" id="quickMenu" aria-hidden="true" aria-label="Menu rápido">
       <button class="quick-menu-item" id="quickSettingsLink" type="button">⚙️ Configurações</button>
       <a class="quick-menu-item" id="quickInviteLink" href="./convites-revendedores.html" hidden>🔐 Gerador de convites de revendedores ↗</a>
-      <a class="quick-menu-item" id="quickPendingOrdersLink" href="./pedidos-revendedores.html" hidden>🕒 Pedidos para aprovação ↗</a>
-      <a class="quick-menu-item" id="quickApprovedOrdersLink" href="./pedidos-revendedores.html" hidden>✅ Pedidos aprovados ↗</a>
+      <a class="quick-menu-item" id="quickPendingOrdersLink" href="./aprovacoes-revendedores.html?status=pending" hidden>🕒 Pedidos para aprovação ↗</a>
+      <a class="quick-menu-item" id="quickApprovedOrdersLink" href="./aprovacoes-revendedores.html?status=approved" hidden>✅ Pedidos aprovados ↗</a>
     </section>
     <section class="settings-menu" id="settingsMenu" aria-hidden="true" aria-label="Menu de configurações">
       <div class="settings-menu-head"><h2>⚙️ Configurações</h2><button class="settings-menu-close" id="settingsMenuClose" type="button" aria-label="Fechar configurações">×</button></div>
@@ -372,6 +372,6 @@ body.invite-mode #loginCard #loginView { display:none; }
 })();
 </script>
 <script src="./supabase-config.js"></script>
-<script src="./revendedor-loader.js?v=20261024-8" defer></script>
+<script src="./revendedor-loader.js?v=20261024-9" defer></script>
 </body>
 </html>
