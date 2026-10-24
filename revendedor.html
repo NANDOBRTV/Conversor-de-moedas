@@ -28,7 +28,7 @@
 .auth-tab:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .signup-divider{height:1px;background:var(--line);margin:22px 0}
 .signup-heading{font-size:16px;margin:0 0 7px}
-.account-purchase{display:grid;gap:9px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
+.gold-benefits{margin-top:14px;padding:14px;border:1px solid #f4c56a;border-radius:14px;background:linear-gradient(145deg,rgba(245,158,11,.12),rgba(251,191,36,.04))}.gold-benefits h3{margin:0 0 8px;font-size:14px;color:#fbbf24}.gold-benefits p,.gold-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.gold-benefits ul{margin:8px 0 0;padding-left:18px}.gold-benefits[hidden]{display:none!important}.account-purchase{display:grid;gap:9px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
 .account-purchase h3{font-size:14px;margin:0}
 .account-purchase p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 3px}
 .account-purchase .btn{width:100%}
@@ -323,6 +323,16 @@ body.invite-mode #loginCard #loginView { display:none; }
           <div class="detail-row"><span>Validade</span><strong id="accountUntil">—</strong></div>
           <p class="footnote">E-mail: <strong id="accountEmail">—</strong></p>
           <p class="footnote">Para editar seus dados, toque na engrenagem no canto superior direito. A validade é exibida conforme os dados cadastrados na conta.</p>
+          <div class="gold-benefits" id="goldBenefits" hidden>
+            <h3>🥇 Privilégios do plano Ouro</h3>
+            <p>Seu plano Ouro está ativo. Você tem acesso à calculadora de revenda e pode consultar até 50 cálculos recentes salvos neste navegador durante a validade exibida na sua conta.</p>
+            <ul>
+              <li>Calculadora de custos, taxas, lucro e margem</li>
+              <li>Histórico de até 50 cálculos recentes neste aparelho</li>
+              <li>Acesso por 30 dias após a aprovação do pagamento</li>
+              <li>Copiar resultados e exportar CSV continuam exclusivos do Diamante</li>
+            </ul>
+          </div>
           <div class="account-purchase" id="accountPurchase">
             <h3>Escolha seu plano Premium</h3>
             <p>Escolha seu plano e finalize pelo WhatsApp. Faça o Pix usando a chave abaixo e envie o comprovante. O acesso será liberado depois da conferência manual do pagamento.</p>
