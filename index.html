@@ -672,17 +672,18 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
     if(sessionError)throw sessionError;
     if(!session){
       popup.close();
-      alert('Para salvar a recarga na sua conta, entre primeiro na Área do Cliente. Ela será aberta em uma nova aba. Depois volte à calculadora e clique em Comprar pelo WhatsApp novamente.');
       window.open('./cliente.html','_blank','noopener,noreferrer');
+      alert('Para salvar a recarga na sua conta, entre na Área do Cliente que foi aberta em outra aba. Depois volte à calculadora e clique em Comprar pelo WhatsApp novamente.');
       return;
     }
     const order=JSON.parse(anchor.dataset.order);
     if(!/^\\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
     const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending'}).select('id').single();
     if(error)throw error;
-    const msgSep=targetUrl.includes('?text=')?'%0A%0A':'';
-    const finalUrl=targetUrl+'&text='+encodeURIComponent('\\n\\n📦 Número do pedido: '+data.id);
-    popup.location.replace(finalUrl);
+    const finalWhatsAppUrl=new URL(targetUrl);
+    const existingMessage=finalWhatsAppUrl.searchParams.get('text')||'';
+    finalWhatsAppUrl.searchParams.set('text',existingMessage+'\\n\\n📦 Número do pedido: '+data.id);
+    popup.location.replace(finalWhatsAppUrl.toString());
   }catch(err){
     popup.close();
     alert((err&&err.message&&/row-level security|permission|policy/i.test(err.message))?'Não foi possível salvar. Entre na sua conta de cliente e tente novamente.':'Não foi possível registrar o pedido antes de abrir o WhatsApp. Nenhum pedido foi enviado. Tente novamente.');
