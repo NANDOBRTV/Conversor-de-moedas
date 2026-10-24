@@ -109,3 +109,28 @@ for each row execute procedure public.handle_new_reseller_signup();
 
 -- A função é executada pelo trigger; não deve ser chamada diretamente pela API pública.
 revoke execute on function public.handle_new_reseller_signup() from public, anon, authenticated;
+
+
+-- Pedidos de pagamento Mercado Pago. Somente funções server-side usam service_role para gravar.
+create table if not exists public.payment_orders (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  plan_tier text not null check (plan_tier in ('gold','diamond')),
+  amount numeric(10,2) not null check (amount > 0),
+  currency text not null default 'BRL' check (currency = 'BRL'),
+  status text not null default 'pending' check (status in ('pending','approved','rejected','cancelled','refunded','expired')),
+  provider text not null default 'mercadopago' check (provider = 'mercadopago'),
+  preference_id text,
+  payment_id text unique,
+  checkout_url text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  approved_at timestamptz
+);
+create index if not exists payment_orders_user_created_idx on public.payment_orders(user_id, created_at desc);
+create index if not exists payment_orders_status_idx on public.payment_orders(status);
+alter table public.payment_orders enable row level security;
+revoke all on public.payment_orders from anon, authenticated;
+drop policy if exists "Users can read own payment orders" on public.payment_orders;
+create policy "Users can read own payment orders" on public.payment_orders
+for select to authenticated using (auth.uid() = user_id);
