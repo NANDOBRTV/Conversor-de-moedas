@@ -227,13 +227,14 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(15,118,110,.12
         <button class="btn btn-primary login-submit" type="submit" id="loginSubmit">Entrar no painel</button>
         <div class="login-message error" id="loginMessage" role="alert" aria-live="polite"></div>
       </form>
-      <p class="footnote">Ainda não tem uma conta? Toque em <strong>Registrar</strong> para criar gratuitamente seu cadastro.</p>
+      <p class="footnote">O cadastro de revendedor exige um convite individual enviado pelo desenvolvedor.</p>
     </div>
 
     <div id="registerView" style="display:none">
       <h2>Crie sua conta</h2>
       <p class="subtext">Informe seus dados para se cadastrar no Painel do Revendedor Sanba.</p>
-      <form id="registerForm" autocomplete="on">
+      <p class="footnote" id="inviteRequiredNotice">O cadastro de revendedor só pode ser solicitado por um link de convite individual válido. Peça um convite ao desenvolvedor do Conversor Sanba.</p>
+      <form id="registerForm" autocomplete="on" style="display:none">
         <label class="field"><span>Seu e-mail</span><input id="registerEmail" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required maxlength="254"></label>
         <label class="field"><span>Nome de usuário</span><input id="registerUsername" name="username" type="text" placeholder="Escolha seu usuário" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" autocapitalize="none" spellcheck="false"></label>
         <label class="field"><span>Crie uma senha</span><input id="registerPassword" name="new-password" type="password" placeholder="Pelo menos 8 caracteres" autocomplete="new-password" required minlength="8" maxlength="128"></label>
@@ -247,6 +248,22 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(15,118,110,.12
 
   <section class="dashboard" id="dashboard" aria-label="Painel de ferramentas">
     <div class="section-head"><div><h2 id="welcomeTitle">Bem-vindo!</h2><p>Resumo rápido e ferramentas da sua conta.</p></div><button class="btn btn-light btn-small" id="logoutButton" type="button">Sair da conta</button></div>
+    <section class="panel-card" id="resellerInviteAdminPanel" hidden aria-labelledby="resellerInviteAdminTitle" style="margin-bottom:16px">
+      <div class="section-head"><div><h2 id="resellerInviteAdminTitle">🔐 Convites e solicitações de revendedores</h2><p>Somente a conta de desenvolvedor pode criar convites, revogá-los e aprovar solicitações.</p></div><button class="btn btn-light btn-small" id="refreshResellerAdmin" type="button">Atualizar</button></div>
+      <form id="createResellerInviteForm">
+        <label class="field"><span>E-mail específico (opcional)</span><input id="resellerInviteEmail" type="email" maxlength="254" placeholder="revendedor@exemplo.com"></label>
+        <button class="btn btn-primary" id="createResellerInvite" type="submit">Gerar convite individual</button>
+      </form>
+      <div id="resellerInviteAdminMessage" class="login-message" role="status" aria-live="polite"></div>
+      <label class="field" style="margin-top:12px"><span>Link do convite (exibido uma única vez)</span><input id="resellerInviteLink" type="text" readonly placeholder="Gere um convite para ver o link"></label>
+      <button class="btn btn-light btn-small" id="copyResellerInviteLink" type="button" disabled>Copiar link</button>
+      <div class="settings-divider"></div>
+      <h3 class="settings-section-title">Solicitações de cadastro</h3>
+      <div id="resellerApplicationsList" class="history-list"><div class="history-empty">Carregue para consultar as solicitações.</div></div>
+      <div class="settings-divider"></div>
+      <h3 class="settings-section-title">Convites emitidos</h3>
+      <div id="resellerInvitesList" class="history-list"><div class="history-empty">Carregue para consultar os convites.</div></div>
+    </section>
     <section class="panel-card recharge-orders-panel" id="rechargeOrdersPanel" hidden aria-labelledby="rechargeOrdersTitle">
       <div class="section-head"><div><h2 id="rechargeOrdersTitle">📦 Pedidos de recarga dos clientes</h2><p>Pedidos sincronizados com as contas dos clientes. Esta área usa a sessão atual do painel.</p></div><button class="btn btn-light btn-small" id="refreshRechargeOrders" type="button">Atualizar pedidos</button></div>
       <div id="rechargeOrdersMessage" class="login-message" role="status" aria-live="polite"></div>
@@ -344,6 +361,16 @@ const loginView = $('loginView');
 const registerView = $('registerView');
 const showLoginTab = $('showLoginTab');
 const showRegisterTab = $('showRegisterTab');
+const inviteParams = new URLSearchParams(window.location.search);
+let resellerInviteToken = inviteParams.get('convite') || '';
+if (resellerInviteToken) {
+  try { sessionStorage.setItem('sanba_reseller_invite_token', resellerInviteToken); } catch (_) {}
+  window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+} else {
+  try { resellerInviteToken = sessionStorage.getItem('sanba_reseller_invite_token') || ''; } catch (_) {}
+}
+$('registerForm').style.display = resellerInviteToken ? '' : 'none';
+$('inviteRequiredNotice').style.display = resellerInviteToken ? 'none' : 'block';
 function setAuthView(view) {
   const isLogin = view === 'login';
   loginView.style.display = isLogin ? 'block' : 'none';
@@ -428,11 +455,13 @@ function membershipTier(profile) {
 }
 function tierLabel(profile) {
   const tier = membershipTier(profile);
+  if (tier === 'common' && profile?.reseller_application_status === 'approved') return 'Revendedor';
   return tier === 'developer' ? 'Desenvolvedor' : tier === 'diamond' ? 'Diamante' : tier === 'gold' ? 'Ouro' : 'Comum';
 }
 function applyAccessUI(profile) {
   const tier = membershipTier(profile);
-  const active = accessIsActive(profile) && tier !== 'common';
+  const activeReseller = profile?.reseller_application_status === 'approved';
+  const active = accessIsActive(profile) && (tier !== 'common' || activeReseller);
   $('accountPurchase').style.display = tier === 'common' ? 'grid' : 'none';
   // Recursos pagos ficam ocultos para contas pendentes, suspensas ou vencidas.
   document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => {
@@ -457,13 +486,19 @@ function renderAccount(profile) {
   const accountActive = accessIsActive(profile);
   const premiumActive = accountActive && tier !== 'common';
   $('welcomeTitle').textContent = 'Olá, ' + profile.username + '!';
-  $('heroStatus').textContent = premiumActive
-    ? '✓ Acesso ' + tierLabel(profile) + ' liberado'
-    : tier === 'common' && accountActive
-      ? '✓ Conta Comum ativa · escolha um plano para liberar ferramentas premium'
-      : tier === 'common'
-        ? '⚠ Conta Comum · acesso inativo'
-        : '⚠ Conta autenticada · acesso pendente';
+  const resellerApproved = profile.reseller_application_status === 'approved';
+  const resellerPending = profile.reseller_application_status === 'pending';
+  $('heroStatus').textContent = resellerApproved && accountActive
+    ? '✓ Acesso de revendedor aprovado'
+    : premiumActive
+      ? '✓ Acesso ' + tierLabel(profile) + ' liberado'
+      : resellerPending
+        ? '⌛ Solicitação de revendedor aguardando aprovação'
+        : tier === 'common' && accountActive
+          ? '✓ Conta Comum ativa · escolha um plano para liberar ferramentas premium'
+          : tier === 'common'
+            ? '⚠ Conta sem acesso ativo'
+            : '⚠ Conta autenticada · acesso pendente';
   $('accountUsername').textContent = profile.username || '—';
   $('accountEmail').textContent = profile.email || 'E-mail não informado';
   if (document.activeElement !== $('editUsername')) $('editUsername').value = profile.username || '';
@@ -477,10 +512,14 @@ function renderAccount(profile) {
   $('accountStatus').appendChild(badge);
   $('statAccess').textContent = premiumActive ? tierLabel(profile) : tier === 'common' && accountActive ? 'Comum ativo' : tier === 'common' ? 'Comum inativo' : 'Pendente';
   $('statAccess').style.color = accountActive ? '#047857' : '#9f1239';
-  if (tier === 'common' && accountActive) {
+  if (resellerApproved && accountActive) {
+    message(accountMessage, 'Sua solicitação de revendedor foi aprovada. Você já pode usar as ferramentas básicas de revenda. Ouro e Diamante continuam sujeitos às regras próprias de pagamento e aprovação.', 'success');
+  } else if (resellerPending) {
+    message(accountMessage, 'Seu cadastro foi recebido. O acesso de revendedor será liberado somente após a aprovação manual do desenvolvedor.', 'error');
+  } else if (tier === 'common' && accountActive) {
     message(accountMessage, 'Sua conta Comum está ativa. A calculadora e o histórico são recursos dos planos Ouro e Diamante. Você pode solicitar um plano premium na área Minha conta.', 'success');
   } else if (tier === 'common') {
-    message(accountMessage, 'Sua conta está no plano Comum, mas o acesso está inativo. Você ainda pode solicitar um plano Ouro ou Diamante na área Minha conta.', 'error');
+    message(accountMessage, 'Sua conta ainda não tem acesso ativo. Você pode solicitar um plano Ouro ou Diamante na área Minha conta, conforme as regras de pagamento e aprovação.', 'error');
   } else if (!premiumActive) {
     message(accountMessage, 'Sua conta foi autenticada, mas o acesso do plano não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
@@ -488,7 +527,7 @@ function renderAccount(profile) {
 async function showSignedIn(session) {
   if (!session || !supabase) return;
   const {data:profile,error} = await supabase.from('reseller_profiles')
-    .select('username, email, requested_plan, access_status, plan_name, access_until, membership_tier')
+    .select('username, email, requested_plan, access_status, plan_name, access_until, membership_tier, reseller_application_status, reseller_requested_at, reseller_reviewed_at')
     .eq('user_id',session.user.id).maybeSingle();
   if (error || !profile) {
     message(accountMessage, 'A sessão foi iniciada, mas não conseguimos carregar o perfil. Tente sair e entrar novamente. Se continuar, fale com o suporte.');
@@ -497,6 +536,11 @@ async function showSignedIn(session) {
   currentProfile = profile;
   $('settingsMenuToggle').style.display = 'inline-flex';
   if ($('adminOrdersLink')) $('adminOrdersLink').style.display = profile.membership_tier === 'developer' ? 'inline-flex' : 'none';
+  const inviteAdminPanel = $('resellerInviteAdminPanel');
+  if (inviteAdminPanel) {
+    inviteAdminPanel.hidden = profile.membership_tier !== 'developer' || !accessIsActive(profile);
+    if (!inviteAdminPanel.hidden) loadResellerAdminData();
+  }
   const rechargePanel = $('rechargeOrdersPanel');
   if (rechargePanel) {
     const canUseOrders = accessIsActive(profile);
@@ -689,6 +733,10 @@ $('registerForm').addEventListener('submit', async event => {
   const registerMessage = $('registerMessage');
   hideMessage(registerMessage);
   if (!supabase) { message(registerMessage, 'O Supabase ainda não está configurado para cadastro.'); return; }
+  if (!resellerInviteToken) {
+    message(registerMessage, 'O cadastro de revendedor exige um convite individual válido. Solicite o link ao desenvolvedor.');
+    return;
+  }
   const email = $('registerEmail').value.trim().toLowerCase();
   const username = $('registerUsername').value.trim().toLowerCase();
   const password = $('registerPassword').value;
@@ -703,18 +751,24 @@ $('registerForm').addEventListener('submit', async event => {
   const submit = $('registerSubmit');
   submit.disabled = true; submit.textContent = 'Criando sua conta…';
   try {
+    const inviteDigest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(resellerInviteToken));
+    const inviteHash = Array.from(new Uint8Array(inviteDigest)).map(b => b.toString(16).padStart(2, '0')).join('');
     const {data,error} = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { username, requested_plan: 'monthly' } }
+      options: { data: { username, requested_plan: 'monthly', reseller_invite_hash: inviteHash } }
     });
     if (error) throw error;
     $('registerPassword').value = '';
+    resellerInviteToken = '';
+    try { sessionStorage.removeItem('sanba_reseller_invite_token'); } catch (_) {}
+    $('registerForm').style.display = 'none';
+    $('inviteRequiredNotice').style.display = 'block';
     if (data.session) {
-      message(registerMessage, 'Conta criada! Seu Plano Comum (básico) já está ativo. Se quiser as ferramentas premium, escolha Ouro ou Diamante.', 'success');
+      message(registerMessage, 'Cadastro enviado! Sua solicitação de revendedor está aguardando aprovação manual. O acesso não será liberado antes da aprovação.', 'success');
       await showSignedIn(data.session);
     } else {
-      message(registerMessage, 'Cadastro recebido. Se o Supabase exigir confirmação, abra o e-mail enviado e confirme o endereço. Depois entre com seu nome de usuário e senha. O Plano Comum será ativado automaticamente; os planos Ouro e Diamante exigem pagamento e aprovação manual.', 'success');
+      message(registerMessage, 'Solicitação recebida. Se o Supabase exigir confirmação, abra o e-mail e confirme o endereço. Depois entre com seu usuário e senha. O desenvolvedor precisa aprovar o cadastro antes de liberar o acesso de revendedor.', 'success');
     }
   } catch (error) {
     const raw = String(error && error.message || '');
@@ -726,7 +780,102 @@ $('registerForm').addEventListener('submit', async event => {
     submit.disabled = false; submit.textContent = 'Criar minha conta';
   }
 });
-$('togglePassword').addEventListener('click', () => {
+
+async function resellerInviteAdminCall(body) {
+  if (!supabase) throw new Error('Supabase não configurado.');
+  const { data, error } = await supabase.functions.invoke('manage-reseller-invites', { body });
+  if (error || !data) throw new Error(data?.error || error?.message || 'Não foi possível concluir a ação.');
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+function inviteAdminNotice(text, type='success') {
+  const el = $('resellerInviteAdminMessage');
+  el.textContent = text;
+  el.className = 'login-message visible ' + type;
+}
+function adminDate(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString('pt-BR');
+}
+async function loadResellerAdminData() {
+  const appsList = $('resellerApplicationsList');
+  const invitesList = $('resellerInvitesList');
+  if (!appsList || !invitesList || !currentProfile || currentProfile.membership_tier !== 'developer') return;
+  appsList.replaceChildren(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Carregando solicitações…'}));
+  invitesList.replaceChildren(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Carregando convites…'}));
+  try {
+    const [appsResult, invitesResult] = await Promise.all([
+      resellerInviteAdminCall({action:'list_applications'}),
+      resellerInviteAdminCall({action:'list_invites'})
+    ]);
+    appsList.replaceChildren();
+    const applications = appsResult.applications || [];
+    if (!applications.length) appsList.append(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Nenhuma solicitação de revendedor ainda.'}));
+    applications.forEach(app => {
+      const card=document.createElement('article'); card.className='history-item';
+      const info=document.createElement('div');
+      const name=document.createElement('strong'); name.textContent=app.username || 'Usuário';
+      const email=document.createElement('small'); email.textContent=app.email || 'E-mail não informado';
+      const date=document.createElement('small'); date.textContent='Solicitado: '+adminDate(app.reseller_requested_at);
+      const status=document.createElement('small'); status.textContent='Status: '+({pending:'Aguardando aprovação',approved:'Aprovado',rejected:'Recusado'}[app.reseller_application_status] || app.reseller_application_status);
+      info.append(name,email,date,status); card.append(info);
+      if (app.reseller_application_status === 'pending') {
+        const actions=document.createElement('div'); actions.className='history-actions';
+        const approve=document.createElement('button'); approve.type='button'; approve.className='btn btn-primary btn-small'; approve.textContent='Aprovar';
+        approve.addEventListener('click',async()=>{if(!confirm('Aprovar '+(app.username||'este cadastro')+' como revendedor? Isso libera somente o acesso básico; Ouro e Diamante continuam protegidos.'))return;approve.disabled=true;try{await resellerInviteAdminCall({action:'approve_application',user_id:app.user_id});inviteAdminNotice('Cadastro aprovado. O acesso básico de revendedor foi liberado.','success');await loadResellerAdminData()}catch(e){inviteAdminNotice(e.message,'error');approve.disabled=false}});
+        const reject=document.createElement('button'); reject.type='button'; reject.className='btn btn-light btn-small'; reject.textContent='Recusar';
+        reject.addEventListener('click',async()=>{const note=prompt('Motivo da recusa (opcional):')||'';if(!confirm('Confirma recusar esta solicitação?'))return;reject.disabled=true;try{await resellerInviteAdminCall({action:'reject_application',user_id:app.user_id,note});inviteAdminNotice('Solicitação recusada; o acesso de revendedor não foi liberado.','success');await loadResellerAdminData()}catch(e){inviteAdminNotice(e.message,'error');reject.disabled=false}});
+        actions.append(approve,reject); card.append(actions);
+      }
+      appsList.append(card);
+    });
+    invitesList.replaceChildren();
+    const invites = invitesResult.invites || [];
+    if (!invites.length) invitesList.append(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Nenhum convite emitido.'}));
+    invites.forEach(inv => {
+      const card=document.createElement('article'); card.className='history-item';
+      const info=document.createElement('div');
+      const title=document.createElement('strong'); title.textContent=inv.invited_email || 'Convite sem e-mail vinculado';
+      const status=document.createElement('small');
+      const expired = new Date(inv.expires_at).getTime() <= Date.now();
+      status.textContent='Status: '+(inv.status==='issued'&&expired?'Vencido':({issued:'Disponível',used:'Utilizado',revoked:'Revogado'}[inv.status]||inv.status));
+      const expiry=document.createElement('small'); expiry.textContent='Validade: '+adminDate(inv.expires_at);
+      info.append(title,status,expiry); card.append(info);
+      if (inv.status === 'issued' && !expired) {
+        const revoke=document.createElement('button'); revoke.type='button'; revoke.className='btn btn-light btn-small'; revoke.textContent='Revogar';
+        revoke.addEventListener('click',async()=>{if(!confirm('Revogar este convite? O link deixará de funcionar.'))return;revoke.disabled=true;try{await resellerInviteAdminCall({action:'revoke_invite',invite_id:inv.id});inviteAdminNotice('Convite revogado.','success');await loadResellerAdminData()}catch(e){inviteAdminNotice(e.message,'error');revoke.disabled=false}});
+        card.append(revoke);
+      }
+      invitesList.append(card);
+    });
+  } catch (error) {
+    appsList.replaceChildren(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Não foi possível carregar solicitações.'}));
+    invitesList.replaceChildren(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Não foi possível carregar convites.'}));
+    inviteAdminNotice(error.message || 'Falha ao carregar a área administrativa.','error');
+  }
+}
+$('createResellerInviteForm')?.addEventListener('submit', async event => {
+  event.preventDefault();
+  const button=$('createResellerInvite'); button.disabled=true;
+  try {
+    const result=await resellerInviteAdminCall({action:'create_invite',invited_email:$('resellerInviteEmail').value.trim().toLowerCase()});
+    $('resellerInviteLink').value=result.link;
+    $('copyResellerInviteLink').disabled=false;
+    $('resellerInviteEmail').value='';
+    inviteAdminNotice('Convite gerado. Copie e envie o link; ele vale por 7 dias e só pode ser usado uma vez.','success');
+    await loadResellerAdminData();
+  } catch(error) { inviteAdminNotice(error.message || 'Não foi possível gerar o convite.','error'); }
+  finally { button.disabled=false; }
+});
+$('copyResellerInviteLink')?.addEventListener('click', async () => {
+  const value=$('resellerInviteLink').value;
+  if(!value)return;
+  try { await navigator.clipboard.writeText(value); inviteAdminNotice('Link copiado. Envie-o somente à pessoa convidada.','success'); }
+  catch (_) { $('resellerInviteLink').focus(); $('resellerInviteLink').select(); inviteAdminNotice('Selecione e copie o link manualmente.','error'); }
+});
+$('refreshResellerAdmin')?.addEventListener('click', loadResellerAdminData);
+\n$('togglePassword').addEventListener('click', () => {
   const show = passwordInput.type === 'password';
   passwordInput.type = show ? 'text' : 'password';
   $('togglePassword').textContent = show ? 'Ocultar' : 'Mostrar';
