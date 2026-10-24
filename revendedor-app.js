@@ -149,7 +149,9 @@ function applyAccessUI(profile) {
   const goldBenefits = $('goldBenefits');
   if (goldBenefits) goldBenefits.hidden = !(tier === 'gold' && active);
   const diamondBenefits = $('diamondBenefits');
-  if (diamondBenefits) diamondBenefits.hidden = !((tier === 'diamond' || tier === 'developer') && active);
+  if (diamondBenefits) diamondBenefits.hidden = !(tier === 'diamond' && active);
+  const developerBenefits = $('developerBenefits');
+  if (developerBenefits) developerBenefits.hidden = !(tier === 'developer' && active);
   const diamondTools = $('diamondTools');
   if (diamondTools) diamondTools.hidden = !((tier === 'diamond' || tier === 'developer') && active);
   const historyExport = $('diamondHistoryExport');
@@ -203,7 +205,9 @@ function renderAccount(profile) {
   $('accountStatus').appendChild(badge);
   $('statAccess').textContent = resellerApproved && accountActive ? 'Revendedor ativo' : premiumActive ? tierLabel(profile) : tier === 'common' && accountActive ? 'Conta comum' : tier === 'common' ? 'Acesso inativo' : 'Pendente';
   $('statAccess').style.color = accountActive ? '#047857' : '#9f1239';
-  if (tier === 'gold' && premiumActive) {
+  if (tier === 'developer' && premiumActive) {
+    message(accountMessage, 'Conta Desenvolvedor ativa e sem vencimento automático: ferramentas Comum, Ouro e Diamante liberadas, além da Central administrativa. Use o menu para acessar a gestão de contas, convites, cadastros, compras e pedidos.', 'success');
+  } else if (tier === 'gold' && premiumActive) {
     message(accountMessage, 'Plano Ouro ativo: calculadora de revenda e histórico de até 50 cálculos recentes liberados por 30 dias. Copiar resultados e exportar CSV são exclusivos do Diamante.', 'success');
   } else if (tier === 'diamond' && premiumActive) {
     message(accountMessage, 'Plano Diamante ativo: calculadora, histórico de até 50 cálculos, cópia, exportação CSV, relatório por período e meta de lucro estimado. O acesso permanece sujeito à validade registrada na conta.', 'success');
@@ -247,11 +251,13 @@ async function showSignedIn(session) {
   }
   currentProfile = profile;
   $('settingsMenuToggle').style.display = 'inline-flex';
-  if ($('adminOrdersLink')) $('adminOrdersLink').style.display = profile.membership_tier === 'developer' ? 'inline-flex' : 'none';
   const showDeveloperMenu = profile.membership_tier === 'developer' && accessIsActive(profile);
+  if ($('quickDeveloperConsoleLink')) $('quickDeveloperConsoleLink').hidden = !showDeveloperMenu;
   $('quickInviteLink').hidden = !showDeveloperMenu;
   if ($('quickPendingOrdersLink')) $('quickPendingOrdersLink').hidden = !showDeveloperMenu;
   if ($('quickApprovedOrdersLink')) $('quickApprovedOrdersLink').hidden = !showDeveloperMenu;
+  if ($('quickCustomerOrdersLink')) $('quickCustomerOrdersLink').hidden = !showDeveloperMenu;
+  if ($('quickSalesOrdersLink')) $('quickSalesOrdersLink').hidden = !showDeveloperMenu;
   const rechargePanel = $('rechargeOrdersPanel');
   if (rechargePanel) {
     const canUseOrders = accessIsActive(profile);
