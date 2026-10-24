@@ -673,23 +673,28 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
     const sb=createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
     const {data:{session},error:sessionError}=await sb.auth.getSession();
     if(sessionError)throw sessionError;
+    const order=JSON.parse(anchor.dataset.order);
+    if(!/^\\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
     if(!session){
-      popup.close();
-      window.open('./cliente.html','_blank','noopener,noreferrer');
-      alert('Para salvar a recarga na sua conta, entre na Área do Cliente que foi aberta em outra aba. Depois volte à calculadora e clique em Comprar pelo WhatsApp novamente.');
+      popup.location.replace(targetUrl);
+      alert('O WhatsApp do vendedor será aberto. Para guardar esta recarga no histórico da sua conta, entre na Área do Cliente antes de fazer o próximo pedido.');
       return;
     }
-    const order=JSON.parse(anchor.dataset.order);
-    if(!/^\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
-    const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending'}).select('id').single();
-    if(error)throw error;
-    const finalWhatsAppUrl=new URL(targetUrl);
-    const existingMessage=finalWhatsAppUrl.searchParams.get('text')||'';
-    finalWhatsAppUrl.searchParams.set('text',existingMessage+'\n\n📦 Número do pedido: '+data.id);
-    popup.location.replace(finalWhatsAppUrl.toString());
+    try{
+      const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending'}).select('id').single();
+      if(error)throw error;
+      const finalWhatsAppUrl=new URL(targetUrl);
+      const existingMessage=finalWhatsAppUrl.searchParams.get('text')||'';
+      finalWhatsAppUrl.searchParams.set('text',existingMessage+'\\n\\n📦 Número do pedido: '+data.id);
+      popup.location.replace(finalWhatsAppUrl.toString());
+    }catch(saveErr){
+      popup.location.replace(targetUrl);
+      alert('O WhatsApp do vendedor será aberto, mas não foi possível salvar o pedido no histórico da conta. Você pode continuar o atendimento normalmente.');
+    }
   }catch(err){
-    popup.close();
-    alert((err&&err.message&&/row-level security|permission|policy/i.test(err.message))?'Não foi possível salvar. Entre na sua conta de cliente e tente novamente.':'Não foi possível registrar o pedido antes de abrir o WhatsApp. Nenhum pedido foi enviado. Tente novamente.');
+    popup.location.replace(targetUrl);
+    alert('O WhatsApp do vendedor será aberto, mas houve um problema ao preparar os dados. Confira o ID Sanba antes de enviar.');
+  }
   }
 }
 document.getElementById('wppC').addEventListener('click',function(e){createRechargeThenOpenWhatsApp(this,e)});
