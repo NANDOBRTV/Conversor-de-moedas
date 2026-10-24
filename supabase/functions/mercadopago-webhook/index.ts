@@ -32,7 +32,7 @@ Deno.serve(async (req: Request) => {
     return index < 0 ? ["", ""] : [part.trim().slice(0, index), part.trim().slice(index + 1)];
   }));
   const ts = parts.ts || "", suppliedV1 = parts.v1 || "";
-  if (!paymentId || !/^\\d+$/.test(paymentId) || !ts || !suppliedV1 || !requestId) return json({ error: "Assinatura ou identificador ausente." }, 400);
+  if (!paymentId || !/^[0-9]+$/.test(paymentId) || !ts || !suppliedV1 || !requestId) return json({ error: "Assinatura ou identificador ausente." }, 400);
   const expected = await hmacSha256Hex(webhookSecret, `id:${paymentId.toLowerCase()};request-id:${requestId};ts:${ts};`);
   if (!safeEqual(expected, suppliedV1.toLowerCase())) return json({ error: "Assinatura inválida." }, 401);
   try {
