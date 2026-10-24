@@ -175,6 +175,19 @@ body.invite-mode #loginCard #registerView { display:block; }
 body.invite-mode #loginCard #loginView { display:none; }
 /* Segurança visual: convites só aparecem depois da autorização do perfil Desenvolvedor no backend. */
 #resellerInviteAdminPanel[hidden]{display:none!important;visibility:hidden!important;}
+
+/* Menu rápido superior esquerdo */
+.top{padding-left:52px}
+.top-actions{margin-right:0}
+.settings-menu-toggle{left:0;right:auto}
+.settings-menu{left:0;right:auto}
+.quick-menu{display:none;position:absolute;left:0;top:50px;z-index:60;width:min(300px,calc(100vw - 26px));padding:8px;background:#071327;border:1px solid #31506e;border-radius:14px;box-shadow:0 20px 55px rgba(0,0,0,.45)}
+.quick-menu.open{display:grid;gap:5px}
+.quick-menu-item{width:100%;border:1px solid transparent;border-radius:9px;padding:12px;text-align:left;background:transparent;color:#dff7ff;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.quick-menu-item:hover,.quick-menu-item:focus-visible{background:#102943;border-color:#22d3ee;outline:none}
+.quick-menu-item[hidden]{display:none!important}
+@media(max-width:520px){.top{padding-left:50px;padding-right:0}.top-actions{margin-right:0;padding-right:0}}
+
 </style>
 </head>
 <body>
@@ -182,7 +195,11 @@ body.invite-mode #loginCard #loginView { display:none; }
   <nav class="top" aria-label="Navegação principal">
     <div class="brand"><span class="brand-mark-reseller" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="resellerCoin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2b2"/><stop offset="1" stop-color="#e9b949"/></linearGradient></defs><rect x="2" y="2" width="60" height="60" rx="17" fill="#0f172a"/><circle cx="32" cy="32" r="22" fill="url(#resellerCoin)"/><circle cx="32" cy="32" r="18" fill="none" stroke="#8a6215" stroke-width="1.5"/><path d="M40 23c-2-2-5-3-8-3-7 0-12 5-12 12s5 12 12 12c4 0 7-1 9-4l-4-4c-1 2-3 2-5 2-3 0-6-2-6-6s3-6 6-6c2 0 3 1 4 2z" fill="#0f3b3a"/></svg></span><span>Conversor <span>Sanba</span></span></div>
     <div class="top-actions"><a class="nav-link" href="./index.html">← Voltar ao conversor</a><a class="nav-link" href="https://wa.me/5582996843269?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20Painel%20do%20Revendedor." target="_blank" rel="noopener noreferrer">Falar com suporte ↗</a></div>
-    <button class="settings-menu-toggle" id="settingsMenuToggle" type="button" aria-label="Abrir configurações" aria-expanded="false" aria-controls="settingsMenu" title="Configurações">⚙</button>
+    <button class="settings-menu-toggle" id="settingsMenuToggle" type="button" aria-label="Abrir menu rápido" aria-expanded="false" aria-controls="quickMenu" title="Menu">☰</button>
+    <section class="quick-menu" id="quickMenu" aria-hidden="true" aria-label="Menu rápido">
+      <button class="quick-menu-item" id="quickSettingsLink" type="button">⚙️ Configurações</button>
+      <button class="quick-menu-item" id="quickInviteLink" type="button" hidden>🔐 Gerador de convites de revendedores</button>
+    </section>
     <section class="settings-menu" id="settingsMenu" aria-hidden="true" aria-label="Menu de configurações">
       <div class="settings-menu-head"><h2>⚙️ Configurações</h2><button class="settings-menu-close" id="settingsMenuClose" type="button" aria-label="Fechar configurações">×</button></div>
       <div class="settings-account-summary" aria-live="polite">
@@ -231,7 +248,7 @@ body.invite-mode #loginCard #loginView { display:none; }
     <div id="loginView">
       <h2 id="loginTitle">Entrar na sua conta</h2>
       <p class="subtext" id="loginIntro">Acesse seu painel com nome de usuário e senha.</p>
-      <form id="resellerLoginForm" autocomplete="on" method="post" action="#">
+      <form id="resellerLoginForm" autocomplete="on" method="post">
         <label class="field"><span>Nome de usuário</span><input id="username" name="username" type="text" placeholder="Seu nome de usuário" autocomplete="username" required maxlength="80" autocapitalize="none" spellcheck="false"></label>
         <label class="field"><span>Senha</span><div class="password-wrap"><input id="password" name="password" type="password" placeholder="Sua senha" autocomplete="current-password" required maxlength="128"><button class="btn btn-light btn-small" type="button" id="togglePassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></label>
         <button class="btn btn-primary login-submit" type="submit" id="loginSubmit">Entrar no painel</button>
