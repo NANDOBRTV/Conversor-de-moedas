@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://esm.sh; connect-src 'self' https://*.supabase.co; form-action 'self' https://wa.me">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://esm.sh; connect-src 'self' https://*.supabase.co https://open.er-api.com https://bcv.today; form-action 'self' https://wa.me">
 <meta name="theme-color" content="#0f172a">
 <title>Painel do Revendedor | Conversor Sanba</title>
 <style>
@@ -66,7 +66,7 @@
             <label>Moedas em cada pacote<input id="calcQuantity" type="number" min="1" step="1" value="1600" inputmode="numeric" required></label>
             <label>Total de moedas que você compra<input id="calcLotCoins" type="number" min="1" step="1" value="160000" inputmode="numeric" required></label>
             <label>Valor total do lote em dólares (US$)<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 50,00" inputmode="decimal" required></label>
-            <label id="usdRateField">Cotação do dólar na moeda de venda<input id="calcUsdRate" type="number" min="0.000001" step="any" value="" inputmode="decimal" required></label>
+            <label id="usdRateField">Cotação do dólar na moeda de venda<input id="calcUsdRate" type="number" min="0.000001" step="any" value="" inputmode="decimal" readonly required><small id="rateStatus" style="display:block;font-weight:500;color:#63748a;line-height:1.5;margin-top:6px">A cotação será consultada automaticamente.</small></label>
             <label>Por quanto vende cada pacote<input id="calcSalePrice" type="number" min="0.01" step="0.01" placeholder="Ex.: 8,00" inputmode="decimal" required></label>
             <label>Outros custos do lote (se houver)<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
             <label>Taxa descontada das vendas (%)<input id="calcFee" type="number" min="0" max="99.99" step="0.01" value="20" inputmode="decimal" required></label>
@@ -91,7 +91,7 @@
           <div class="detail-row"><span>Validade</span><strong id="accountUntil">—</strong></div>
           <p class="footnote">Para alterar seu plano ou corrigir o acesso, fale com o suporte. A validade é exibida conforme os dados cadastrados na conta.</p>
         </section>
-        <section class="helper"><h3>💡 Como usar</h3><p>A compra do lote é em dólares. Escolha a moeda de venda: o campo de cotação muda automaticamente. Em dólares, a cotação fica em 1; em reais ou bolívares, informe quanto vale US$ 1 nessa moeda.</p></section>
+        <section class="helper"><h3>💡 Como usar</h3><p>A compra do lote é em dólares. A cotação é buscada automaticamente: Real usa uma taxa de referência de câmbio; Bolívar usa a taxa publicada pelo BCV. Essas taxas não são necessariamente cotação de mercado em tempo real e podem mudar conforme a fonte.</p></section>
       </div>
     </div>
 
@@ -256,6 +256,8 @@ $('logoutButton').addEventListener('click', async () => {
   form.reset(); hideMessage(loginMessage); hideMessage(accountMessage); hideMessage(calcMessage);
   $('calcResults').style.display = 'none'; $('heroStatus').textContent = '🔐 Entre para acessar suas ferramentas';
 });
+const exchangeRateCache = {};
+let rateRequestId = 0;
 function updateUsdRateField() {
   const currency = $('calcCurrency').value;
   const rate = $('calcUsdRate');
@@ -266,12 +268,56 @@ function updateUsdRateField() {
     VES: 'Cotação do dólar em bolívares (VES)'
   };
   field.firstChild.textContent = labels[currency] + ' ';
-  const isUsd = currency === 'USD';
-  rate.disabled = isUsd;
-  field.style.opacity = isUsd ? '.65' : '1';
-  if (isUsd) rate.value = '1';
-  else if (rate.value === '1') rate.value = '';
-  rate.placeholder = isUsd ? 'Automática: 1' : currency === 'BRL' ? 'Ex.: 5,50' : 'Informe a cotação em VES';
+  rate.readOnly = currency !== 'USD';
+  rate.disabled = currency === 'USD';
+  field.style.opacity = '1';
+  if (currency === 'USD') {
+    rate.value = '1';
+    $('rateStatus').textContent = 'Cotação fixa: US$ 1 = US$ 1.';
+    calculate(false);
+    return;
+  }
+  rate.value = '';
+  $('rateStatus').textContent = 'Buscando cotação publicada…';
+  fetchExchangeRate(currency);
+}
+async function fetchExchangeRate(currency) {
+  const requestId = ++rateRequestId;
+  if (currency === 'USD') return;
+  try {
+    let rate, dateText, sourceText;
+    const cached = exchangeRateCache[currency];
+    if (cached && Date.now() - cached.fetchedAt < 30 * 60 * 1000) {
+      ({rate, dateText, sourceText} = cached);
+    } else if (currency === 'BRL') {
+      const response = await fetch('https://open.er-api.com/v6/latest/USD', {cache:'no-cache'});
+      if (!response.ok) throw new Error('Não foi possível consultar a cotação do real.');
+      const data = await response.json();
+      if (data.result !== 'success' || !Number.isFinite(data.rates?.BRL) || data.rates.BRL <= 0) throw new Error('A fonte não retornou uma cotação válida para o real.');
+      rate = data.rates.BRL;
+      dateText = data.time_last_update_utc ? new Date(data.time_last_update_utc).toLocaleString('pt-BR', {dateStyle:'short',timeStyle:'short',timeZone:'America/Sao_Paulo'}) : 'data não informada';
+      sourceText = 'Fonte: ExchangeRate-API · taxa de referência';
+      exchangeRateCache[currency] = {rate,dateText,sourceText,fetchedAt:Date.now()};
+    } else {
+      const response = await fetch('https://bcv.today/api/v1/rate.json', {cache:'no-cache'});
+      if (!response.ok) throw new Error('Não foi possível consultar a cotação do bolívar.');
+      const data = await response.json();
+      if (!Number.isFinite(data.USD) || data.USD <= 0) throw new Error('A fonte não retornou uma cotação válida para o bolívar.');
+      rate = data.USD;
+      dateText = data.effective_date || data.date || 'data não informada';
+      sourceText = 'Fonte: taxa oficial publicada pelo BCV';
+      exchangeRateCache[currency] = {rate,dateText,sourceText,fetchedAt:Date.now()};
+    }
+    if (requestId !== rateRequestId || $('calcCurrency').value !== currency) return;
+    $('calcUsdRate').value = String(rate);
+    $('rateStatus').textContent = 'US$ 1 = ' + Number(rate).toLocaleString('pt-BR',{maximumFractionDigits:6}) + ' ' + currency + ' · Data: ' + dateText + ' · ' + sourceText;
+    calculate(false);
+  } catch (error) {
+    if (requestId !== rateRequestId || $('calcCurrency').value !== currency) return;
+    $('calcUsdRate').value = '';
+    $('rateStatus').textContent = 'Não foi possível atualizar a cotação. Tente trocar a moeda e voltar ou recarregar a página.';
+    message(calcMessage, error.message || 'Falha ao consultar a cotação. O cálculo ficará indisponível até a cotação ser obtida.');
+  }
 }
 $('calcCurrency').addEventListener('change', updateUsdRateField);
 updateUsdRateField();
@@ -285,6 +331,11 @@ function calculate(showErrors=true) {
   const salePrice=Number($('calcSalePrice').value);
   const extras=Number($('calcExtras').value);
   const feePercent=Number($('calcFee').value);
+  if(currency !== 'USD' && !Number.isFinite(usdRate)) {
+    $('calcResults').style.display='none';
+    if(showErrors) message(calcMessage,'A cotação automática ainda não foi carregada. Aguarde ou recarregue a página.');
+    return null;
+  }
   if(!Number.isInteger(packageCoins)||packageCoins<1||!Number.isInteger(lotCoins)||lotCoins<1||
     !Number.isFinite(purchaseCostUSD)||purchaseCostUSD<=0||!Number.isFinite(usdRate)||usdRate<=0||!Number.isFinite(salePrice)||salePrice<=0||
     !Number.isFinite(extras)||extras<0||!Number.isFinite(feePercent)||feePercent<0||feePercent>=100){
