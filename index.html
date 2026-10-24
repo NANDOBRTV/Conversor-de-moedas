@@ -587,6 +587,7 @@ function attLabels(){
 function calcC(){
   var m=num(document.getElementById('moedas').value);
   var rc=document.getElementById('resC'),ec=document.getElementById('errC'),pc=document.getElementById('pgtoC'),wc=document.getElementById('wppC'),nc=document.getElementById('needC');
+  wc.removeAttribute('data-order');
   rc.classList.remove('show');pc.classList.remove('show');ec.classList.remove('show');wc.classList.remove('show');nc.classList.remove('show');wc.removeAttribute('href');
   if(!(m>0))return;
   if(!Number.isInteger(m)){ec.classList.add('show');document.getElementById('errCMsg').textContent='Informe uma quantidade inteira de moedas, sem casas decimais.';return}
@@ -610,12 +611,13 @@ function calcC(){
   }else{
     msg='¡Hola! Vengo del sitio web del Conversor Sanba.\n\n🪙 *Cantidad:* '+fmtN.format(Math.round(m))+' monedas\n💰 *Total a pagar:* '+fmtRd(p,moeda)+'\n🆔 *ID de Sanba:* '+getUserId()+'\n\nQuiero realizar esta recarga. ¿Me pueden ayudar?';
   }
-  wc.href=wpp(msg,moeda);wc.classList.add('show');
+  wc.dataset.order=JSON.stringify({sanba_id:getUserId(),coin_quantity:Math.round(m),amount:p,currency:moeda,calc_mode:'coins_to_value'});wc.href=wpp(msg,moeda);wc.classList.add('show');
 }
 
 function calcR(){
   var v=num(document.getElementById('reais').value);
   var rr=document.getElementById('resR'),er=document.getElementById('errR'),wr=document.getElementById('wppR'),nr=document.getElementById('needR');
+  wr.removeAttribute('data-order');
   rr.classList.remove('show');er.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');wr.removeAttribute('href');
   if(!(v>0))return;
   
@@ -638,7 +640,7 @@ function calcR(){
   }else{
     msg='¡Hola! Vengo del sitio web del Conversor Sanba.\n\n💰 *Monto a pagar:* '+fmtRd(valorCobrado,moeda)+'\n🪙 *Cantidad:* '+fmtN.format(qtd)+' monedas\n🆔 *ID de Sanba:* '+getUserId()+'\n\nQuiero realizar esta recarga. ¿Me pueden ayudar?';
   }
-  wr.href=wpp(msg,moeda);wr.classList.add('show');
+  wr.dataset.order=JSON.stringify({sanba_id:getUserId(),coin_quantity:Math.round(qtd),amount:valorCobrado,currency:moeda,calc_mode:'value_to_coins'});wr.href=wpp(msg,moeda);wr.classList.add('show');
 }
 
 var rememberIdEl=document.getElementById('rememberId');var rememberStatus=document.getElementById('rememberStatus');
@@ -653,6 +655,41 @@ document.getElementById('printR').addEventListener('click',function(){if(documen
 carregarIdSalvo();
 document.getElementById('wppC').addEventListener('click',function(e){if(!isIdValid()||!this.classList.contains('show')||!this.getAttribute('href')){e.preventDefault();this.removeAttribute('href');calcC();}});
 document.getElementById('wppR').addEventListener('click',function(e){if(!isIdValid()||!this.classList.contains('show')||!this.getAttribute('href')){e.preventDefault();this.removeAttribute('href');calcR();}});
+async function createRechargeThenOpenWhatsApp(anchor,e){
+  e.preventDefault();
+  if(!isIdValid()||!anchor.dataset.order||!anchor.getAttribute('href')){return}
+  const targetUrl=anchor.getAttribute('href');
+  const popup=window.open('about:blank','_blank');
+  if(!popup){alert('Permita abrir uma nova aba para continuar pelo WhatsApp.');return}
+  popup.document.title='Preparando pedido…';
+  popup.document.body.innerHTML='<p style="font-family:system-ui;padding:24px">Salvando seu pedido com segurança…</p>';
+  try{
+    const {createClient}=await import('https://esm.sh/@supabase/supabase-js@2');
+    const cfg=window.SANBA_SUPABASE_CONFIG||{};
+    if(!cfg.url||!cfg.anonKey)throw new Error('Não foi possível conectar ao sistema de pedidos.');
+    const sb=createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    const {data:{session},error:sessionError}=await sb.auth.getSession();
+    if(sessionError)throw sessionError;
+    if(!session){
+      popup.close();
+      alert('Para salvar a recarga na sua conta, entre primeiro na Área do Cliente. Ela será aberta em uma nova aba. Depois volte à calculadora e clique em Comprar pelo WhatsApp novamente.');
+      window.open('./cliente.html','_blank','noopener,noreferrer');
+      return;
+    }
+    const order=JSON.parse(anchor.dataset.order);
+    if(!/^\\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
+    const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending'}).select('id').single();
+    if(error)throw error;
+    const msgSep=targetUrl.includes('?text=')?'%0A%0A':'';
+    const finalUrl=targetUrl+'&text='+encodeURIComponent('\\n\\n📦 Número do pedido: '+data.id);
+    popup.location.replace(finalUrl);
+  }catch(err){
+    popup.close();
+    alert((err&&err.message&&/row-level security|permission|policy/i.test(err.message))?'Não foi possível salvar. Entre na sua conta de cliente e tente novamente.':'Não foi possível registrar o pedido antes de abrir o WhatsApp. Nenhum pedido foi enviado. Tente novamente.');
+  }
+}
+document.getElementById('wppC').addEventListener('click',function(e){createRechargeThenOpenWhatsApp(this,e)});
+document.getElementById('wppR').addEventListener('click',function(e){createRechargeThenOpenWhatsApp(this,e)});
 sel.addEventListener('change',function(e){moeda=e.target.value;regionSel.value=moeda;atualizarIndicadorMoeda();attLabels();calcC();calcR()});
 regionSel.addEventListener('change',function(e){moeda=e.target.value;sel.value=moeda;atualizarIndicadorMoeda();attLabels();calcC();calcR()});
 document.getElementById('changeCurrency').addEventListener('click',function(){sel.focus();sel.scrollIntoView({behavior:'smooth',block:'center'})});
