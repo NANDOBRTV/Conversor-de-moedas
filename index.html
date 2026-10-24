@@ -447,7 +447,7 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
         <div class="project-callout"><strong>Limitações importantes:</strong> por ser um site estático, os cálculos e parte do código são visíveis no navegador. A restrição de domínio não substitui autenticação nem segurança de servidor. Este painel não é privado e não deve exibir senhas, chaves, tokens ou dados de clientes.</div>
         <ul>
           <li><strong>Alerta ainda pendente:</strong> a proteção do Supabase contra senhas conhecidas em vazamentos está desativada e precisa ser habilitada nas configurações de autenticação.</li>
-          <li><strong>Pagamentos:</strong> a presença das funções de checkout e webhook não comprova que uma compra completa funciona. Não há pedidos registrados na tabela de pagamentos nem evidência recente de execução do checkout/webhook.</li>
+          <li><strong>Checkout manual:</strong> pedidos via WhatsApp são registrados na tabela <code>customer_orders</code>. O fluxo de criação, WhatsApp e aprovação ainda precisa de teste ponta a ponta com uma conta de cliente e uma conta Desenvolvedor.</li><li><strong>Mercado Pago:</strong> as funções antigas <code>create-checkout</code> e <code>mercadopago-webhook</code> continuam no projeto, mas não são usadas pelo checkout manual novo.</li>
           <li>As credenciais secretas do Mercado Pago devem existir somente nos secrets das Edge Functions do Supabase, nunca no GitHub ou no navegador.</li>
         </ul>
         <p>Os preços são estimativas editáveis no código e não são uma confirmação automática de pagamento. A confirmação e a recarga continuam manuais pelo WhatsApp.</p>
@@ -465,10 +465,10 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
         <ul>
           <li><strong>Confirmado por registros reais:</strong> login por nome de usuário, autenticação Supabase e consulta do perfil do revendedor responderam HTTP 200.</li>
           <li><strong>Confirmado por inspeção:</strong> <code>supabase-config.js</code> existe no repositório e o painel do revendedor carrega essa configuração.</li>
-          <li><strong>Confirmado por inspeção:</strong> as três Edge Functions estão publicadas/ativas, com verificação JWT habilitada em <code>create-checkout</code>; o webhook é configurado para receber chamadas externas.</li>
+          <li><strong>Confirmado por inspeção:</strong> as funções <code>login-by-username</code>, <code>create-checkout</code>, <code>mercadopago-webhook</code>, <code>create-customer-order</code> e <code>manage-customer-orders</code> estão publicadas/ativas. As novas funções de pedidos exigem sessão JWT.</li>
           <li><strong>Banco de dados:</strong> foram encontrados 3 perfis de revendedor (2 Comum e 1 Desenvolvedor) e nenhum pedido de pagamento registrado na consulta realizada.</li>
           <li><strong>Ainda não comprovado:</strong> compra ponta a ponta, confirmação do webhook, liberação automática de plano, cálculos em todos os cenários e testes visuais em vários aparelhos.</li>
-          <li><strong>Área do cliente adicionada:</strong> favoritos de pacotes, perfil local, histórico de solicitações e status editável neste navegador em <code>cliente.html</code>. Os dados são locais e não sincronizam entre dispositivos; o status não confirma pagamentos reais.</li>
+          <li><strong>Área do cliente atualizada:</strong> login/cadastro pelo Supabase, checkout manual para os planos Ouro e Diamante, gravação do pedido na tabela <code>customer_orders</code> antes de abrir o WhatsApp e histórico real por conta. O status começa como pendente e não confirma pagamento.</li><li><strong>Gestão de pedidos:</strong> novas Edge Functions <code>create-customer-order</code> e <code>manage-customer-orders</code>. A página <code>admin-pedidos.html</code> permite ao perfil Desenvolvedor listar, aprovar ou rejeitar pedidos; a aprovação libera o plano do cliente.</li><li><strong>Segurança aplicada:</strong> a tabela de pedidos usa RLS para que o cliente só leia os próprios pedidos; criação e aprovação passam por Edge Functions que verificam a sessão e o nível Desenvolvedor.</li>
           <li><strong>Limitação da auditoria:</strong> não foi possível abrir o site em um navegador visual automatizado nesta verificação; portanto, não se declara aprovação visual.</li>
         </ul>
         <div class="project-callout">O relatório diferencia verificações por código/logs de testes completos com usuário. Não faça pagamentos reais para testar sem autorização explícita; prefira o ambiente de teste do Mercado Pago.</div>
@@ -477,7 +477,7 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
         <h3>Próximas melhorias recomendadas</h3>
         <ul>
           <li>Testes reais em Android e desktop, incluindo cálculo, moeda, validação e links do WhatsApp.</li>
-          <li>Se precisar de histórico e acompanhamento de pedidos entre aparelhos, implementar autenticação de clientes e tabela de pedidos no Supabase, com políticas RLS e atualização real de status.</li>
+          <li>Testar o fluxo manual completo: cadastro/login, salvar pedido, abertura do WhatsApp, pedido visível no painel administrativo, aprovação/rejeição e atualização do status na conta do cliente.</li>
           <li>Revisão independente das fórmulas e dos arredondamentos dos preços.</li>
           <li>Habilitar a proteção do Supabase contra senhas vazadas e revisar as opções de segurança da autenticação.</li>
           <li>Configurar e verificar com segurança os secrets <code>MERCADOPAGO_ACCESS_TOKEN</code> e <code>MERCADOPAGO_WEBHOOK_SECRET</code> nas Edge Functions, sem expô-los no código.</li>
