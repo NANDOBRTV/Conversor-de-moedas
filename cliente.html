@@ -18,6 +18,22 @@ button,.btn{border:0;border-radius:11px;padding:11px 14px;background:linear-grad
 .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.plan{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:15px;padding:15px;background:#08162b}.plan.featured{border:1px solid #22d3ee;background:linear-gradient(150deg,#0c2839,#111a39);box-shadow:inset 0 0 24px #22d3ee0b}.plan h3{margin:0;font-size:14px}.price{font-size:25px;font-weight:950;color:#a5f3fc}.price small{font-size:11px;color:var(--muted)}.plan p{font-size:11px;color:var(--muted);line-height:1.6;margin:0;flex:1}.plan button{width:100%}
 .order{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:13px;border:1px solid var(--line);border-radius:12px;background:#08162a}.order strong{display:block;font-size:13px;overflow-wrap:anywhere}.order small{display:block;color:var(--muted);font-size:11px;margin-top:4px;overflow-wrap:anywhere}.status{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900;background:#392b16;color:#fde68a;white-space:nowrap}.status.approved{background:#10372b;color:#a7f3d0}.status.rejected,.status.cancelled{background:#421e2b;color:#fecdd3}.list{display:grid;gap:9px}.empty{padding:20px;text-align:center;border:1px dashed #34506f;border-radius:12px;color:var(--muted);font-size:12px}.full{grid-column:1/-1}.accountline{font-size:12px;color:var(--muted);margin:0 0 12px}.hidden{display:none!important}footer{text-align:center;color:#7187a5;font-size:11px;margin-top:23px}
 @media(max-width:650px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.hero{padding:20px}.plan-grid{grid-template-columns:1fr}.order{flex-direction:column}.wrap{padding:13px 11px 30px}}
+
+/* Visual polish — customer area */
+body{background:radial-gradient(ellipse at 8% 0%,#17415a 0,transparent 40%),radial-gradient(ellipse at 100% 22%,#30235a 0,transparent 34%),var(--bg)}
+.hero{box-shadow:0 24px 65px rgba(0,0,0,.28);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(180deg,var(--cyan),var(--blue));opacity:.9}
+.panel{box-shadow:0 16px 42px rgba(0,0,0,.18);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.panel:hover{border-color:#3b6688;box-shadow:0 20px 48px rgba(0,0,0,.24)}
+button,.btn,.navlinks a,.tabs button{transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+button:hover,.btn:hover,.navlinks a:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(0,0,0,.22);border-color:#4c7da2}
+button:active,.btn:active{transform:translateY(0)}
+input:focus{box-shadow:0 0 0 4px #67e8f91c}
+:focus-visible{outline:3px solid #fbbf24;outline-offset:3px}
+.message,.empty{line-height:1.6}
+@media(max-width:650px){.hero{padding:21px 18px;border-radius:19px}.panel{padding:17px;border-radius:16px}.navlinks a{padding:9px 10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
 </style>
 </head>
 <body><main class="wrap">
