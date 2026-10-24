@@ -38,7 +38,8 @@ create policy "Resellers can read their own profile"
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
-as $$
+set search_path = ''
+as $
 begin
   new.updated_at = now();
   return new;
@@ -105,3 +106,6 @@ drop trigger if exists on_auth_user_created_reseller on auth.users;
 create trigger on_auth_user_created_reseller
 after insert on auth.users
 for each row execute procedure public.handle_new_reseller_signup();
+
+-- A função é executada pelo trigger; não deve ser chamada diretamente pela API pública.
+revoke execute on function public.handle_new_reseller_signup() from public, anon, authenticated;
