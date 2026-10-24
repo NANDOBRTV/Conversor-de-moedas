@@ -267,6 +267,23 @@ body:not(.customer-authenticated) .wpp.show{display:none!important}
 .signup-cta b{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:8px;background:#1e3c72;color:#fff;font-size:12px}
 body.customer-authenticated .signup-cta{display:none!important}
 
+
+/* Visual polish — public converter */
+:root{color-scheme:light}
+body{background:radial-gradient(ellipse at 12% 0%,rgba(96,165,250,.28),transparent 38%),linear-gradient(145deg,#0f2345,#1e3c72 48%,#2a5298);padding:clamp(12px,3vw,28px)}
+.card{border:1px solid rgba(255,255,255,.72);box-shadow:0 24px 70px rgba(3,12,30,.34);backdrop-filter:blur(10px)}
+h1{font-size:clamp(20px,4vw,25px);letter-spacing:-.45px}
+.sub{line-height:1.55}
+select,input{transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
+select:focus,input:focus{box-shadow:0 0 0 4px rgba(42,82,152,.12)}
+button,.wpp,.tab,.nav-link{transition:transform .16s ease,box-shadow .16s ease,background-color .16s ease}
+button:hover,.wpp:hover,.nav-link:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(15,23,42,.14)}
+button:active,.wpp:active,.nav-link:active{transform:translateY(0)}
+.result{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 12px 25px rgba(0,131,106,.15)}
+.erro,.needid,.pgto,.brl{line-height:1.55}
+@media(max-width:520px){body{padding:10px}.card{padding:20px 16px;border-radius:16px}.result .val{font-size:clamp(23px,7vw,28px)}.tabs{gap:4px}.tab{padding:10px 6px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
 </style>
 </head>
 <body>
