@@ -16,6 +16,19 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 .hero{padding:26px;border-radius:22px;border:1px solid rgba(103,232,249,.28);background:linear-gradient(120deg,#071227,#0b334b 65%,#211344);box-shadow:0 24px 70px #0005;margin-bottom:18px}.eyebrow{color:#67e8f9;font-size:11px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase}.hero h1{font-size:clamp(26px,4vw,38px);margin:9px 0;letter-spacing:-.8px}.hero p{margin:0;color:#b7cbe3;line-height:1.7;font-size:14px;max-width:700px}
 .panel-card{background:linear-gradient(150deg,rgba(12,26,49,.97),rgba(7,16,32,.97));border:1px solid var(--line);border-radius:19px;padding:22px;box-shadow:0 18px 50px #0004}.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 15px}.section-head h2{font-size:20px;margin:0 0 5px}.section-head p,.subtext{font-size:12px;color:var(--muted);line-height:1.6;margin:0}.field{display:block;margin:0 0 14px}.field span{display:block;font-size:12px;font-weight:850;margin-bottom:7px}.field input{width:100%;border:1px solid #2b4969;border-radius:11px;padding:12px;background:#071327;color:#eaf7ff;font:inherit;font-size:14px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #31506e;border-radius:11px;padding:11px 14px;font:inherit;font-size:12px;font-weight:850;cursor:pointer;text-decoration:none}.btn:disabled{opacity:.55;cursor:wait}.btn-primary{background:linear-gradient(110deg,#0891b2,#2563eb);color:#fff;border-color:transparent}.btn-light{background:#0a1930;color:#cbeafe}.login-message{display:none;margin:12px 0;padding:12px;border-radius:11px;font-size:12px;line-height:1.6;overflow-wrap:anywhere}.login-message.visible{display:block}.login-message.error{background:#3b1022;border:1px solid #9f1239;color:#fecdd3}.login-message.success{background:#073329;border:1px solid #047857;color:#a7f3d0}.settings-divider{height:1px;background:var(--line);margin:21px 0}.settings-section-title{font-size:14px;margin:0 0 12px}.history-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}.history-empty{padding:20px;border:1px dashed #31506e;border-radius:12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}.history-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);border-radius:12px;background:#071327}.history-item strong{display:block;font-size:13px;overflow-wrap:anywhere}.history-item small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.5}.history-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.foot{font-size:10px;line-height:1.7;text-align:center;color:var(--muted);margin-top:22px}
 [hidden]{display:none!important}@media(max-width:520px){.wrap{padding:13px 11px 30px}.hero,.panel-card{padding:17px;border-radius:16px}.history-item{align-items:flex-start;flex-direction:column}.nav{width:100%}.nav a{flex:1;text-align:center}}
+
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;padding:5px;border:1px solid var(--line);background:#061225;border-radius:14px}
+.tab-button{flex:1;min-width:130px;border:1px solid transparent;border-radius:10px;padding:12px;background:transparent;color:#a8c4df;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
+.tab-button.active{background:linear-gradient(110deg,#0e7490,#1d4ed8);border-color:#38bdf8;color:#fff;box-shadow:0 7px 22px #0891b233}
+.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 18px}
+.metric{padding:16px;border:1px solid rgba(103,232,249,.22);border-radius:14px;background:linear-gradient(140deg,#0a2036,#111b37)}
+.metric span,.metric small{display:block;color:var(--muted);font-size:11px;line-height:1.5}
+.metric strong{display:block;color:#a5f3fc;font-size:clamp(22px,4vw,30px);margin:6px 0;overflow-wrap:anywhere}
+.order-form{padding:16px;border:1px solid var(--line);border-radius:14px;background:#061225;margin:0 0 14px}
+.order-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+.order-status{display:inline-block;margin-top:6px;padding:4px 8px;border:1px solid #31506e;border-radius:999px;color:#a5f3fc;font-size:10px;font-weight:800}
+.order-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:520px){.metric-grid,.order-form-grid{grid-template-columns:1fr}.tab-button{min-width:0}}
 </style>
 </head>
 <body>
@@ -25,7 +38,12 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 <section class="panel-card" id="accessPanel">
 <div id="accessMessage" class="login-message visible" role="status" aria-live="polite">Verificando sua sessão e suas permissões…</div>
 <div id="adminPanel" hidden>
-<div class="section-head"><div><h2>Convites e solicitações de revendedores</h2><p>Esta área só fica disponível para a conta de desenvolvedor com acesso ativo.</p></div><button class="btn btn-light" id="refreshResellerAdmin" type="button">Atualizar listas</button></div>
+<div class="section-head"><div><h2>Administração de revendedores</h2><p>Gerencie convites, cadastros e pedidos em áreas separadas.</p></div><button class="btn btn-light" id="refreshResellerAdmin" type="button">Atualizar listas</button></div>
+<div class="admin-tabs" role="tablist" aria-label="Áreas administrativas">
+<button class="tab-button active" id="showInvitesTab" type="button" role="tab" aria-selected="true" aria-controls="inviteSection">🔐 Convites</button>
+<button class="tab-button" id="showOrdersTab" type="button" role="tab" aria-selected="false" aria-controls="ordersSection">📦 Pedidos</button>
+</div>
+<section id="inviteSection" role="tabpanel" aria-labelledby="showInvitesTab">
 <form id="createResellerInviteForm">
 <label class="field"><span>E-mail específico (opcional)</span><input id="resellerInviteEmail" type="email" maxlength="254" placeholder="revendedor@exemplo.com" autocomplete="email"></label>
 <button class="btn btn-primary" id="createResellerInvite" type="submit">Gerar convite individual</button>
@@ -37,6 +55,24 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 <div id="resellerApplicationsList" class="history-list"><div class="history-empty">Carregando solicitações…</div></div>
 <div class="settings-divider"></div><h3 class="settings-section-title">Convites emitidos</h3>
 <div id="resellerInvitesList" class="history-list"><div class="history-empty">Carregando convites…</div></div>
+</section>
+<section id="ordersSection" role="tabpanel" aria-labelledby="showOrdersTab" hidden>
+<div class="section-head"><div><h2>📦 Pedidos para revendedores</h2><p>Registre os interessados, a quantidade de compra e o total mensal de vendas informado.</p></div><button class="btn btn-light" id="refreshOrders" type="button">Atualizar pedidos</button></div>
+<div class="metric-grid"><article class="metric"><span>Total mensal de vendas</span><strong id="monthlySalesTotal">R$ 0,00</strong><small id="monthlySalesPeriod">Mês atual</small></article><article class="metric"><span>Pedidos neste mês</span><strong id="monthlyOrdersCount">0</strong><small>Registros do mês atual</small></article></div>
+<form id="resellerOrderForm" class="order-form">
+<div class="order-form-grid">
+<label class="field"><span>Nome completo</span><input id="orderCustomerName" name="customer_name" type="text" maxlength="120" placeholder="Nome do interessado" required minlength="2" autocomplete="name"></label>
+<label class="field"><span>E-mail</span><input id="orderCustomerEmail" name="customer_email" type="email" maxlength="254" placeholder="nome@exemplo.com" required autocomplete="email"></label>
+<label class="field"><span>Quantidade de compra para ser revendedor</span><input id="orderPurchaseQuantity" name="purchase_quantity" type="number" min="1" step="1" placeholder="Ex.: 1600" required inputmode="numeric"></label>
+<label class="field"><span>Total mensal de vendas (R$)</span><input id="orderMonthlySales" name="monthly_sales_total" type="number" min="0" step="0.01" value="0" required inputmode="decimal"></label>
+</div>
+<label class="field"><span>Observações (opcional)</span><input id="orderNotes" name="notes" type="text" maxlength="500" placeholder="Informações sobre o pedido ou contato"></label>
+<button class="btn btn-primary" id="saveResellerOrder" type="submit">Salvar pedido</button>
+</form>
+<div id="ordersMessage" class="login-message" role="status" aria-live="polite"></div>
+<div class="settings-divider"></div><h3 class="settings-section-title">Pedidos registrados</h3>
+<div id="resellerOrdersList" class="history-list"><div class="history-empty">Carregue para consultar os pedidos.</div></div>
+</section>
 </div></section>
 <footer class="foot">Conversor Sanba · Ferramentas administrativas<br>O acesso é validado pela sessão do Supabase e pelo perfil de desenvolvedor.</footer>
 </main>
