@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const config = window.SANBA_SUPABASE_CONFIG || {};
+window.SANBA_RESELLER_APP_READY = true;
 const $ = id => document.getElementById(id);
 const form = $('resellerLoginForm');
 const usernameInput = $('username');
@@ -547,7 +548,7 @@ $('copyResellerInviteLink')?.addEventListener('click', async () => {
   catch (_) { $('resellerInviteLink').focus(); $('resellerInviteLink').select(); inviteAdminNotice('Selecione e copie o link manualmente.','error'); }
 });
 $('refreshResellerAdmin')?.addEventListener('click', loadResellerAdminData);
-\n$('togglePassword').addEventListener('click', () => {
+$('togglePassword').addEventListener('click', () => {
   const show = passwordInput.type === 'password';
   passwordInput.type = show ? 'text' : 'password';
   $('togglePassword').textContent = show ? 'Ocultar' : 'Mostrar';
