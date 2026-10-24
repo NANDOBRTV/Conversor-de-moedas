@@ -66,7 +66,7 @@
             <label>Moedas em cada pacote<input id="calcQuantity" type="number" min="1" step="1" value="1600" inputmode="numeric" required></label>
             <label>Total de moedas que você compra<input id="calcLotCoins" type="number" min="1" step="1" value="160000" inputmode="numeric" required></label>
             <label>Valor total do lote em dólares (US$)<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 50,00" inputmode="decimal" required></label>
-            <label>Cotação do dólar (US$ 1 em moeda de venda)<input id="calcUsdRate" type="number" min="0.000001" step="any" value="" inputmode="decimal" required></label>
+            <label id="usdRateField">Cotação do dólar (US$ 1 na moeda de venda)<input id="calcUsdRate" type="number" min="0.000001" step="any" value="" inputmode="decimal" required></label>
             <label>Por quanto vende cada pacote<input id="calcSalePrice" type="number" min="0.01" step="0.01" placeholder="Ex.: 8,00" inputmode="decimal" required></label>
             <label>Outros custos do lote (se houver)<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
             <label>Taxa descontada das vendas (%)<input id="calcFee" type="number" min="0" max="99.99" step="0.01" value="20" inputmode="decimal" required></label>
@@ -256,7 +256,7 @@ $('logoutButton').addEventListener('click', async () => {
   form.reset(); hideMessage(loginMessage); hideMessage(accountMessage); hideMessage(calcMessage);
   $('calcResults').style.display = 'none'; $('heroStatus').textContent = '🔐 Entre para acessar suas ferramentas';
 });
-$('calcCurrency').addEventListener('change', () => { if ($('calcCurrency').value === 'USD') $('calcUsdRate').value = '1'; else if ($('calcUsdRate').value === '1') $('calcUsdRate').value = ''; });
+function updateUsdRateField() {\n  const isUsd = $('calcCurrency').value === 'USD';\n  const rate = $('calcUsdRate');\n  rate.disabled = isUsd;\n  $('usdRateField').style.opacity = isUsd ? '.65' : '1';\n  if (isUsd) rate.value = '1';\n  else if (rate.value === '1') rate.value = '';\n  rate.placeholder = isUsd ? 'Cotação automática: 1' : 'Informe a cotação atual';\n}\n$('calcCurrency').addEventListener('change', updateUsdRateField);\nupdateUsdRateField();
 function calculate(showErrors=true) {
   hideMessage(calcMessage);
   const currency=$('calcCurrency').value;
