@@ -110,6 +110,27 @@ function renderHistory() {
   });
   $('statCount').textContent=String(historyItems.length);
   $('statLast').textContent=historyItems.length?money(historyItems[0].totalCost,historyItems[0].currency||'BRL'):'—';
+  updateDiamondReport();
+}
+function diamondHistoryForReport() {
+  const period = $('diamondPeriod')?.value || '30';
+  const currency = $('diamondCurrency')?.value || 'BRL';
+  const cutoff = period === 'all' ? 0 : Date.now() - Number(period) * 24 * 60 * 60 * 1000;
+  return historyItems.filter(item => (item.currency || 'BRL') === currency &&
+    Number.isFinite(Date.parse(item.savedAt)) && Date.parse(item.savedAt) >= cutoff);
+}
+function updateDiamondReport() {
+  const totalEl = $('diamondProfitTotal');
+  if (!totalEl) return;
+  const currency = $('diamondCurrency')?.value || 'BRL';
+  const items = diamondHistoryForReport();
+  const total = items.reduce((sum, item) => sum + (Number(item.totalProfit) || 0), 0);
+  totalEl.textContent = money(total, currency);
+  $('diamondCalcCount').textContent = String(items.length);
+  const goal = Number($('diamondGoal')?.value);
+  $('diamondGoalProgress').textContent = Number.isFinite(goal) && goal > 0
+    ? Math.min(100, Math.max(0, total / goal * 100)).toLocaleString('pt-BR',{maximumFractionDigits:1}) + '%'
+    : 'Defina uma meta';
 }
 function membershipTier(profile) {
   const tier = String(profile?.membership_tier || 'common').toLowerCase();
@@ -127,6 +148,12 @@ function applyAccessUI(profile) {
   $('accountPurchase').style.display = tier === 'common' && profile.reseller_application_status === 'approved' ? 'grid' : 'none';
   const goldBenefits = $('goldBenefits');
   if (goldBenefits) goldBenefits.hidden = !(tier === 'gold' && active);
+  const diamondBenefits = $('diamondBenefits');
+  if (diamondBenefits) diamondBenefits.hidden = !((tier === 'diamond' || tier === 'developer') && active);
+  const diamondTools = $('diamondTools');
+  if (diamondTools) diamondTools.hidden = !((tier === 'diamond' || tier === 'developer') && active);
+  const historyExport = $('diamondHistoryExport');
+  if (historyExport) historyExport.hidden = !((tier === 'diamond' || tier === 'developer') && active);
   // Recursos pagos ficam ocultos para contas pendentes, suspensas ou vencidas.
   document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => {
     el.style.display = active ? '' : 'none';
@@ -179,7 +206,7 @@ function renderAccount(profile) {
   if (tier === 'gold' && premiumActive) {
     message(accountMessage, 'Plano Ouro ativo: calculadora de revenda e histórico de até 50 cálculos recentes liberados por 30 dias. Copiar resultados e exportar CSV são exclusivos do Diamante.', 'success');
   } else if (tier === 'diamond' && premiumActive) {
-    message(accountMessage, 'Plano Diamante ativo: calculadora, histórico, cópia dos resultados e exportação CSV liberados. O acesso permanece sujeito à validade registrada na conta.', 'success');
+    message(accountMessage, 'Plano Diamante ativo: calculadora, histórico de até 50 cálculos, cópia, exportação CSV, relatório por período e meta de lucro estimado. O acesso permanece sujeito à validade registrada na conta.', 'success');
   } else if (resellerApproved && accountActive) {
     message(accountMessage, 'Sua solicitação de revendedor foi aprovada. Você já pode usar as ferramentas básicas de revenda. Ouro e Diamante continuam sujeitos às regras próprias de pagamento e aprovação.', 'success');
   } else if (resellerPending) {
@@ -804,6 +831,45 @@ $('clearHistory').addEventListener('click', () => {
   if (!historyItems.length) { message(accountMessage,'O histórico já está vazio.','success'); return; }
   if (!confirm('Tem certeza de que deseja apagar todos os cálculos salvos neste navegador?')) return;
   historyItems = []; writeHistory(); renderHistory(); message(accountMessage,'Histórico apagado deste navegador.','success');
+});
+$('diamondPeriod')?.addEventListener('change', updateDiamondReport);
+$('diamondCurrency')?.addEventListener('change', updateDiamondReport);
+$('diamondGoal')?.addEventListener('input', updateDiamondReport);
+$('saveDiamondGoal')?.addEventListener('click', () => {
+  if (!currentProfile || !['diamond','developer'].includes(membershipTier(currentProfile)) || !accessIsActive(currentProfile)) {
+    message(accountMessage,'A meta de lucro é exclusiva do plano Diamante.'); return;
+  }
+  const goal = Number($('diamondGoal').value);
+  if (!Number.isFinite(goal) || goal <= 0) {
+    message(accountMessage,'Informe uma meta maior que zero.'); return;
+  }
+  try {
+    localStorage.setItem('sanba_diamond_profit_goal_v1', JSON.stringify({amount:goal,currency:$('diamondCurrency').value}));
+    message(accountMessage,'Meta salva neste navegador.','success');
+  } catch (e) { message(accountMessage,'Não foi possível salvar a meta neste navegador.'); }
+  updateDiamondReport();
+});
+try {
+  const savedGoal = JSON.parse(localStorage.getItem('sanba_diamond_profit_goal_v1') || 'null');
+  if (savedGoal && Number.isFinite(Number(savedGoal.amount))) {
+    $('diamondGoal').value = String(savedGoal.amount);
+    if (['BRL','USD','VES'].includes(savedGoal.currency)) $('diamondCurrency').value = savedGoal.currency;
+  }
+} catch (e) {}
+$('downloadHistoryCsv')?.addEventListener('click', () => {
+  if (!currentProfile || !['diamond','developer'].includes(membershipTier(currentProfile)) || !accessIsActive(currentProfile)) {
+    message(accountMessage,'Exportar o histórico completo é exclusivo do plano Diamante.'); return;
+  }
+  if (!historyItems.length) { message(accountMessage,'Ainda não há cálculos salvos para exportar.'); return; }
+  const rows = [['Data','Moeda','Moedas no lote','Moedas por pacote','Pacotes vendáveis','Custo total','Preço por pacote','Faturamento bruto','Taxa (%)','Receita líquida','Lucro estimado','Margem (%)','Retorno (%)']];
+  historyItems.slice(0,50).forEach(r => rows.push([
+    r.savedAt || '',r.currency || 'BRL',r.lotCoins ?? '',r.packageCoins ?? '',r.packageCount ?? '',
+    Number(r.totalCost || 0).toFixed(2),Number(r.salePrice || 0).toFixed(2),Number(r.grossRevenue || 0).toFixed(2),
+    Number(r.feePercent || 0),Number(r.netRevenue || 0).toFixed(2),Number(r.totalProfit || 0).toFixed(2),
+    r.marginPercent === null ? 'Não aplicável' : Number(r.marginPercent || 0).toFixed(2),Number(r.returnPercent || 0).toFixed(2)
+  ]));
+  const csv='\\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\\r\\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='historico-completo-sanba.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 });
 function exportText() {
   if(!latestCalculation)return '';
