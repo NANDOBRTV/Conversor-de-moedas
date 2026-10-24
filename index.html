@@ -695,7 +695,6 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
     popup.location.replace(targetUrl);
     alert('O WhatsApp do vendedor será aberto, mas houve um problema ao preparar os dados. Confira o ID Sanba antes de enviar.');
   }
-  }
 }
 document.getElementById('wppC').addEventListener('click',function(e){createRechargeThenOpenWhatsApp(this,e)});
 document.getElementById('wppR').addEventListener('click',function(e){createRechargeThenOpenWhatsApp(this,e)});
