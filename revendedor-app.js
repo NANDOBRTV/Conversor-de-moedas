@@ -805,12 +805,20 @@ function exportText() {
   return ['RESUMO DO LOTE SANBA','Moeda: '+currency,'Moedas no lote: '+r.lotCoins,'Moedas por pacote: '+r.packageCoins,'Pacotes que pode vender: '+r.packageCount,'Compra do lote em dólares: '+money(r.purchaseCostUSD??r.purchaseCost,'USD'),'Cotação do dólar: '+(r.usdRate??1),'Custo da compra convertido: '+money(r.purchaseCost??r.totalCost,currency),'Custo total com extras: '+money(r.totalCost,currency),'Preço de venda por pacote: '+money(r.salePrice,currency),'Faturamento bruto: '+money(r.grossRevenue,currency),'Taxa sobre vendas ('+r.feePercent+'%): '+money(r.saleFees,currency),'Receita líquida após taxa: '+money(r.netRevenue,currency),'LUCRO FINAL: '+money(r.totalProfit,currency),'MARGEM DE LUCRO: '+(r.marginPercent===null?'Não aplicável (receita líquida zero)':r.marginPercent.toFixed(2)+'%'),'Retorno sobre investimento: '+r.returnPercent.toFixed(2)+'%'].join('\n');
 }
 $('copyResults').addEventListener('click', async () => {
+  if (!currentProfile || !['diamond','developer'].includes(membershipTier(currentProfile)) || !accessIsActive(currentProfile)) {
+    message(calcMessage, 'Copiar resultados é um recurso do plano Diamante.');
+    return;
+  }
   const text = exportText();
   if (!text) return;
   try { await navigator.clipboard.writeText(text); message(calcMessage,'Resultado copiado. Você já pode colar onde quiser.','success'); }
   catch (e) { message(calcMessage,'Seu navegador bloqueou a cópia automática. Use “Baixar CSV” para guardar o resultado.'); }
 });
 $('downloadResults').addEventListener('click',()=>{
+  if (!currentProfile || !['diamond','developer'].includes(membershipTier(currentProfile)) || !accessIsActive(currentProfile)) {
+    message(calcMessage, 'Baixar CSV é um recurso do plano Diamante.');
+    return;
+  }
   if(!latestCalculation)return;
   const r=latestCalculation,currency=r.currency||'BRL';
   const rows=[['Campo','Valor'],['Moeda',currency],['Moedas no lote',r.lotCoins],['Moedas por pacote',r.packageCoins],['Pacotes vendáveis',r.packageCount],['Moedas restantes',r.leftoverCoins],['Compra do lote (USD)',Number(r.purchaseCostUSD??r.purchaseCost).toFixed(2)],['Cotação USD',Number(r.usdRate??1)],['Custo da compra convertido ('+currency+')',Number(r.purchaseCost??r.totalCost).toFixed(2)],['Custo total com extras ('+currency+')',r.totalCost.toFixed(2)],['Preço por pacote ('+currency+')',r.salePrice.toFixed(2)],['Faturamento bruto ('+currency+')',r.grossRevenue.toFixed(2)],['Taxa sobre vendas (%)',r.feePercent],['Valor descontado em taxas ('+currency+')',r.saleFees.toFixed(2)],['Receita líquida após taxas ('+currency+')',r.netRevenue.toFixed(2)],['Lucro final ('+currency+')',r.totalProfit.toFixed(2)],['Margem de lucro (%)',r.marginPercent===null?'Não aplicável':r.marginPercent.toFixed(2)],['Retorno sobre investimento (%)',r.returnPercent.toFixed(2)]];
