@@ -538,7 +538,7 @@ async function fetchExchangeRate(currency) {
   try {
     let rate, dateText, sourceText;
     const cached = exchangeRateCache[currency];
-    if (cached && Date.now() - cached.fetchedAt < 5 * 1000) {
+    if (cached && Date.now() - cached.fetchedAt < 5 * 60 * 1000) {
       ({rate, dateText, sourceText} = cached);
     } else if (currency === 'BRL') {
       const response = await fetch('https://open.er-api.com/v6/latest/USD', {cache:'no-cache'});
@@ -584,13 +584,12 @@ $('calcCurrency').addEventListener('change', () => {
 $('calcQuantity').addEventListener('change', updateSuggestedSalePrice);
 updateSuggestedSalePrice();
 updateUsdRateField();
-// Reconsulta a cotação automaticamente a cada 5 segundos enquanto o painel estiver aberto.
-// As fontes podem publicar novas taxas com menos frequência, então o valor pode permanecer igual.
+// Reconsulta a cotação a cada 5 minutos; evita chamadas excessivas às fontes externas.
 setInterval(() => {
   if (dashboard.style.display !== 'none' && $('calcCurrency').value !== 'USD') {
     fetchExchangeRate($('calcCurrency').value);
   }
-}, 5000);
+}, 5 * 60 * 1000);
 function calculate(showErrors=true) {
   hideMessage(calcMessage);
   const currency=$('calcCurrency').value;
