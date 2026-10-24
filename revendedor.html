@@ -52,19 +52,21 @@
     <div class="section-head"><div><h2 id="welcomeTitle">Bem-vindo!</h2><p>Resumo rápido e ferramentas da sua conta.</p></div><button class="btn btn-light btn-small" id="logoutButton" type="button">Sair da conta</button></div>
     <div class="stats">
       <article class="stat"><div><div class="stat-label">Cálculos salvos</div><div class="stat-note">Neste navegador</div></div><div class="stat-value" id="statCount">0</div></article>
-      <article class="stat"><div><div class="stat-label">Último lote calculado</div><div class="stat-note">Seu cálculo mais recente</div></div><div class="stat-value" id="statLast">—</div></article>
+      <article class="stat"><div><div class="stat-label">Custo total do lote</div><div class="stat-note">Seu cálculo mais recente</div></div><div class="stat-value" id="statLast">—</div></article>
       <article class="stat"><div><div class="stat-label">Situação do acesso</div><div class="stat-note">Conforme seu perfil</div></div><div class="stat-value" id="statAccess">—</div></article>
     </div>
 
-    <div class="section-head"><div><h2>Calculadora de revenda</h2><p>Informe o custo real e a taxa para calcular preços mais seguros.</p></div></div>
+    <div class="section-head"><div><h2>Calculadora de revenda</h2><p>Informe as moedas por pacote, o tamanho do lote, quanto você paga e por quanto vende cada pacote.</p></div></div>
     <div class="content-grid">
       <section class="panel-card calculator" aria-labelledby="calculatorTitle">
-        <h2 id="calculatorTitle">🧮 Custo, taxa e lucro</h2><p class="subtext">O lucro abaixo é calculado sobre o custo do lote. A taxa percentual é descontada do preço de venda.</p>
+        <h2 id="calculatorTitle">🧮 Custo, taxa e lucro</h2><p class="subtext">Veja quantos pacotes formam o lote de 160.000 moedas, o faturamento e o lucro depois da taxa.</p>
         <form id="profitCalculator">
           <div class="calc-fields">
             <label>Moeda utilizada<select id="calcCurrency"><option value="BRL">Brasil · Real (BRL)</option><option value="USD">Internacional · Dólar (USD)</option><option value="VES">Venezuela · Bolívar (VES)</option></select></label>
-            <label>Quantidade no lote<input id="calcQuantity" type="number" min="1" step="1" value="1600" inputmode="numeric" required></label>
-            <label>Custo de compra do lote<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 100,00" inputmode="decimal" required></label>
+            <label>Moedas por pacote<input id="calcQuantity" type="number" min="1" step="1" value="1500" inputmode="numeric" required></label>
+            <label>Quantidade total de moedas no lote<input id="calcLotCoins" type="number" min="1" step="1" value="160000" inputmode="numeric" required></label>
+            <label>Seu custo de compra por pacote<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Quanto você paga por pacote" inputmode="decimal" required></label>
+            <label>Preço de venda por pacote<input id="calcSalePrice" type="number" min="0.01" step="0.01" placeholder="Por quanto você vende" inputmode="decimal" required></label>
             <label>Despesas extras do lote<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
             <label>Taxa sobre a venda (%)<input id="calcFee" type="number" min="0" max="99.99" step="0.01" value="20" inputmode="decimal" required></label>
           </div>
@@ -88,7 +90,7 @@
           <div class="detail-row"><span>Validade</span><strong id="accountUntil">—</strong></div>
           <p class="footnote">Para alterar seu plano ou corrigir o acesso, fale com o suporte. A validade é exibida conforme os dados cadastrados na conta.</p>
         </section>
-        <section class="helper"><h3>💡 Como usar</h3><p>1. Informe o custo pago pelo lote. 2. Some despesas extras, se houver. 3. Digite a taxa cobrada na venda. 4. Compare o ponto de equilíbrio com os preços de lucro e salve o cálculo se quiser consultá-lo depois.</p></section>
+        <section class="helper"><h3>💡 Como usar</h3><p>1. Informe quantas moedas vêm em cada pacote. 2. Informe o total de moedas do lote (ex.: 160.000). 3. Digite quanto você paga e quanto cobra por pacote. 4. Confira quantos pacotes o lote fecha, as taxas e o lucro estimado.</p></section>
       </div>
     </div>
 
@@ -164,21 +166,23 @@ function renderHistory() {
     const info = document.createElement('div');
     const currency = item.currency || 'BRL';
     const title = document.createElement('strong');
-    title.textContent = item.quantity.toLocaleString('pt-BR') + ' unidades · ' + currency + ' · taxa ' + item.feePercent + '%';
+    title.textContent = (item.packageCoins || item.quantity || 0).toLocaleString('pt-BR') + ' moedas/pacote · lote ' + (item.lotCoins || 0).toLocaleString('pt-BR') + ' moedas · ' + currency;
     const detail = document.createElement('small');
-    detail.textContent = new Date(item.savedAt).toLocaleString('pt-BR') + ' · Custo do lote: ' + money(item.totalCost, currency);
+    detail.textContent = new Date(item.savedAt).toLocaleString('pt-BR') + ' · ' + (item.packageCount || 0).toLocaleString('pt-BR') + ' pacotes · Custo: ' + money(item.totalCost, currency);
     info.append(title, detail);
     const price = document.createElement('div'); price.className = 'history-price';
-    price.textContent = money(item.price20, currency);
-    const priceLabel = document.createElement('small'); priceLabel.textContent = 'Preço com 20% de lucro';
+    price.textContent = money(item.totalProfit ?? 0, currency);
+    const priceLabel = document.createElement('small'); priceLabel.textContent = 'Lucro estimado do lote';
     price.appendChild(priceLabel);
     const actions = document.createElement('button'); actions.className = 'btn btn-light btn-small'; actions.type = 'button'; actions.textContent = 'Ver';
     actions.addEventListener('click', () => {
       $('calcCurrency').value = item.currency || 'BRL';
-      $('calcQuantity').value = item.quantity;
-      $('calcCost').value = item.purchaseCost.toFixed(2);
-      $('calcExtras').value = item.extras.toFixed(2);
-      $('calcFee').value = item.feePercent;
+      $('calcQuantity').value = item.packageCoins || item.quantity || 1500;
+      $('calcLotCoins').value = item.lotCoins || 160000;
+      $('calcCost').value = item.costPerPackage ?? item.purchaseCost ?? '';
+      $('calcSalePrice').value = item.salePrice ?? '';
+      $('calcExtras').value = item.extras || 0;
+      $('calcFee').value = item.feePercent ?? 20;
       calculate(false);
       $('calculatorTitle').scrollIntoView({behavior:'smooth',block:'start'});
     });
@@ -263,39 +267,49 @@ $('logoutButton').addEventListener('click', async () => {
 function calculate(showErrors=true) {
   hideMessage(calcMessage);
   const currency = $('calcCurrency').value;
-  const quantity = Number($('calcQuantity').value);
-  const purchaseCost = Number($('calcCost').value);
+  const packageCoins = Number($('calcQuantity').value);
+  const lotCoins = Number($('calcLotCoins').value);
+  const costPerPackage = Number($('calcCost').value);
+  const salePrice = Number($('calcSalePrice').value);
   const extras = Number($('calcExtras').value);
   const feePercent = Number($('calcFee').value);
-  if (!Number.isInteger(quantity) || quantity < 1 || !Number.isFinite(quantity) ||
-      !Number.isFinite(purchaseCost) || purchaseCost <= 0 ||
+  if (!Number.isInteger(packageCoins) || packageCoins < 1 ||
+      !Number.isInteger(lotCoins) || lotCoins < 1 ||
+      !Number.isFinite(costPerPackage) || costPerPackage <= 0 ||
+      !Number.isFinite(salePrice) || salePrice <= 0 ||
       !Number.isFinite(extras) || extras < 0 ||
       !Number.isFinite(feePercent) || feePercent < 0 || feePercent >= 100) {
     $('calcResults').style.display = 'none';
-    if (showErrors) message(calcMessage, 'Confira os campos: quantidade inteira maior que zero, custo de compra acima de zero, despesas não negativas e taxa entre 0% e menos de 100%.');
+    if (showErrors) message(calcMessage, 'Confira os campos: moedas por pacote e lote devem ser números inteiros positivos; custo e preço de venda devem ser maiores que zero; despesas não negativas e taxa entre 0% e menos de 100%.');
     return null;
   }
-  const totalCost = purchaseCost + extras;
-  const unitCost = totalCost / quantity;
-  const fee = feePercent / 100;
-  const breakEven = unitCost / (1-fee);
-  const price = margin => unitCost * (1+margin)/(1-fee);
-  const result = {
-    quantity,currency,purchaseCost,extras,feePercent,totalCost,unitCost,breakEven,
-    price10:price(.10),price20:price(.20),price30:price(.30),
-    lot10:price(.10)*quantity,lot20:price(.20)*quantity,lot30:price(.30)*quantity,
-    savedAt:new Date().toISOString()
-  };
+  const packageCount = Math.floor(lotCoins / packageCoins);
+  const leftoverCoins = lotCoins % packageCoins;
+  if (packageCount < 1) {
+    $('calcResults').style.display = 'none';
+    if (showErrors) message(calcMessage, 'O lote precisa ter moedas suficientes para formar pelo menos um pacote.');
+    return null;
+  }
+  const totalCost = costPerPackage * packageCount + extras;
+  const grossRevenue = salePrice * packageCount;
+  const saleFees = grossRevenue * feePercent / 100;
+  const netRevenue = grossRevenue - saleFees;
+  const totalProfit = netRevenue - totalCost;
+  const profitPerPackage = salePrice * (1-feePercent/100) - costPerPackage - extras/packageCount;
+  const breakEvenPrice = (costPerPackage + extras/packageCount) / (1-feePercent/100);
+  const result = {currency,packageCoins,lotCoins,packageCount,leftoverCoins,costPerPackage,salePrice,extras,feePercent,totalCost,grossRevenue,saleFees,netRevenue,totalProfit,profitPerPackage,breakEvenPrice,savedAt:new Date().toISOString()};
   latestCalculation = result;
   const rows = [
+    ['Pacotes completos no lote',packageCount.toLocaleString('pt-BR') + ' pacotes',false],
+    ['Moedas que sobram',leftoverCoins.toLocaleString('pt-BR') + ' moedas',false],
     ['Custo total do lote',money(totalCost,currency),false],
-    ['Custo por unidade',money(unitCost,currency),false],
-    ['Ponto de equilíbrio por unidade',money(breakEven,currency),false],
-    ['Preço unitário · lucro 10%',money(result.price10,currency),true],
-    ['Preço unitário · lucro 20%',money(result.price20,currency),true],
-    ['Preço unitário · lucro 30%',money(result.price30,currency),true],
-    ['Receita do lote · lucro 20%',money(result.lot20,currency),false],
-    ['Lucro estimado do lote · meta 20%',money(result.lot20*(1-fee)-totalCost,currency),false]
+    ['Faturamento bruto do lote',money(grossRevenue,currency),false],
+    ['Taxa descontada das vendas',money(saleFees,currency),false],
+    ['Receita depois da taxa',money(netRevenue,currency),false],
+    ['Custo por pacote (com extras)',money(costPerPackage+extras/packageCount,currency),false],
+    ['Preço mínimo por pacote para empatar',money(breakEvenPrice,currency),false],
+    ['Lucro por pacote estimado',money(profitPerPackage,currency),true],
+    ['Lucro total estimado do lote',money(totalProfit,currency),true]
   ];
   const grid = $('resultGrid'); grid.replaceChildren();
   rows.forEach(([label,value,featured]) => {
@@ -316,7 +330,7 @@ $('profitCalculator').addEventListener('submit', event => {
   }
 });
 $('clearCalculator').addEventListener('click', () => {
-  $('calcQuantity').value = '1600'; $('calcCost').value = ''; $('calcExtras').value = '0'; $('calcFee').value = '20';
+  $('calcQuantity').value = '1500'; $('calcLotCoins').value = '160000'; $('calcCost').value = ''; $('calcSalePrice').value = ''; $('calcExtras').value = '0'; $('calcFee').value = '20';
   latestCalculation = null; $('calcResults').style.display = 'none'; hideMessage(calcMessage); $('calcCost').focus();
 });
 $('saveCalculation').addEventListener('click', () => {
@@ -333,22 +347,16 @@ $('clearHistory').addEventListener('click', () => {
 });
 function exportText() {
   if (!latestCalculation) return '';
-  const r = latestCalculation;
+  const r = latestCalculation, currency = r.currency || 'BRL';
   return [
-    'PAINEL DO REVENDEDOR - CONVERSOR SANBA',
-    'Moeda: '+(r.currency || 'BRL'),
-    'Quantidade no lote: '+r.quantity,
-    'Custo de compra: '+money(r.purchaseCost),
-    'Despesas extras: '+money(r.extras),
-    'Custo total: '+money(r.totalCost),
-    'Taxa sobre venda: '+r.feePercent+'%',
-    'Custo unitário: '+money(r.unitCost),
-    'Ponto de equilíbrio unitário: '+money(r.breakEven),
-    'Preço unitário com 10% de lucro: '+money(r.price10),
-    'Preço unitário com 20% de lucro: '+money(r.price20),
-    'Preço unitário com 30% de lucro: '+money(r.price30),
-    'Receita estimada do lote com meta de 20%: '+money(r.lot20),
-    'Estimativa, confira as despesas e taxas aplicáveis.'
+    'PAINEL DO REVENDEDOR - CONVERSOR SANBA','Moeda: '+currency,
+    'Moedas por pacote: '+r.packageCoins,'Moedas no lote: '+r.lotCoins,
+    'Pacotes completos no lote: '+r.packageCount,'Moedas restantes: '+r.leftoverCoins,
+    'Custo por pacote: '+money(r.costPerPackage,currency),'Preço de venda por pacote: '+money(r.salePrice,currency),
+    'Custo total do lote: '+money(r.totalCost,currency),'Faturamento bruto do lote: '+money(r.grossRevenue,currency),
+    'Taxa sobre as vendas: '+r.feePercent+'% ('+money(r.saleFees,currency)+')',
+    'Receita depois da taxa: '+money(r.netRevenue,currency),'Lucro estimado por pacote: '+money(r.profitPerPackage,currency),
+    'Lucro estimado do lote: '+money(r.totalProfit,currency),'Estimativa, confira as despesas e taxas aplicáveis.'
   ].join('\n');
 }
 $('copyResults').addEventListener('click', async () => {
@@ -359,9 +367,8 @@ $('copyResults').addEventListener('click', async () => {
 });
 $('downloadResults').addEventListener('click', () => {
   if (!latestCalculation) return;
-  const r = latestCalculation;
-  const currency = r.currency || 'BRL';
-  const rows = [['Campo','Valor'],['Moeda',currency],['Quantidade',r.quantity],['Custo de compra ('+currency+')',r.purchaseCost.toFixed(2)],['Despesas extras ('+currency+')',r.extras.toFixed(2)],['Custo total ('+currency+')',r.totalCost.toFixed(2)],['Taxa (%)',r.feePercent],['Custo unitário ('+currency+')',r.unitCost.toFixed(4)],['Ponto de equilíbrio ('+currency+')',r.breakEven.toFixed(4)],['Preço unitário lucro 10% ('+currency+')',r.price10.toFixed(4)],['Preço unitário lucro 20% ('+currency+')',r.price20.toFixed(4)],['Preço unitário lucro 30% ('+currency+')',r.price30.toFixed(4)],['Receita estimada lote meta 20% ('+currency+')',r.lot20.toFixed(2)]];
+  const r = latestCalculation, currency = r.currency || 'BRL';
+  const rows = [['Campo','Valor'],['Moeda',currency],['Moedas por pacote',r.packageCoins],['Moedas no lote',r.lotCoins],['Pacotes completos',r.packageCount],['Moedas restantes',r.leftoverCoins],['Custo por pacote ('+currency+')',r.costPerPackage.toFixed(2)],['Preço de venda por pacote ('+currency+')',r.salePrice.toFixed(2)],['Despesas extras ('+currency+')',r.extras.toFixed(2)],['Custo total do lote ('+currency+')',r.totalCost.toFixed(2)],['Faturamento bruto ('+currency+')',r.grossRevenue.toFixed(2)],['Taxa sobre vendas (%)',r.feePercent],['Taxa descontada ('+currency+')',r.saleFees.toFixed(2)],['Receita após taxa ('+currency+')',r.netRevenue.toFixed(2)],['Lucro por pacote ('+currency+')',r.profitPerPackage.toFixed(2)],['Lucro total estimado ('+currency+')',r.totalProfit.toFixed(2)]];
   const csv = '\uFEFF' + rows.map(row => row.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
   const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob); const a = document.createElement('a');
