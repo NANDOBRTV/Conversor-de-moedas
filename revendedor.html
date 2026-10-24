@@ -472,8 +472,9 @@ async function showSignedIn(session) {
   if ($('adminOrdersLink')) $('adminOrdersLink').style.display = profile.membership_tier === 'developer' ? 'inline-flex' : 'none';
   const rechargePanel = $('rechargeOrdersPanel');
   if (rechargePanel) {
-    rechargePanel.hidden = profile.membership_tier !== 'developer';
-    if (profile.membership_tier === 'developer') loadRechargeOrders();
+    const canUseOrders = accessIsActive(profile);
+    rechargePanel.hidden = !canUseOrders;
+    if (canUseOrders) loadRechargeOrders();
   }
   $('editUsername').value = profile.username || '';
   $('editEmail').value = profile.email || session.user.email || '';
@@ -488,7 +489,7 @@ async function showSignedIn(session) {
 const rechargeStatusLabels={pending:'Aguardando pagamento',payment_confirmed:'Pagamento confirmado',processing:'Em processamento',completed:'Concluído',payment_rejected:'Pagamento não confirmado',cancelled:'Cancelado'};
 async function loadRechargeOrders(){
   const list=$('rechargeOrdersList'),note=$('rechargeOrdersMessage');
-  if(!list||!currentProfile||currentProfile.membership_tier!=='developer'||!supabase)return;
+  if(!list||!currentProfile||!accessIsActive(currentProfile)||!supabase)return;
   list.innerHTML='<div class="history-empty">Carregando pedidos de recarga…</div>';hideMessage(note);
   const {data,error}=await supabase.from('recharge_orders').select('id,user_id,sanba_id,coin_quantity,amount,currency,status,created_at,admin_note').order('created_at',{ascending:false}).limit(100);
   if(error){list.textContent='Não foi possível carregar os pedidos. Verifique a conexão e atualize.';return}
@@ -514,11 +515,13 @@ async function loadRechargeOrders(){
         : 'Prazo para confirmar o pagamento: até ' + expiresAt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + ' (15 minutos após o pedido).';
       info.append(deadline);
     }
-    const nextActions = o.status === 'pending'
-      ? [['payment_confirmed','Confirmar pagamento']]
-      : (o.status === 'payment_confirmed' || o.status === 'processing')
-        ? [['completed','Confirmar entrega']]
-        : [];
+    const nextActions = currentProfile.membership_tier === 'developer'
+      ? (o.status === 'pending'
+        ? [['payment_confirmed','Confirmar pagamento']]
+        : (o.status === 'payment_confirmed' || o.status === 'processing')
+          ? [['completed','Confirmar entrega']]
+          : [])
+      : [];
     nextActions.forEach(([next,label])=>{
       const b=document.createElement('button');b.type='button';b.className='btn btn-primary btn-small';b.textContent=label;b.addEventListener('click',()=>updateRechargeStatus(o.id,next,b));actions.appendChild(b);
     });
