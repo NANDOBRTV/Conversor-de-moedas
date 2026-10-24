@@ -654,11 +654,6 @@ async function requestPurchase(tier) {
 $('requestMonthly').addEventListener('click', () => requestPurchase('gold'));
 $('requestOneTime').addEventListener('click', () => requestPurchase('diamond'));
 // Pagamento manual por Pix: o pedido é confirmado no painel administrativo.
-
-  message($('purchaseMessage'), 'O Mercado Pago informou que o pagamento está pendente. O acesso será liberado somente quando a confirmação chegar.', 'error');
-} else if (paymentReturn === 'failure') {
-  message($('purchaseMessage'), 'O pagamento não foi concluído. Você pode tentar novamente.', 'error');
-}
 $('registerForm').addEventListener('submit', async event => {
   event.preventDefault();
   const registerMessage = $('registerMessage');
