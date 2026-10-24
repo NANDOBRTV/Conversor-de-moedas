@@ -43,6 +43,8 @@
 5. **Advisors de desempenho:** o Supabase sinalizou índices ainda não usados. Como os dados e o volume são pequenos, os índices foram mantidos para não remover otimizações preventivamente.
 6. **Esquema SQL:** o arquivo de referência foi atualizado no GitHub, mas não foi reexecutado no banco de produção durante esta revisão. O banco já continha as tabelas/funções verificadas; a revisão evitou uma migração desnecessária.
 
+7. **Correção adicional do formulário de login (24/10/2026):** um teste de navegador mostrou que o formulário podia ser enviado como formulário HTML normal, sem mensagem de erro e sem executar o fluxo de autenticação. O módulo de autenticação foi movido de dentro do HTML para `revendedor-app.js`, com o carregador externo `revendedor-loader.js` e feedback visível caso o módulo falhe ao carregar. O formulário também deixou de permitir que o navegador acrescente usuário/senha à URL e mostra um estado inicial de conexão. A página e os arquivos externos foram confirmados no GitHub; ainda é necessário validar uma entrada real com a conta do proprietário, sem compartilhar senha no chat.
+
 ## Restrições preservadas
 
 - `index.html` não foi alterado.
