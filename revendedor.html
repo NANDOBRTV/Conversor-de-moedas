@@ -135,10 +135,20 @@
           <p class="footnote">E-mail: <strong id="accountEmail">—</strong></p>
           <p class="footnote">Para alterar seu plano ou corrigir o acesso, fale com o suporte. A validade é exibida conforme os dados cadastrados na conta.</p>
           <div class="account-purchase" id="accountPurchase">
-            <h3>Planos e compra</h3>
-            <p>Escolha o plano. O pedido será enviado pelo WhatsApp com seu usuário e e-mail para conferência manual.</p>
-            <button class="btn btn-light" type="button" id="requestMonthly">Solicitar plano mensal · R$ 9,90</button>
-            <button class="btn btn-primary" type="button" id="requestOneTime">Solicitar pagamento único · R$ 49,90</button>
+            <h3>Escolha seu plano Premium</h3>
+            <p>Seu pedido será enviado pelo WhatsApp para conferência manual. O acesso é liberado após a confirmação do pagamento.</p>
+            <div class="plan-option">
+              <h3>🥇 Plano Ouro</h3>
+              <div class="plan-price">R$ 9,90 <small>/ mês</small></div>
+              <p>Acesso à calculadora de revenda e ao histórico de cálculos salvos.</p>
+              <button class="btn btn-light" type="button" id="requestMonthly">Solicitar Ouro</button>
+            </div>
+            <div class="plan-option featured">
+              <h3>💎 Plano Diamante</h3>
+              <div class="plan-price">R$ 49,90 <small>pagamento único</small></div>
+              <p>Inclui os benefícios do Ouro, além de copiar resultados e exportar cálculos em CSV.</p>
+              <button class="btn btn-primary" type="button" id="requestOneTime">Solicitar Diamante</button>
+            </div>
             <div class="login-message error" id="purchaseMessage" role="status" aria-live="polite"></div>
           </div>
         </section>
@@ -269,6 +279,8 @@ function applyAccessUI(profile) {
   document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => {
     el.style.display = active ? '' : 'none';
   });
+  $('copyResults').style.display = tier === 'diamond' ? '' : 'none';
+  $('downloadResults').style.display = tier === 'diamond' ? '' : 'none';
   if (active) {
     loginCard.style.display = 'none';
     form.style.display = '';
@@ -317,20 +329,21 @@ async function showSignedIn(session) {
   readHistory();
   renderHistory();
 }
-function requestPurchase(plan) {
+function requestPurchase(tier) {
   if (!currentProfile || !currentProfile.username || !currentProfile.email) {
     message($('purchaseMessage'), 'Não conseguimos identificar sua conta. Saia e entre novamente ou fale com o suporte.');
     return;
   }
-  const monthly = plan === 'monthly';
-  const planName = monthly ? 'Plano mensal' : 'Pagamento único';
-  const price = monthly ? 'R$ 9,90 por mês' : 'R$ 49,90';
-  const msg = 'Olá! Quero solicitar o ' + planName + ' do Painel de Revendedor Sanba (' + price + '). Usuário: ' + currentProfile.username + '. E-mail da conta: ' + currentProfile.email + '. Por favor, me informe como pagar. Sei que o acesso será ativado após a confirmação do pagamento.';
+  const monthly = tier === 'gold';
+  const planName = monthly ? 'Plano Ouro' : 'Plano Diamante';
+  const price = monthly ? 'R$ 9,90 por mês' : 'R$ 49,90, pagamento único';
+  const requestedPlan = monthly ? 'monthly' : 'one_time';
+  const msg = 'Olá! Quero solicitar o ' + planName + ' do Painel de Revendedor Sanba (' + price + '). Categoria desejada: ' + (monthly ? 'gold' : 'diamond') + '. Plano solicitado: ' + requestedPlan + '. Usuário: ' + currentProfile.username + '. E-mail da conta: ' + currentProfile.email + '. Por favor, me informe como pagar. Sei que o acesso será ativado após a confirmação manual do pagamento.';
   const url = 'https://wa.me/5582996843269?text=' + encodeURIComponent(msg);
   window.open(url, '_blank', 'noopener,noreferrer');
 }
-$('requestMonthly').addEventListener('click', () => requestPurchase('monthly'));
-$('requestOneTime').addEventListener('click', () => requestPurchase('one_time'));
+$('requestMonthly').addEventListener('click', () => requestPurchase('gold'));
+$('requestOneTime').addEventListener('click', () => requestPurchase('diamond'));
 $('registerForm').addEventListener('submit', async event => {
   event.preventDefault();
   const registerMessage = $('registerMessage');
