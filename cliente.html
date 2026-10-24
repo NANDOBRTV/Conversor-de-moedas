@@ -66,4 +66,5 @@ $('saveName').addEventListener('click',()=>{if(!session)return;customerName=$('c
 $('signOut').addEventListener('click',async()=>{if(supabase)await supabase.auth.signOut();session=null;profile=null;showAccount(false);setMode('login');msg('authMessage','Você saiu da sua conta.','success')});
 
 if(supabase){supabase.auth.getSession().then(({data})=>{if(data.session)showSignedIn(data.session)});supabase.auth.onAuthStateChange((_event,s)=>{if(s&&!session)showSignedIn(s)})}else{msg('authMessage','Supabase indisponível. Confira o arquivo de configuração.','error')}
+if(window.location.hash==='#criar-conta'){setMode('signup');$('authTitle').scrollIntoView({behavior:'smooth',block:'center'});}
 </script></body></html>
