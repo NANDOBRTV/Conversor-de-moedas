@@ -256,6 +256,9 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
 .site-mini-menu a,.site-mini-menu button{color:#d8edff}
 @media(max-width:520px){body{padding:12px 10px}.card{border-radius:20px;padding:20px 16px}}
 
+
+/* Visitantes sem sessão usam a calculadora normalmente, sem botões de compra. */
+body:not(.customer-authenticated) .wpp.show{display:none!important}
 </style>
 </head>
 <body>
@@ -786,6 +789,29 @@ attLabels();updateIdHint();
 
 
 ;
+</script>
+<script type="module">
+// O botão de WhatsApp só fica disponível quando há uma sessão autenticada.
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const cfg = window.SANBA_SUPABASE_CONFIG || {};
+if (cfg.url && cfg.anonKey) {
+  const authClient = createClient(cfg.url, cfg.anonKey, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const syncCustomerAccess = async () => {
+    try {
+      const {data,error} = await authClient.auth.getSession();
+      if (error) throw error;
+      document.body.classList.toggle('customer-authenticated', Boolean(data.session && data.session.user));
+    } catch (_) {
+      document.body.classList.remove('customer-authenticated');
+    }
+  };
+  await syncCustomerAccess();
+  authClient.auth.onAuthStateChange((_event, session) => {
+    document.body.classList.toggle('customer-authenticated', Boolean(session && session.user));
+  });
+} else {
+  document.body.classList.remove('customer-authenticated');
+}
 </script>
 </body>
 </html>
