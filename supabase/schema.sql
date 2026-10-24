@@ -134,6 +134,8 @@ revoke all on public.payment_orders from anon, authenticated;
 drop policy if exists "Users can read own payment orders" on public.payment_orders;
 create policy "Users can read own payment orders" on public.payment_orders
 for select to authenticated using (auth.uid() = user_id);
+-- A política limita as linhas; a permissão SQL é necessária para a consulta via API.
+grant select on public.payment_orders to authenticated;
 
 -- ============================================================
 -- Esquema completo Sanba (cliente, recargas, convites e pedidos)
