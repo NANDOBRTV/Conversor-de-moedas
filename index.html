@@ -676,24 +676,20 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
     const order=JSON.parse(anchor.dataset.order);
     if(!/^\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
     if(!session){
-      popup.location.replace(targetUrl);
-      alert('O WhatsApp do vendedor será aberto. Para guardar esta recarga no histórico da sua conta, entre na Área do Cliente antes de fazer o próximo pedido.');
+      popup.location.replace(new URL('./cliente.html',window.location.href).toString());
+      alert('Entre na sua conta na Área do Cliente para registrar a recarga. Depois volte à calculadora e toque em Comprar pelo WhatsApp novamente. O WhatsApp só será aberto depois que o pedido for salvo.');
       return;
     }
-    try{
-      const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending'}).select('id').single();
-      if(error)throw error;
-      const finalWhatsAppUrl=new URL(targetUrl);
-      const existingMessage=finalWhatsAppUrl.searchParams.get('text')||'';
-      finalWhatsAppUrl.searchParams.set('text',existingMessage+'\n\n📦 Número do pedido: '+data.id);
-      popup.location.replace(finalWhatsAppUrl.toString());
-    }catch(saveErr){
-      popup.location.replace(targetUrl);
-      alert('O WhatsApp do vendedor será aberto, mas não foi possível salvar o pedido no histórico da conta. Você pode continuar o atendimento normalmente.');
-    }
+    const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending',whatsapp_message_sent_at:new Date().toISOString()}).select('id').single();
+    if(error)throw error;
+    const finalWhatsAppUrl=new URL(targetUrl);
+    const existingMessage=finalWhatsAppUrl.searchParams.get('text')||'';
+    finalWhatsAppUrl.searchParams.set('text',existingMessage+'\n\n📦 Número do pedido: '+data.id);
+    popup.location.replace(finalWhatsAppUrl.toString());
   }catch(err){
-    popup.location.replace(targetUrl);
-    alert('O WhatsApp do vendedor será aberto, mas houve um problema ao preparar os dados. Confira o ID Sanba antes de enviar.');
+    popup.close();
+    const detail=err&&err.message?err.message:'Erro desconhecido';
+    alert('Não foi possível registrar a recarga, então o WhatsApp não foi aberto para evitar um pedido sem histórico. Entre na Área do Cliente e tente novamente. Detalhe: '+detail);
   }
 }
 document.getElementById('wppC').addEventListener('click',function(e){createRechargeThenOpenWhatsApp(this,e)});
