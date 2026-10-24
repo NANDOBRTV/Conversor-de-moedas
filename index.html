@@ -427,7 +427,9 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
           <li>Validação do ID Sanba com 8 dígitos numéricos.</li>
           <li>Opção para lembrar o ID somente no armazenamento local deste navegador.</li>
           <li>Resumo para copiar, opção de imprimir/salvar em PDF e botão para limpar os campos.</li>
-          <li>Mensagem de pedido pré-preenchida para continuar o atendimento no WhatsApp.</li>
+          <li>Pedidos de recarga são gravados no Supabase antes de abrir o WhatsApp, com número do pedido incluído na mensagem.</li>
+          <li>Área do Cliente consulta o histórico individual de recargas e seus status.</li>
+          <li>Painel do Revendedor incorpora a fila de recargas na sessão já autenticada, com atualização de status sem novo login.</li>
           <li>Aviso de que os valores são referências e precisam de confirmação manual.</li>
           <li>Regras de atendimento, pagamento e privacidade disponíveis no próprio site.</li>
         </ul>
@@ -440,7 +442,7 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
           <li>Links de WhatsApp em nova aba usam proteções contra acesso à janela de origem.</li>
           <li>Validação do ID e dos valores antes de preparar um pedido.</li>
           <li>O ID só fica salvo neste navegador se a pessoa ativar a opção de lembrá-lo.</li>
-          <li>No Supabase, RLS está ativado nas tabelas <code>reseller_profiles</code> e <code>payment_orders</code>, com políticas para cada usuário consultar apenas os próprios registros.</li>
+          <li>No Supabase, RLS está ativado em <code>reseller_profiles</code>, <code>payment_orders</code>, <code>customer_orders</code> e <code>recharge_orders</code>. Clientes consultam apenas as próprias recargas; a consulta e a alteração da fila global ficam restritas ao perfil desenvolvedor.</li>
           <li>Privilégios das tabelas foram restringidos e as políticas foram ajustadas para usar <code>(select auth.uid())</code>.</li>
           <li>Os registros do Supabase mostraram respostas HTTP 200 para login por nome de usuário, autenticação e consulta do perfil do revendedor.</li>
         </ul>
@@ -661,6 +663,7 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
   const targetUrl=anchor.getAttribute('href');
   const popup=window.open('about:blank','_blank');
   if(!popup){alert('Permita abrir uma nova aba para continuar pelo WhatsApp.');return}
+  popup.opener=null;
   popup.document.title='Preparando pedido…';
   popup.document.body.innerHTML='<p style="font-family:system-ui;padding:24px">Salvando seu pedido com segurança…</p>';
   try{
