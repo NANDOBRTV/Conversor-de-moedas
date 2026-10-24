@@ -165,6 +165,9 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(15,118,110,.12
 @media(max-width:600px){.wrap{padding:12px 11px 30px}.hero{padding:21px 18px;border-radius:19px}.login-card,.panel-card{padding:17px;border-radius:16px}.top-actions{margin-right:48px}.nav-link{padding:9px 10px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
+
+/* Segurança visual: o painel de convites permanece oculto até a validação do perfil Desenvolvedor pelo Supabase. */
+#resellerInviteAdminPanel[hidden]{display:none!important;visibility:hidden!important;}
 </style>
 </head>
 <body>
