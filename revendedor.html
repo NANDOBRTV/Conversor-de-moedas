@@ -437,9 +437,16 @@ function applyAccessUI(profile) {
 }
 function renderAccount(profile) {
   const tier = membershipTier(profile);
-  const active = accessIsActive(profile) && tier !== 'common';
+  const accountActive = accessIsActive(profile);
+  const premiumActive = accountActive && tier !== 'common';
   $('welcomeTitle').textContent = 'Olá, ' + profile.username + '!';
-  $('heroStatus').textContent = active ? '✓ Acesso ' + tierLabel(profile) + ' liberado' : tier === 'common' ? 'Conta Comum · escolha um plano para virar Premium' : '⚠ Conta autenticada · acesso pendente';
+  $('heroStatus').textContent = premiumActive
+    ? '✓ Acesso ' + tierLabel(profile) + ' liberado'
+    : tier === 'common' && accountActive
+      ? '✓ Conta Comum ativa · escolha um plano para liberar ferramentas premium'
+      : tier === 'common'
+        ? '⚠ Conta Comum · acesso inativo'
+        : '⚠ Conta autenticada · acesso pendente';
   $('accountUsername').textContent = profile.username || '—';
   $('accountEmail').textContent = profile.email || 'E-mail não informado';
   if (document.activeElement !== $('editUsername')) $('editUsername').value = profile.username || '';
@@ -448,14 +455,17 @@ function renderAccount(profile) {
   $('accountUntil').textContent = dateLabel(profile.access_until);
   $('accountStatus').replaceChildren();
   const badge = document.createElement('span');
-  badge.className = 'badge' + (active ? '' : ' inactive');
-  badge.textContent = active ? 'ATIVO' : 'INATIVO';
+  badge.className = 'badge' + (accountActive ? '' : ' inactive');
+  badge.textContent = accountActive ? 'ATIVO' : 'INATIVO';
   $('accountStatus').appendChild(badge);
-  $('statAccess').textContent = active ? tierLabel(profile) : tier === 'common' ? 'Comum' : 'Pendente';
-  $('statAccess').style.color = active ? '#047857' : '#9f1239';
-  if (!active) {
-    if (tier === 'common') message(accountMessage, 'Você está no plano Comum. Escolha Ouro ou Diamante, faça o Pix pelo WhatsApp e aguarde a conferência do pagamento.', 'error');
-    else message(accountMessage, 'Sua conta foi autenticada, mas o acesso do plano não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
+  $('statAccess').textContent = premiumActive ? tierLabel(profile) : tier === 'common' && accountActive ? 'Comum ativo' : tier === 'common' ? 'Comum inativo' : 'Pendente';
+  $('statAccess').style.color = accountActive ? '#047857' : '#9f1239';
+  if (tier === 'common' && accountActive) {
+    message(accountMessage, 'Sua conta Comum está ativa. A calculadora e o histórico são recursos dos planos Ouro e Diamante. Você pode solicitar um plano premium na área Minha conta.', 'success');
+  } else if (tier === 'common') {
+    message(accountMessage, 'Sua conta está no plano Comum, mas o acesso está inativo. Você ainda pode solicitar um plano Ouro ou Diamante na área Minha conta.', 'error');
+  } else if (!premiumActive) {
+    message(accountMessage, 'Sua conta foi autenticada, mas o acesso do plano não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
 }
 async function showSignedIn(session) {
