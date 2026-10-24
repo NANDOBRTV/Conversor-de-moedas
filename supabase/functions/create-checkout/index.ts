@@ -11,10 +11,113 @@ function json(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
 
+async function checkVpn(req: Request): Promise<{ blocked: boolean; unavailable: boolean }> {
+  // Prefer the edge-provided client IP; fall back to the forwarded chain.
+  const clientIp = req.headers.get("cf-connecting-ip")?.trim()
+    || req.headers.get("x-real-ip")?.trim()
+    || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (!clientIp || clientIp.length > 100) return { blocked: false, unavailable: true };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 6500);
+  try {
+    const response = await fetch("https://iplogs.com/v1/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ip: clientIp }),
+      signal: controller.signal,
+    });
+    if (!response.ok) return { blocked: false, unavailable: true };
+    const result = await response.json();
+    if (typeof result?.verdict !== "string") return { blocked: false, unavailable: true };
+    const torDetected = Array.isArray(result?.signals)
+      && result.signals.some((s: {type?: string; matched?: boolean}) => s?.type === "tor_exit" && s?.matched === true);
+    const blocked = result.is_vpn === true
+      || result.verdict === "vpn_detected"
+      || result.ip_info?.is_proxy === true
+      || torDetected;
+    return { blocked, unavailable: false };
+  } catch {
+    return { blocked: false, unavailable: true };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+function requestIp(req: Request): string | null {
+  const value = req.headers.get("cf-connecting-ip")?.trim()
+    || req.headers.get("x-real-ip")?.trim()
+    || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (!value || value.length > 100 || value.includes("\n")) return null;
+  return value;
+}
+async function consumeRateLimit(req: Request, scope: string, limit: number, windowSeconds: number, identity?: string): Promise<boolean> {
+  const ip = requestIp(req);
+  const url = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!ip || !url || !serviceKey) return false;
+  const key = await sha256Hex(ip.toLowerCase());
+  const response = await fetch(url + "/rest/v1/rpc/check_and_consume_rate_limit", {
+    method: "POST",
+    headers: {
+      "apikey": serviceKey,
+      "Authorization": "Bearer " + serviceKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ p_key_hash: key, p_scope: scope, p_limit: limit, p_window_seconds: windowSeconds }),
+  });
+  if (!response.ok) return false;
+  const allowed = await response.json();
+  if (allowed !== true) return false;
+  if (identity !== undefined) {
+    const identityHash = await sha256Hex(identity.trim().toLowerCase());
+    const identityResponse = await fetch(url + "/rest/v1/rpc/check_and_consume_rate_limit", {
+      method: "POST",
+      headers: {
+        "apikey": serviceKey,
+        "Authorization": "Bearer " + serviceKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        p_key_hash: identityHash,
+        p_scope: "login_identifier",
+        p_limit: 8,
+        p_window_seconds: 900,
+      }),
+    });
+    if (!identityResponse.ok) return false;
+    if (await identityResponse.json() !== true) return false;
+  }
+  return true;
+}
+
+async function enforceVpnCheck(req: Request): Promise<Response | null> {
+  const result = await checkVpn(req);
+  if (result.blocked) {
+    return json({ error: "Acesso bloqueado: detectamos VPN, proxy ou Tor. Desative esse serviço e tente novamente pela sua conexão normal." }, 403);
+  }
+  if (result.unavailable) {
+    return json({ error: "Não foi possível verificar a conexão com segurança agora. Tente novamente em alguns minutos." }, 503);
+  }
+  return null;
+}
+
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Método não permitido." }, 405);
   if (req.headers.get("origin") !== "https://nandobrtv.github.io") return json({ error: "Origem não autorizada." }, 403);
+
+  if (!(await consumeRateLimit(req, "checkout_ip", 8, 60))) {
+    return json({ error: "Muitas tentativas em pouco tempo. Aguarde e tente novamente." }, 429);
+  }
+
+  const vpnBlock = await enforceVpnCheck(req);
+  if (vpnBlock) return vpnBlock;
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
