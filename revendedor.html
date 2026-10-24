@@ -198,7 +198,7 @@ body.invite-mode #loginCard #loginView { display:none; }
     <button class="settings-menu-toggle" id="settingsMenuToggle" type="button" aria-label="Abrir menu rápido" aria-expanded="false" aria-controls="quickMenu" title="Menu">☰</button>
     <section class="quick-menu" id="quickMenu" aria-hidden="true" aria-label="Menu rápido">
       <button class="quick-menu-item" id="quickSettingsLink" type="button">⚙️ Configurações</button>
-      <button class="quick-menu-item" id="quickInviteLink" type="button" hidden>🔐 Gerador de convites de revendedores</button>
+      <a class="quick-menu-item" id="quickInviteLink" href="./convites-revendedores.html" hidden>🔐 Gerador de convites de revendedores ↗</a>
     </section>
     <section class="settings-menu" id="settingsMenu" aria-hidden="true" aria-label="Menu de configurações">
       <div class="settings-menu-head"><h2>⚙️ Configurações</h2><button class="settings-menu-close" id="settingsMenuClose" type="button" aria-label="Fechar configurações">×</button></div>
@@ -275,22 +275,6 @@ body.invite-mode #loginCard #loginView { display:none; }
 
   <section class="dashboard" id="dashboard" aria-label="Painel de ferramentas">
     <div class="section-head"><div><h2 id="welcomeTitle">Bem-vindo!</h2><p>Resumo rápido e ferramentas da sua conta.</p></div><button class="btn btn-light btn-small" id="logoutButton" type="button">Sair da conta</button></div>
-    <section class="panel-card" id="resellerInviteAdminPanel" hidden aria-labelledby="resellerInviteAdminTitle" style="margin-bottom:16px">
-      <div class="section-head"><div><h2 id="resellerInviteAdminTitle">🔐 Convites e solicitações de revendedores</h2><p>Somente a conta de desenvolvedor pode criar convites, revogá-los e aprovar solicitações.</p></div><button class="btn btn-light btn-small" id="refreshResellerAdmin" type="button">Atualizar</button></div>
-      <form id="createResellerInviteForm">
-        <label class="field"><span>E-mail específico (opcional)</span><input id="resellerInviteEmail" type="email" maxlength="254" placeholder="revendedor@exemplo.com"></label>
-        <button class="btn btn-primary" id="createResellerInvite" type="submit">Gerar convite individual</button>
-      </form>
-      <div id="resellerInviteAdminMessage" class="login-message" role="status" aria-live="polite"></div>
-      <label class="field" style="margin-top:12px"><span>Link do convite (exibido uma única vez)</span><input id="resellerInviteLink" type="text" readonly placeholder="Gere um convite para ver o link"></label>
-      <button class="btn btn-light btn-small" id="copyResellerInviteLink" type="button" disabled>Copiar link</button>
-      <div class="settings-divider"></div>
-      <h3 class="settings-section-title">Solicitações de cadastro</h3>
-      <div id="resellerApplicationsList" class="history-list"><div class="history-empty">Carregue para consultar as solicitações.</div></div>
-      <div class="settings-divider"></div>
-      <h3 class="settings-section-title">Convites emitidos</h3>
-      <div id="resellerInvitesList" class="history-list"><div class="history-empty">Carregue para consultar os convites.</div></div>
-    </section>
     <section class="panel-card recharge-orders-panel" id="rechargeOrdersPanel" hidden aria-labelledby="rechargeOrdersTitle">
       <div class="section-head"><div><h2 id="rechargeOrdersTitle">📦 Pedidos de recarga dos clientes</h2><p>Pedidos sincronizados com as contas dos clientes. Esta área usa a sessão atual do painel.</p></div><button class="btn btn-light btn-small" id="refreshRechargeOrders" type="button">Atualizar pedidos</button></div>
       <div id="rechargeOrdersMessage" class="login-message" role="status" aria-live="polite"></div>
@@ -386,6 +370,6 @@ body.invite-mode #loginCard #loginView { display:none; }
 })();
 </script>
 <script src="./supabase-config.js"></script>
-<script src="./revendedor-loader.js?v=20261024-5" defer></script>
+<script src="./revendedor-loader.js?v=20261024-6" defer></script>
 </body>
 </html>
