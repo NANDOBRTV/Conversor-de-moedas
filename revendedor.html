@@ -155,7 +155,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 <main class="wrap">
   <nav class="top" aria-label="Navegação principal">
     <div class="brand"><span class="brand-mark-reseller" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="resellerCoin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2b2"/><stop offset="1" stop-color="#e9b949"/></linearGradient></defs><rect x="2" y="2" width="60" height="60" rx="17" fill="#0f172a"/><circle cx="32" cy="32" r="22" fill="url(#resellerCoin)"/><circle cx="32" cy="32" r="18" fill="none" stroke="#8a6215" stroke-width="1.5"/><path d="M40 23c-2-2-5-3-8-3-7 0-12 5-12 12s5 12 12 12c4 0 7-1 9-4l-4-4c-1 2-3 2-5 2-3 0-6-2-6-6s3-6 6-6c2 0 3 1 4 2z" fill="#0f3b3a"/></svg></span><span>Conversor <span>Sanba</span></span></div>
-    <div class="top-actions"><a class="nav-link" href="./index.html">← Voltar ao conversor</a><a class="nav-link" href="https://wa.me/5582996843269?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20Painel%20do%20Revendedor." target="_blank" rel="noopener noreferrer">Falar com suporte ↗</a></div>
+    <div class="top-actions"><a class="nav-link" href="./index.html">← Voltar ao conversor</a><a class="nav-link" id="adminOrdersLink" href="./admin-pedidos.html" style="display:none">📦 Aprovar pedidos</a><a class="nav-link" href="https://wa.me/5582996843269?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20Painel%20do%20Revendedor." target="_blank" rel="noopener noreferrer">Falar com suporte ↗</a></div>
     <button class="settings-menu-toggle" id="settingsMenuToggle" type="button" aria-label="Abrir configurações" aria-expanded="false" aria-controls="settingsMenu" title="Configurações">⚙</button>
     <section class="settings-menu" id="settingsMenu" aria-hidden="true" aria-label="Menu de configurações">
       <div class="settings-menu-head"><h2>⚙️ Configurações</h2><button class="settings-menu-close" id="settingsMenuClose" type="button" aria-label="Fechar configurações">×</button></div>
@@ -464,6 +464,7 @@ async function showSignedIn(session) {
   }
   currentProfile = profile;
   $('settingsMenuToggle').style.display = 'inline-flex';
+  if ($('adminOrdersLink')) $('adminOrdersLink').style.display = profile.membership_tier === 'developer' ? 'inline-flex' : 'none';
   $('editUsername').value = profile.username || '';
   $('editEmail').value = profile.email || session.user.email || '';
   $('settingsPlanName').textContent = tierLabel(profile);
