@@ -66,7 +66,7 @@
             <label>Moedas em cada pacote<input id="calcQuantity" type="number" min="1" step="1" value="1600" inputmode="numeric" required></label>
             <label>Total de moedas que você compra<input id="calcLotCoins" type="number" min="1" step="1" value="160000" inputmode="numeric" required></label>
             <label>Valor total do lote em dólares (US$)<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 50,00" inputmode="decimal" required></label>
-            <label>Cotação do dólar (US$ 1 em moeda de venda)<input id="calcUsdRate" type="number" min="0.000001" step="any" value="1" inputmode="decimal" required></label>
+            <label>Cotação do dólar (US$ 1 em moeda de venda)<input id="calcUsdRate" type="number" min="0.000001" step="any" value="" inputmode="decimal" required></label>
             <label>Por quanto vende cada pacote<input id="calcSalePrice" type="number" min="0.01" step="0.01" placeholder="Ex.: 8,00" inputmode="decimal" required></label>
             <label>Outros custos do lote (se houver)<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
             <label>Taxa descontada das vendas (%)<input id="calcFee" type="number" min="0" max="99.99" step="0.01" value="20" inputmode="decimal" required></label>
@@ -331,7 +331,7 @@ $('clearHistory').addEventListener('click', () => {
 function exportText() {
   if(!latestCalculation)return '';
   const r=latestCalculation,currency=r.currency||'BRL';
-  return ['RESUMO DO LOTE SANBA','Moeda: '+currency,'Moedas no lote: '+r.lotCoins,'Moedas por pacote: '+r.packageCoins,'Pacotes que pode vender: '+r.packageCount,'Custo do lote: '+money(r.totalCost,currency),'Preço de venda por pacote: '+money(r.salePrice,currency),'Faturamento bruto: '+money(r.grossRevenue,currency),'Taxa descontada: '+money(r.saleFees,currency),'Receita após taxa: '+money(r.netRevenue,currency),'LUCRO FINAL: '+money(r.totalProfit,currency),'MARGEM DE LUCRO: '+r.marginPercent.toFixed(2)+'%','Retorno sobre investimento: '+r.returnPercent.toFixed(2)+'%'].join('\\n');
+  return ['RESUMO DO LOTE SANBA','Moeda: '+currency,'Moedas no lote: '+r.lotCoins,'Moedas por pacote: '+r.packageCoins,'Pacotes que pode vender: '+r.packageCount,'Compra do lote em dólares: '+money(r.purchaseCostUSD??r.purchaseCost,'USD'),'Cotação do dólar: '+(r.usdRate??1),'Custo da compra convertido: '+money(r.purchaseCost??r.totalCost,currency),'Custo total com extras: '+money(r.totalCost,currency),'Preço de venda por pacote: '+money(r.salePrice,currency),'Faturamento bruto: '+money(r.grossRevenue,currency),'Taxa descontada: '+money(r.saleFees,currency),'Receita após taxa: '+money(r.netRevenue,currency),'LUCRO FINAL: '+money(r.totalProfit,currency),'MARGEM DE LUCRO: '+r.marginPercent.toFixed(2)+'%','Retorno sobre investimento: '+r.returnPercent.toFixed(2)+'%'].join('\\n');
 }
 $('copyResults').addEventListener('click', async () => {
   const text = exportText();
