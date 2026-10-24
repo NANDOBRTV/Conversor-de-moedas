@@ -508,6 +508,23 @@ async function loadRechargeOrders(){
     [['payment_confirmed','Confirmar pagamento'],['processing','Em processamento'],['completed','Concluir'],['payment_rejected','Recusar'],['cancelled','Cancelar']].filter(([s])=>s!==o.status).forEach(([next,label])=>{
       const b=document.createElement('button');b.type='button';b.className='btn btn-light btn-small';b.textContent=label;b.addEventListener('click',()=>updateRechargeStatus(o.id,next,b));actions.appendChild(b);
     });
+    const expiresAt = new Date(new Date(o.created_at).getTime() + 15 * 60 * 1000);
+    if(o.status === 'pending'){
+      const deadline=document.createElement('small');
+      deadline.className='recharge-order-deadline';
+      deadline.textContent = Date.now() >= expiresAt.getTime()
+        ? 'Prazo de pagamento vencido. O sistema cancelará este pedido automaticamente.'
+        : 'Prazo para confirmar o pagamento: até ' + expiresAt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + ' (15 minutos após o pedido).';
+      info.append(deadline);
+    }
+    const nextActions = o.status === 'pending'
+      ? [['payment_confirmed','Confirmar pagamento']]
+      : (o.status === 'payment_confirmed' || o.status === 'processing')
+        ? [['completed','Confirmar entrega']]
+        : [];
+    nextActions.forEach(([next,label])=>{
+      const b=document.createElement('button');b.type='button';b.className='btn btn-primary btn-small';b.textContent=label;b.addEventListener('click',()=>updateRechargeStatus(o.id,next,b));actions.appendChild(b);
+    });
     card.append(info,actions);list.appendChild(card);
   });
 }
