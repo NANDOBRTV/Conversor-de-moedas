@@ -224,7 +224,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
         <button class="btn btn-dark login-submit" type="submit" id="registerSubmit">Criar minha conta</button>
         <div class="login-message error" id="registerMessage" role="status" aria-live="polite"></div>
       </form>
-      <p class="footnote">Use um e-mail válido. O acesso pago é liberado automaticamente após a confirmação segura do pagamento pelo Mercado Pago.</p>
+      <p class="footnote">Use um e-mail válido. O acesso pago é liberado após a conferência manual do pagamento.</p>
       <p class="footnote">Já tem conta? Toque em <strong>Entrar</strong>.</p>
     </div>
   </section>
@@ -278,7 +278,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
           <p class="footnote">Para editar seus dados, toque na engrenagem no canto superior direito. A validade é exibida conforme os dados cadastrados na conta.</p>
           <div class="account-purchase" id="accountPurchase">
             <h3>Escolha seu plano Premium</h3>
-            <p>Escolha o plano e pague com Pix ou cartão de crédito pelo checkout seguro do Mercado Pago. O acesso é liberado automaticamente após a confirmação do pagamento.</p>
+            <p>Escolha seu plano e finalize pelo WhatsApp. Faça o Pix usando a chave abaixo e envie o comprovante. O acesso será liberado depois da conferência manual do pagamento.</p>
             <div class="plan-option">
               <h3>🥇 Plano Ouro</h3>
               <div class="plan-price">R$ 9,90 <small>/ 30 dias</small></div>
@@ -303,7 +303,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
       <div id="historyEmpty" class="history-empty">Você ainda não salvou nenhum cálculo. Faça uma simulação e toque em “Salvar cálculo”.</div>
       <ul id="historyList" class="history-list"></ul>
     </section>
-    <div class="notice"><strong>Importante:</strong> os cálculos são estimativas e não confirmam o preço oficial do Sanba nem a conclusão de uma recarga. Os pagamentos dos planos Ouro e Diamante são feitos no checkout do Mercado Pago; a liberação depende da confirmação segura do provedor. O histórico é local e não sincroniza entre aparelhos.</div>
+    <div class="notice"><strong>Importante:</strong> os cálculos são estimativas e não confirmam o preço oficial do Sanba nem a conclusão de uma recarga. Os planos Ouro e Diamante são pagos por Pix e liberados após a confirmação manual do recebimento. O histórico é local e não sincroniza entre aparelhos.</div>
   </section>
 
   <div class="login-message" id="accountMessage" role="status" aria-live="polite"></div>
@@ -630,22 +630,22 @@ async function requestPurchase(tier) {
   const button = tier === 'gold' ? $('requestMonthly') : $('requestOneTime');
   const originalText = button.textContent;
   button.disabled = true;
-  button.textContent = 'Preparando checkout…';
-  message(purchaseMessage, 'Estamos preparando o pagamento seguro. Não feche esta página.', 'success');
+  button.textContent = 'Preparando pedido…';
+  message(purchaseMessage, 'Estamos registrando seu pedido antes de abrir o WhatsApp.', 'success');
   try {
-    const { data, error } = await supabase.functions.invoke('create-checkout', { body: { tier } });
+    const { data, error } = await supabase.functions.invoke('create-customer-order', { body: { tier, customer_name: currentProfile.full_name || currentProfile.name || '' } });
     if (error) throw error;
-    if (!data || data.error || !data.checkout_url || !/^https:\/\/([\w-]+\.)?mercadopago\.com(\.br)?\//i.test(data.checkout_url)) {
-      throw new Error(data && data.error ? data.error : 'O checkout não foi criado. Tente novamente ou fale com o suporte.');
+    if (!data || data.error || !data.whatsapp_url || !/^https:\/\/wa\.me\//i.test(data.whatsapp_url) || !data.order || !data.order.id) {
+      throw new Error(data && data.error ? data.error : 'O pedido não foi criado. Tente novamente ou fale com o suporte.');
     }
-    message(purchaseMessage, 'Pedido criado. Redirecionando para o Mercado Pago…', 'success');
-    window.location.assign(data.checkout_url);
+    message(purchaseMessage, 'Pedido ' + data.order.id + ' registrado. Abrindo o WhatsApp com os dados do Pix…', 'success');
+    window.location.assign(data.whatsapp_url);
   } catch (error) {
     console.error('Checkout error', error);
     const detail = String(error && error.message || '');
-    message(purchaseMessage, /credencial|configurad|not configured/i.test(detail)
-      ? 'A integração ainda precisa das credenciais do Mercado Pago no Supabase. Nenhuma cobrança foi criada.'
-      : 'Não foi possível iniciar o pagamento agora. Nenhuma liberação foi feita. Tente novamente mais tarde ou fale com o suporte.');
+    message(purchaseMessage, detail && !/fetch|network|function|non-2xx|failed/i.test(detail)
+      ? detail
+      : 'Não foi possível registrar o pedido agora. Nenhuma liberação foi feita. Verifique sua conexão e tente novamente.');
   } finally {
     button.disabled = false;
     button.textContent = originalText;
@@ -653,10 +653,8 @@ async function requestPurchase(tier) {
 }
 $('requestMonthly').addEventListener('click', () => requestPurchase('gold'));
 $('requestOneTime').addEventListener('click', () => requestPurchase('diamond'));
-const paymentReturn = new URLSearchParams(window.location.search).get('payment');
-if (paymentReturn === 'success') {
-  message($('purchaseMessage'), 'Retorno do Mercado Pago recebido. Estamos confirmando o pagamento com segurança; se o acesso não atualizar em alguns instantes, saia e entre novamente.', 'success');
-} else if (paymentReturn === 'pending') {
+// Pagamento manual por Pix: o pedido é confirmado no painel administrativo.
+
   message($('purchaseMessage'), 'O Mercado Pago informou que o pagamento está pendente. O acesso será liberado somente quando a confirmação chegar.', 'error');
 } else if (paymentReturn === 'failure') {
   message($('purchaseMessage'), 'O pagamento não foi concluído. Você pode tentar novamente.', 'error');
