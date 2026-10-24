@@ -136,18 +136,18 @@
           <p class="footnote">Para alterar seu plano ou corrigir o acesso, fale com o suporte. A validade é exibida conforme os dados cadastrados na conta.</p>
           <div class="account-purchase" id="accountPurchase">
             <h3>Escolha seu plano Premium</h3>
-            <p>Seu pedido será enviado pelo WhatsApp para conferência manual. O acesso é liberado após a confirmação do pagamento.</p>
+            <p>Escolha o plano e pague com Pix ou cartão de crédito pelo checkout seguro do Mercado Pago. O acesso é liberado automaticamente após a confirmação do pagamento.</p>
             <div class="plan-option">
               <h3>🥇 Plano Ouro</h3>
-              <div class="plan-price">R$ 9,90 <small>/ mês</small></div>
-              <p>Acesso à calculadora de revenda e ao histórico de cálculos salvos.</p>
-              <button class="btn btn-light" type="button" id="requestMonthly">Solicitar Ouro</button>
+              <div class="plan-price">R$ 9,90 <small>/ 30 dias</small></div>
+              <p>Acesso à calculadora de revenda e ao histórico de cálculos salvos por 30 dias. A renovação ainda será feita por uma nova compra, não é cobrança recorrente automática.</p>
+              <button class="btn btn-light" type="button" id="requestMonthly">Pagar Ouro</button>
             </div>
             <div class="plan-option featured">
               <h3>💎 Plano Diamante</h3>
               <div class="plan-price">R$ 49,90 <small>pagamento único</small></div>
               <p>Inclui os benefícios do Ouro, além de copiar resultados e exportar cálculos em CSV.</p>
-              <button class="btn btn-primary" type="button" id="requestOneTime">Solicitar Diamante</button>
+              <button class="btn btn-primary" type="button" id="requestOneTime">Pagar Diamante</button>
             </div>
             <div class="login-message error" id="purchaseMessage" role="status" aria-live="polite"></div>
           </div>
@@ -329,21 +329,46 @@ async function showSignedIn(session) {
   readHistory();
   renderHistory();
 }
-function requestPurchase(tier) {
-  if (!currentProfile || !currentProfile.username || !currentProfile.email) {
-    message($('purchaseMessage'), 'Não conseguimos identificar sua conta. Saia e entre novamente ou fale com o suporte.');
+async function requestPurchase(tier) {
+  const purchaseMessage = $('purchaseMessage');
+  if (!supabase || !currentProfile || !currentProfile.username || !currentProfile.email) {
+    message(purchaseMessage, 'Não conseguimos identificar sua conta. Saia e entre novamente antes de comprar.');
     return;
   }
-  const monthly = tier === 'gold';
-  const planName = monthly ? 'Plano Ouro' : 'Plano Diamante';
-  const price = monthly ? 'R$ 9,90 por mês' : 'R$ 49,90, pagamento único';
-  const requestedPlan = monthly ? 'monthly' : 'one_time';
-  const msg = 'Olá! Quero solicitar o ' + planName + ' do Painel de Revendedor Sanba (' + price + '). Categoria desejada: ' + (monthly ? 'gold' : 'diamond') + '. Plano solicitado: ' + requestedPlan + '. Usuário: ' + currentProfile.username + '. E-mail da conta: ' + currentProfile.email + '. Por favor, me informe como pagar. Sei que o acesso será ativado após a confirmação manual do pagamento.';
-  const url = 'https://wa.me/5582996843269?text=' + encodeURIComponent(msg);
-  window.open(url, '_blank', 'noopener,noreferrer');
+  const button = tier === 'gold' ? $('requestMonthly') : $('requestOneTime');
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Preparando checkout…';
+  message(purchaseMessage, 'Estamos preparando o pagamento seguro. Não feche esta página.', 'success');
+  try {
+    const { data, error } = await supabase.functions.invoke('create-checkout', { body: { tier } });
+    if (error) throw error;
+    if (!data || data.error || !data.checkout_url || !/^https:\/\/([\w-]+\.)?mercadopago\.com(\.br)?\//i.test(data.checkout_url)) {
+      throw new Error(data && data.error ? data.error : 'O checkout não foi criado. Tente novamente ou fale com o suporte.');
+    }
+    message(purchaseMessage, 'Pedido criado. Redirecionando para o Mercado Pago…', 'success');
+    window.location.assign(data.checkout_url);
+  } catch (error) {
+    console.error('Checkout error', error);
+    const detail = String(error && error.message || '');
+    message(purchaseMessage, /credencial|configurad|not configured/i.test(detail)
+      ? 'A integração ainda precisa das credenciais do Mercado Pago no Supabase. Nenhuma cobrança foi criada.'
+      : 'Não foi possível iniciar o pagamento agora. Nenhuma liberação foi feita. Tente novamente mais tarde ou fale com o suporte.');
+  } finally {
+    button.disabled = false;
+    button.textContent = originalText;
+  }
 }
 $('requestMonthly').addEventListener('click', () => requestPurchase('gold'));
 $('requestOneTime').addEventListener('click', () => requestPurchase('diamond'));
+const paymentReturn = new URLSearchParams(window.location.search).get('payment');
+if (paymentReturn === 'success') {
+  message($('purchaseMessage'), 'Retorno do Mercado Pago recebido. Estamos confirmando o pagamento com segurança; se o acesso não atualizar em alguns instantes, saia e entre novamente.', 'success');
+} else if (paymentReturn === 'pending') {
+  message($('purchaseMessage'), 'O Mercado Pago informou que o pagamento está pendente. O acesso será liberado somente quando a confirmação chegar.', 'error');
+} else if (paymentReturn === 'failure') {
+  message($('purchaseMessage'), 'O pagamento não foi concluído. Você pode tentar novamente.', 'error');
+}
 $('registerForm').addEventListener('submit', async event => {
   event.preventDefault();
   const registerMessage = $('registerMessage');
