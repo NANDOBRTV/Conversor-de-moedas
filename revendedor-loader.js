@@ -12,7 +12,7 @@
   }
   var script = document.createElement('script');
   script.type = 'module';
-  script.src = './revendedor-app.js?v=20261024-9';
+  script.src = './revendedor-app.js?v=20261024-10';
   script.onerror = function () {
     showLoadError('Não foi possível baixar o sistema de login. Confira sua conexão e recarregue a página.');
   };
