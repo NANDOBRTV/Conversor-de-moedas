@@ -167,12 +167,13 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(15,118,110,.12
 
 
 
-/* Acesso do revendedor: somente login nesta página. O cadastro é feito exclusivamente por convite, fora da tela de entrada. */
-#loginCard .auth-tabs #showRegisterTab,
-#loginCard #registerView { display:none !important; }
+/* A página pública abre somente no login. O cadastro só aparece em links com convite. */
 #loginCard .auth-tabs { display:none !important; }
+#loginCard #registerView { display:none !important; }
 #loginCard #loginView { display:block !important; }
-/* Segurança visual: o painel de convites permanece oculto até a validação do perfil Desenvolvedor pelo Supabase. */
+body.invite-mode #loginCard #registerView { display:block !important; }
+body.invite-mode #loginCard #loginView { display:none !important; }
+/* Segurança visual: convites só aparecem depois da autorização do perfil Desenvolvedor no backend. */
 #resellerInviteAdminPanel[hidden]{display:none!important;visibility:hidden!important;}
 </style>
 </head>
@@ -373,6 +374,7 @@ const showRegisterTab = $('showRegisterTab');
 const inviteParams = new URLSearchParams(window.location.search);
 let resellerInviteToken = inviteParams.get('convite') || '';
 if (resellerInviteToken) {
+  document.body.classList.add('invite-mode');
   try { sessionStorage.setItem('sanba_reseller_invite_token', resellerInviteToken); } catch (_) {}
   window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
 } else {
