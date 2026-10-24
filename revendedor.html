@@ -845,7 +845,7 @@ function calculate(showErrors=true) {
   const salePrice=Number($('calcSalePrice').value);
   const extras=Number($('calcExtras').value);
   const feePercent=Number($('calcFeePercent').value);
-  if(currency !== 'USD' && !Number.isFinite(usdRate)) {
+  if(currency !== 'USD' && (!Number.isFinite(usdRate) || usdRate <= 0)) {
     $('calcResults').style.display='none';
     if(showErrors) message(calcMessage,'A cotação automática ainda não foi carregada. Aguarde ou recarregue a página.');
     return null;
