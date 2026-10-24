@@ -19,7 +19,8 @@ Deno.serve(async (req: Request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  const accessToken = (req.headers.get("Authorization") || "").replace(/^Bearer\\s+/i, "");
+  const authorization = req.headers.get("Authorization") || "";
+  const accessToken = authorization.startsWith("Bearer ") ? authorization.slice(7) : authorization;
   const mpToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
   if (!supabaseUrl || !serviceRoleKey || !anonKey) return json({ error: "Serviço de pagamento ainda não configurado no Supabase." }, 503);
   if (!mpToken) return json({ error: "Falta configurar a credencial do Mercado Pago no Supabase." }, 503);
