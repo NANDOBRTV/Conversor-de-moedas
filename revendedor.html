@@ -149,7 +149,23 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 @media(max-width:760px){.hero:before{right:-120px;opacity:.65}.hero:after{right:-15px}}
 @media(prefers-reduced-motion:no-preference){.hero,.login-card,.panel-card,.account-card,.stat{transition:border-color .2s,box-shadow .2s,transform .2s}.login-card:hover,.panel-card:hover,.account-card:hover{border-color:rgba(103,232,249,.34);box-shadow:0 22px 58px rgba(0,0,0,.34),0 0 22px rgba(34,211,238,.04)}.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}}
 
-.recharge-orders-panel{margin:16px 0 22px}.recharge-orders-list{display:grid;gap:10px}.recharge-order{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:13px;background:rgba(5,18,35,.55)}.recharge-order strong{display:block;font-size:13px;overflow-wrap:anywhere}.recharge-order small{display:block;color:var(--muted);font-size:10px;line-height:1.6;overflow-wrap:anywhere}.recharge-order-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:280px}.recharge-order-actions button{font-size:10px;padding:8px 9px}.recharge-status{display:inline-flex;margin-top:7px;padding:5px 8px;border:1px solid var(--line);border-radius:999px;font-size:10px;font-weight:800;color:#a5f3fc}@media(max-width:600px){.recharge-order{grid-template-columns:1fr}.recharge-order-actions{justify-content:flex-start;max-width:none}}</style>
+.recharge-orders-panel{margin:16px 0 22px}.recharge-orders-list{display:grid;gap:10px}.recharge-order{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:13px;background:rgba(5,18,35,.55)}.recharge-order strong{display:block;font-size:13px;overflow-wrap:anywhere}.recharge-order small{display:block;color:var(--muted);font-size:10px;line-height:1.6;overflow-wrap:anywhere}.recharge-order-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:280px}.recharge-order-actions button{font-size:10px;padding:8px 9px}.recharge-status{display:inline-flex;margin-top:7px;padding:5px 8px;border:1px solid var(--line);border-radius:999px;font-size:10px;font-weight:800;color:#a5f3fc}@media(max-width:600px){.recharge-order{grid-template-columns:1fr}.recharge-order-actions{justify-content:flex-start;max-width:none}}
+/* Visual polish — reseller dashboard */
+body{background:radial-gradient(ellipse at 8% 0%,rgba(45,212,191,.13),transparent 36%),radial-gradient(ellipse at 100% 10%,rgba(59,130,246,.08),transparent 34%),var(--paper)}
+.hero{box-shadow:0 22px 48px rgba(15,23,42,.14);border:1px solid rgba(255,255,255,.13)}
+.panel-card,.login-card{transition:box-shadow .18s ease,border-color .18s ease}
+.panel-card:hover{box-shadow:0 16px 40px rgba(15,23,42,.09);border-color:#c4d7e5}
+button,.btn,.nav-link,.settings-menu-toggle{transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+button:hover,.btn:hover,.nav-link:hover,.settings-menu-toggle:hover{transform:translateY(-1px);box-shadow:0 7px 17px rgba(15,23,42,.12)}
+button:active,.btn:active,.nav-link:active{transform:translateY(0)}
+input,select,textarea{transition:border-color .16s ease,box-shadow .16s ease,background .16s ease}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(15,118,110,.12)}
+:focus-visible{outline:3px solid #f59e0b;outline-offset:3px}
+.status,.badge,.pill{letter-spacing:.15px}
+@media(max-width:600px){.wrap{padding:12px 11px 30px}.hero{padding:21px 18px;border-radius:19px}.login-card,.panel-card{padding:17px;border-radius:16px}.top-actions{margin-right:48px}.nav-link{padding:9px 10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+</style>
 </head>
 <body>
 <main class="wrap">
