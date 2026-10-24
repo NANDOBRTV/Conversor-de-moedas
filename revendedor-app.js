@@ -868,7 +868,7 @@ $('downloadHistoryCsv')?.addEventListener('click', () => {
     Number(r.feePercent || 0),Number(r.netRevenue || 0).toFixed(2),Number(r.totalProfit || 0).toFixed(2),
     r.marginPercent === null ? 'Não aplicável' : Number(r.marginPercent || 0).toFixed(2),Number(r.returnPercent || 0).toFixed(2)
   ]));
-  const csv='\\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\\r\\n');
+  const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='historico-completo-sanba.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 });
 function exportText() {
