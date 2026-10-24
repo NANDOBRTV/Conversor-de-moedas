@@ -15,6 +15,7 @@
 body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px}
 .card{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column;position:relative}
 h1{font-size:20px;color:#1e3c72;text-align:center;margin-bottom:4px}
+.brand-mark{display:inline-flex;vertical-align:middle;width:32px;height:32px;margin-right:7px;filter:drop-shadow(0 3px 5px rgba(15,23,42,.16))}.brand-mark svg{width:100%;height:100%}
 .sub{text-align:center;color:#666;font-size:13px;margin-bottom:16px}
 label{display:block;font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
 select,input{width:100%;padding:13px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;background:#fafafa;outline:none;font-family:inherit;margin-bottom:8px}
@@ -220,7 +221,7 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
   </nav>
 </div>
 <div class="card">
-  <h1>🪙 Calculadora de Recarga Sanba</h1>
+  <h1><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sanbaCoin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2b2"/><stop offset="1" stop-color="#e9b949"/></linearGradient></defs><circle cx="32" cy="32" r="29" fill="#0f766e"/><circle cx="32" cy="32" r="22" fill="url(#sanbaCoin)"/><circle cx="32" cy="32" r="18" fill="none" stroke="#8a6215" stroke-width="1.5"/><path d="M40 23c-2-2-5-3-8-3-7 0-12 5-12 12s5 12 12 12c4 0 7-1 9-4l-4-4c-1 2-3 2-5 2-3 0-6-2-6-6s3-6 6-6c2 0 3 1 4 2z" fill="#0f3b3a"/></svg></span>Calculadora de Recarga Sanba</h1>
   <p class="sub">Calcule sua recarga de moedas Sanba</p>
 
   <label for="regionSelect">🌎 País / região</label>
