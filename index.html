@@ -674,7 +674,7 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
     const {data:{session},error:sessionError}=await sb.auth.getSession();
     if(sessionError)throw sessionError;
     const order=JSON.parse(anchor.dataset.order);
-    if(!/^\\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
+    if(!/^\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
     if(!session){
       popup.location.replace(targetUrl);
       alert('O WhatsApp do vendedor será aberto. Para guardar esta recarga no histórico da sua conta, entre na Área do Cliente antes de fazer o próximo pedido.');
@@ -685,7 +685,7 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
       if(error)throw error;
       const finalWhatsAppUrl=new URL(targetUrl);
       const existingMessage=finalWhatsAppUrl.searchParams.get('text')||'';
-      finalWhatsAppUrl.searchParams.set('text',existingMessage+'\\n\\n📦 Número do pedido: '+data.id);
+      finalWhatsAppUrl.searchParams.set('text',existingMessage+'\n\n📦 Número do pedido: '+data.id);
       popup.location.replace(finalWhatsAppUrl.toString());
     }catch(saveErr){
       popup.location.replace(targetUrl);
