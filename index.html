@@ -685,7 +685,7 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
     if(error)throw error;
     const finalWhatsAppUrl=new URL(targetUrl);
     const existingMessage=finalWhatsAppUrl.searchParams.get('text')||'';
-    finalWhatsAppUrl.searchParams.set('text',existingMessage+'\\n\\n📦 Número do pedido: '+data.id);
+    finalWhatsAppUrl.searchParams.set('text',existingMessage+'\n\n📦 Número do pedido: '+data.id);
     popup.location.replace(finalWhatsAppUrl.toString());
   }catch(err){
     popup.close();
