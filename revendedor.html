@@ -21,6 +21,48 @@
 @media(max-width:760px){.hero{grid-template-columns:1fr;padding:23px}.hero-mark{display:none}.content-grid{grid-template-columns:1fr}.side-stack{grid-template-columns:1fr 1fr}.stats{gap:8px}.stat{padding:13px}.stat-value{font-size:18px}}
 @media(max-width:520px){.wrap{padding:12px 11px 28px}.top{align-items:flex-start}.top-actions{width:100%}.nav-link{flex:1}.hero{border-radius:18px;padding:20px}.login-card,.panel-card,.account-card{padding:16px}.field-grid,.calc-fields,.result-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.stat{display:flex;justify-content:space-between;align-items:center;gap:10px}.stat-value{margin:0;text-align:right}.stat-note{display:none}.side-stack{grid-template-columns:1fr}.section-head{margin-top:21px}.history-item{align-items:flex-start}.history-price{font-size:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
+
+/* Ajustes finais de espaçamento e hierarquia visual */
+.hero{margin-bottom:20px}
+.dashboard .section-head{margin-top:23px}
+.stat-label{text-transform:uppercase;letter-spacing:.6px}
+.stat-value{line-height:1.25}
+.content-grid{gap:18px}
+.panel-card{padding:22px}
+.calculator{border-top:4px solid var(--brand)}
+.account-card{border-top:4px solid #cbd5e1}
+.helper{align-self:start}
+.calc-fields label{line-height:1.45}
+.calc-fields input{margin-top:8px;min-height:45px}
+.calc-actions{margin-top:3px}
+.calc-actions .btn{min-height:44px}
+.result-area{background:#fff;margin:18px -2px 0;padding:18px 2px 0}
+.result-head{flex-wrap:wrap}
+.result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.result-item{display:flex;flex-direction:column;justify-content:space-between;min-height:80px}
+.result-item.featured{border-left:4px solid var(--brand)}
+.history-card .section-head{align-items:center}
+.history-item{background:#fff}
+.history-price{color:var(--brand-dark)}
+.notice{border-left:4px solid #94a3b8}
+.login-message.success{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+@media(min-width:761px){
+  .calculator{padding:25px}
+  .side-stack{position:sticky;top:14px}
+  .result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:520px){
+  .panel-card{padding:16px}
+  .result-grid{grid-template-columns:1fr 1fr}
+  .result-item{min-height:76px;padding:10px}
+  .result-item strong{font-size:14px}
+  .calc-actions{display:grid;grid-template-columns:1fr 1fr}
+  .calc-actions .btn-primary{grid-column:1/-1}
+  .history-card .section-head{align-items:flex-start}
+  .history-card .section-head>button{width:100%}
+  .history-actions{display:grid;grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 <body>
@@ -68,7 +110,7 @@
           <div class="calc-actions"><button class="btn btn-primary" type="submit" id="calculateButton">Calcular preços</button><button class="btn btn-light" type="button" id="clearCalculator">Limpar</button></div>
           <div class="login-message error" id="calcMessage" role="alert" aria-live="polite"></div>
         </form>
-        <div class="result-area" id="calcResults" aria-live="polite">
+        <div class="result-area" id="calcResults" aria-live="polite" style="display:none">
           <div class="result-head"><h3>Resultado do lote</h3><button class="btn btn-light btn-small" type="button" id="saveCalculation">Salvar cálculo</button></div>
           <div class="result-grid" id="resultGrid"></div>
           <p class="calc-note">Estimativa matemática: considera uma única taxa percentual sobre cada venda e despesas extras informadas. Não inclui impostos ou custos que você não informar. Arredonde o preço final para cima se necessário.</p>
