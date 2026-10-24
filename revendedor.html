@@ -56,16 +56,17 @@
       <article class="stat"><div><div class="stat-label">Situação do acesso</div><div class="stat-note">Conforme seu perfil</div></div><div class="stat-value" id="statAccess">—</div></article>
     </div>
 
-    <div class="section-head"><div><h2>Calculadora de revenda</h2><p>Informe o tamanho do pacote, o total de moedas do lote, o custo total da compra e o preço de venda.</p></div></div>
+    <div class="section-head"><div><h2>Calculadora de revenda</h2><p>Informe a quantidade de moedas do lote, quanto você pagou em dólares, quantos pacotes ele rende e o preço de venda de cada pacote.</p></div></div>
     <div class="content-grid">
       <section class="panel-card calculator" aria-labelledby="calculatorTitle">
-        <h2 id="calculatorTitle">🧮 Descubra seu lucro no lote</h2><p class="subtext">Preencha 4 informações principais. O painel calcula o lucro do lote e sua margem automaticamente.</p>
+        <h2 id="calculatorTitle">🧮 Descubra seu lucro no lote</h2><p class="subtext">A compra do lote é sempre em dólares (US$). Informe a cotação do dólar para converter o custo para a moeda em que você venderá.</p>
         <form id="profitCalculator">
           <div class="calc-fields">
             <label>Moeda<select id="calcCurrency"><option value="BRL">Real (BRL)</option><option value="USD">Dólar (USD)</option><option value="VES">Bolívar (VES)</option></select></label>
             <label>Moedas em cada pacote<input id="calcQuantity" type="number" min="1" step="1" value="1600" inputmode="numeric" required></label>
             <label>Total de moedas que você compra<input id="calcLotCoins" type="number" min="1" step="1" value="160000" inputmode="numeric" required></label>
-            <label>Quanto custa o lote inteiro<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 500,00" inputmode="decimal" required></label>
+            <label>Valor total do lote em dólares (US$)<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 50,00" inputmode="decimal" required></label>
+            <label>Cotação do dólar (US$ 1 em moeda de venda)<input id="calcUsdRate" type="number" min="0.000001" step="any" value="1" inputmode="decimal" required></label>
             <label>Por quanto vende cada pacote<input id="calcSalePrice" type="number" min="0.01" step="0.01" placeholder="Ex.: 8,00" inputmode="decimal" required></label>
             <label>Outros custos do lote (se houver)<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
             <label>Taxa descontada das vendas (%)<input id="calcFee" type="number" min="0" max="99.99" step="0.01" value="20" inputmode="decimal" required></label>
@@ -90,7 +91,7 @@
           <div class="detail-row"><span>Validade</span><strong id="accountUntil">—</strong></div>
           <p class="footnote">Para alterar seu plano ou corrigir o acesso, fale com o suporte. A validade é exibida conforme os dados cadastrados na conta.</p>
         </section>
-        <section class="helper"><h3>💡 Como usar</h3><p>Informe quantas moedas tem cada pacote, quantas moedas vêm no lote, quanto custa o lote inteiro e por quanto você vende cada pacote. A taxa padrão é 20%, mas você pode mudar.</p></section>
+        <section class="helper"><h3>💡 Como usar</h3><p>A compra do lote é em dólares. Informe a cotação de US$ 1 na moeda em que você vai vender, o preço de cada pacote e a taxa de venda. Se vender em dólares, deixe a cotação em 1.</p></section>
       </div>
     </div>
 
@@ -173,8 +174,8 @@ function renderHistory() {
     const actions=document.createElement('button'); actions.className='btn btn-light btn-small'; actions.type='button'; actions.textContent='Ver';
     actions.addEventListener('click',()=>{
       $('calcCurrency').value=item.currency||'BRL'; $('calcQuantity').value=item.packageCoins||1600;
-      $('calcLotCoins').value=item.lotCoins||160000; $('calcCost').value=item.purchaseCost??'';
-      $('calcSalePrice').value=item.salePrice??''; $('calcExtras').value=item.extras||0; $('calcFee').value=item.feePercent??20;
+      $('calcLotCoins').value=item.lotCoins||160000; $('calcCost').value=item.purchaseCostUSD??item.purchaseCost??'';
+      $('calcUsdRate').value=item.usdRate??1; $('calcSalePrice').value=item.salePrice??''; $('calcExtras').value=item.extras||0; $('calcFee').value=item.feePercent??20;
       calculate(false); $('calculatorTitle').scrollIntoView({behavior:'smooth',block:'start'});
     });
     const right=document.createElement('div'); right.style.display='grid'; right.style.justifyItems='end'; right.style.gap='7px';
@@ -255,17 +256,19 @@ $('logoutButton').addEventListener('click', async () => {
   form.reset(); hideMessage(loginMessage); hideMessage(accountMessage); hideMessage(calcMessage);
   $('calcResults').style.display = 'none'; $('heroStatus').textContent = '🔐 Entre para acessar suas ferramentas';
 });
+$('calcCurrency').addEventListener('change', () => { if ($('calcCurrency').value === 'USD') $('calcUsdRate').value = '1'; else if ($('calcUsdRate').value === '1') $('calcUsdRate').value = ''; });
 function calculate(showErrors=true) {
   hideMessage(calcMessage);
   const currency=$('calcCurrency').value;
   const packageCoins=Number($('calcQuantity').value);
   const lotCoins=Number($('calcLotCoins').value);
-  const purchaseCost=Number($('calcCost').value);
+  const purchaseCostUSD=Number($('calcCost').value);
+  const usdRate=Number($('calcUsdRate').value);
   const salePrice=Number($('calcSalePrice').value);
   const extras=Number($('calcExtras').value);
   const feePercent=Number($('calcFee').value);
   if(!Number.isInteger(packageCoins)||packageCoins<1||!Number.isInteger(lotCoins)||lotCoins<1||
-    !Number.isFinite(purchaseCost)||purchaseCost<=0||!Number.isFinite(salePrice)||salePrice<=0||
+    !Number.isFinite(purchaseCostUSD)||purchaseCostUSD<=0||!Number.isFinite(usdRate)||usdRate<=0||!Number.isFinite(salePrice)||salePrice<=0||
     !Number.isFinite(extras)||extras<0||!Number.isFinite(feePercent)||feePercent<0||feePercent>=100){
     $('calcResults').style.display='none';
     if(showErrors) message(calcMessage,'Preencha os campos com valores válidos. O custo do lote e o preço de venda precisam ser maiores que zero.');
@@ -273,6 +276,7 @@ function calculate(showErrors=true) {
   }
   const packageCount=Math.floor(lotCoins/packageCoins), leftoverCoins=lotCoins%packageCoins;
   if(packageCount<1){$('calcResults').style.display='none';if(showErrors)message(calcMessage,'O lote precisa ter moedas suficientes para formar pelo menos um pacote.');return null;}
+  const purchaseCost=purchaseCostUSD*usdRate;
   const totalCost=purchaseCost+extras;
   const grossRevenue=salePrice*packageCount;
   const saleFees=grossRevenue*feePercent/100;
@@ -280,12 +284,14 @@ function calculate(showErrors=true) {
   const totalProfit=netRevenue-totalCost;
   const marginPercent=netRevenue>0?totalProfit/netRevenue*100:0;
   const returnPercent=totalCost>0?totalProfit/totalCost*100:0;
-  const result={currency,packageCoins,lotCoins,packageCount,leftoverCoins,purchaseCost,salePrice,extras,feePercent,totalCost,grossRevenue,saleFees,netRevenue,totalProfit,marginPercent,returnPercent,savedAt:new Date().toISOString()};
+  const result={currency,packageCoins,lotCoins,packageCount,leftoverCoins,purchaseCostUSD,usdRate,purchaseCost,salePrice,extras,feePercent,totalCost,grossRevenue,saleFees,netRevenue,totalProfit,marginPercent,returnPercent,savedAt:new Date().toISOString()};
   latestCalculation=result;
   const rows=[
     ['Pacotes que você consegue vender',packageCount.toLocaleString('pt-BR')+' pacotes',false],
     ['Moedas restantes',leftoverCoins.toLocaleString('pt-BR')+' moedas',false],
-    ['Custo total do lote',money(totalCost,currency),false],
+    ['Compra do lote em dólares',money(purchaseCostUSD,'USD'),false],
+    ['Custo da compra convertido',money(purchaseCost,currency),false],
+    ['Custo total com extras',money(totalCost,currency),false],
     ['Total que entra com as vendas',money(grossRevenue,currency),false],
     ['Taxa descontada',money(saleFees,currency),false],
     ['Você recebe depois da taxa',money(netRevenue,currency),false],
@@ -307,7 +313,7 @@ $('profitCalculator').addEventListener('submit', event => {
   }
 });
 $('clearCalculator').addEventListener('click', () => {
-  $('calcQuantity').value = '1600'; $('calcLotCoins').value = '160000'; $('calcCost').value = ''; $('calcSalePrice').value = ''; $('calcExtras').value = '0'; $('calcFee').value = '20';
+  $('calcQuantity').value = '1600'; $('calcLotCoins').value = '160000'; $('calcCost').value = ''; $('calcUsdRate').value = $('calcCurrency').value === 'USD' ? '1' : ''; $('calcSalePrice').value = ''; $('calcExtras').value = '0'; $('calcFee').value = '20';
   latestCalculation = null; $('calcResults').style.display = 'none'; hideMessage(calcMessage); $('calcCost').focus();
 });
 $('saveCalculation').addEventListener('click', () => {
@@ -336,7 +342,7 @@ $('copyResults').addEventListener('click', async () => {
 $('downloadResults').addEventListener('click',()=>{
   if(!latestCalculation)return;
   const r=latestCalculation,currency=r.currency||'BRL';
-  const rows=[['Campo','Valor'],['Moeda',currency],['Moedas no lote',r.lotCoins],['Moedas por pacote',r.packageCoins],['Pacotes vendáveis',r.packageCount],['Moedas restantes',r.leftoverCoins],['Custo total do lote ('+currency+')',r.totalCost.toFixed(2)],['Preço por pacote ('+currency+')',r.salePrice.toFixed(2)],['Faturamento bruto ('+currency+')',r.grossRevenue.toFixed(2)],['Taxa ('+currency+')',r.saleFees.toFixed(2)],['Receita líquida ('+currency+')',r.netRevenue.toFixed(2)],['Lucro final ('+currency+')',r.totalProfit.toFixed(2)],['Margem de lucro (%)',r.marginPercent.toFixed(2)],['Retorno sobre investimento (%)',r.returnPercent.toFixed(2)]];
+  const rows=[['Campo','Valor'],['Moeda',currency],['Moedas no lote',r.lotCoins],['Moedas por pacote',r.packageCoins],['Pacotes vendáveis',r.packageCount],['Moedas restantes',r.leftoverCoins],['Compra do lote (USD)',Number(r.purchaseCostUSD??r.purchaseCost).toFixed(2)],['Cotação USD',Number(r.usdRate??1)],['Custo da compra convertido ('+currency+')',Number(r.purchaseCost??r.totalCost).toFixed(2)],['Custo total com extras ('+currency+')',r.totalCost.toFixed(2)],['Preço por pacote ('+currency+')',r.salePrice.toFixed(2)],['Faturamento bruto ('+currency+')',r.grossRevenue.toFixed(2)],['Taxa ('+currency+')',r.saleFees.toFixed(2)],['Receita líquida ('+currency+')',r.netRevenue.toFixed(2)],['Lucro final ('+currency+')',r.totalProfit.toFixed(2)],['Margem de lucro (%)',r.marginPercent.toFixed(2)],['Retorno sobre investimento (%)',r.returnPercent.toFixed(2)]];
   const csv='\\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\\r\\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='calculo-lote-sanba.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 });
