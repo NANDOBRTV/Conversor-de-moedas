@@ -21,6 +21,30 @@ if(p.membership_tier==="developer"){tier.disabled=true;status.disabled=true;save
 save.addEventListener("click",async()=>{if(p.membership_tier==="developer")return;if(!confirm("Confirmar a alteração da conta @"+(p.username||"usuário")+" para "+tier.options[tier.selectedIndex].text+" / "+status.options[status.selectedIndex].text+"? Se ativar Ouro ou Diamante, confirme que o pagamento já foi verificado."))return;save.disabled=true;try{const result=await call({action:"update_profile",user_id:p.user_id,membership_tier:tier.value,access_status:status.value});profiles=profiles.map(x=>x.user_id===p.user_id?result.profile:x);msg("accountsMessage","Conta @"+(result.profile.username||"usuário")+" atualizada. Confira a validade exibida.","success");renderProfiles();await loadOverview();}catch(e){msg("accountsMessage",e.message);save.disabled=false;}});
 controls.append(save,reset);card.append(info,tierLabel,statusLabel,controls);list.append(card);});}
 async function loadProfiles(){const list=$("accountsList");list.replaceChildren(Object.assign(document.createElement("div"),{className:"muted",textContent:"Carregando contas…"}));try{const data=await call({action:"list_profiles"});profiles=data.profiles||[];renderProfiles();}catch(e){list.replaceChildren();msg("accountsMessage",e.message);}}
-async function refreshAll(){await Promise.all([loadOverview(),loadProfiles()]);}
+async function loadRevenueSummary(){
+ const root=$("revenueSummaryGrid");if(!root)return;
+ try{
+  const {data,error}=await sb.functions.invoke("manage-revenue-orders",{body:{action:"list_orders"}});
+  if(error||!data||data.error)throw new Error(data?.error||error?.message||"Não foi possível carregar o relatório.");
+  const orders=data.orders||[];
+  const paid=orders.filter(o=>["payment_confirmed","in_progress","delivered"].includes(o.status));
+  const refunded=orders.filter(o=>o.status==="refunded");
+  const pending=orders.filter(o=>o.status==="pending");
+  const paidTotal=paid.reduce((s,o)=>s+Number(o.amount||0),0);
+  const refundTotal=refunded.reduce((s,o)=>s+Number(o.amount||0),0);
+  const net=paidTotal-refundTotal;
+  const items=[
+   ["Receita confirmada",paidTotal,"Pagamentos verificados manualmente"],
+   ["Pedidos aguardando",pending.length,"Não contabilizados como receita"],
+   ["Em execução / entregues",orders.filter(o=>["in_progress","delivered"].includes(o.status)).length,"Pedidos já pagos"],
+   ["Reembolsos registrados",refundTotal,"Valor marcado como reembolsado"],
+   ["Receita após reembolsos",net,"Estimativa baseada nos status registrados"],
+   ["Total de pedidos",orders.length,"Últimos 300 pedidos carregados"]
+  ];
+  root.replaceChildren(...items.map(([label,value,note])=>{const card=document.createElement("article");card.className="metric";const span=document.createElement("span");span.textContent=label;const strong=document.createElement("strong");strong.textContent=typeof value==="number"&&label!=="Pedidos aguardando"&&label!=="Em execução / entregues"&&label!=="Total de pedidos"?value.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}):Number(value).toLocaleString("pt-BR");const small=document.createElement("small");small.textContent=note;card.append(span,strong,small);return card;}));
+  $("revenueSummaryMessage").className="msg";
+ }catch(e){msg("revenueSummaryMessage",e.message);}
+}
+async function refreshAll(){await Promise.all([loadOverview(),loadProfiles(),loadRevenueSummary()]);}
 async function init(){if(!sb){accessMsg("A configuração do Supabase não foi encontrada.");return;}const {data,error}=await sb.auth.getSession();session=data?.session;if(error||!session){accessMsg("Entre primeiro no painel do revendedor e depois abra a Central do Desenvolvedor.");return;}const {data:profile,error:profileError}=await sb.from("reseller_profiles").select("membership_tier,access_status,access_until").eq("user_id",session.user.id).maybeSingle();if(profileError||!profile){accessMsg("Não foi possível verificar o perfil da conta.");return;}if(profile.membership_tier!=="developer"||profile.access_status!=="active"||(profile.access_until&&new Date(profile.access_until).getTime()<=Date.now())){accessMsg("Acesso restrito: somente a conta Desenvolvedor ativa pode abrir esta central.");return;}$("accessMessage").className="msg";$("console").classList.remove("hidden");await refreshAll();}
 $("refreshAll").addEventListener("click",refreshAll);$("accountSearch").addEventListener("input",renderProfiles);init().catch(e=>accessMsg(e.message||"Falha ao iniciar a Central do Desenvolvedor."));
