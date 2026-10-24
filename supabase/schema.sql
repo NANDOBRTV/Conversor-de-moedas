@@ -10,6 +10,7 @@ create table if not exists public.reseller_profiles (
   access_status text not null default 'pending'
     check (access_status in ('pending', 'active', 'suspended')),
   plan_name text not null default 'premium',
+  membership_tier text not null default 'common' check (membership_tier in ('common', 'gold', 'diamond')),
   access_until timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -54,6 +55,11 @@ for each row execute function public.set_updated_at();
 alter table public.reseller_profiles add column if not exists email text;
 alter table public.reseller_profiles
   add column if not exists requested_plan text not null default 'monthly';
+alter table public.reseller_profiles
+  add column if not exists membership_tier text not null default 'common';
+alter table public.reseller_profiles drop constraint if exists reseller_profiles_membership_tier_check;
+alter table public.reseller_profiles add constraint reseller_profiles_membership_tier_check
+  check (membership_tier in ('common', 'gold', 'diamond'));
 
 -- Preenche o e-mail dos perfis criados antes deste cadastro automático.
 update public.reseller_profiles as rp
@@ -87,9 +93,9 @@ begin
   end if;
 
   insert into public.reseller_profiles
-    (user_id, username, email, requested_plan, access_status, plan_name)
+    (user_id, username, email, requested_plan, access_status, plan_name, membership_tier)
   values
-    (new.id, chosen_username, lower(new.email), chosen_plan, 'pending', 'pendente');
+    (new.id, chosen_username, lower(new.email), chosen_plan, 'pending', 'pendente', 'common');
 
   return new;
 end;
