@@ -207,7 +207,10 @@ async function showSignedIn(session) {
   currentProfile = profile;
   $('settingsMenuToggle').style.display = 'inline-flex';
   if ($('adminOrdersLink')) $('adminOrdersLink').style.display = profile.membership_tier === 'developer' ? 'inline-flex' : 'none';
-  $('quickInviteLink').hidden = profile.membership_tier !== 'developer' || !accessIsActive(profile);
+  const showDeveloperMenu = profile.membership_tier === 'developer' && accessIsActive(profile);
+  $('quickInviteLink').hidden = !showDeveloperMenu;
+  if ($('quickPendingOrdersLink')) $('quickPendingOrdersLink').hidden = !showDeveloperMenu;
+  if ($('quickApprovedOrdersLink')) $('quickApprovedOrdersLink').hidden = !showDeveloperMenu;
   const rechargePanel = $('rechargeOrdersPanel');
   if (rechargePanel) {
     const canUseOrders = accessIsActive(profile);
