@@ -62,9 +62,10 @@
         <h2 id="calculatorTitle">🧮 Custo, taxa e lucro</h2><p class="subtext">O lucro abaixo é calculado sobre o custo do lote. A taxa percentual é descontada do preço de venda.</p>
         <form id="profitCalculator">
           <div class="calc-fields">
+            <label>Moeda utilizada<select id="calcCurrency"><option value="BRL">Brasil · Real (BRL)</option><option value="USD">Internacional · Dólar (USD)</option><option value="VES">Venezuela · Bolívar (VES)</option></select></label>
             <label>Quantidade no lote<input id="calcQuantity" type="number" min="1" step="1" value="1600" inputmode="numeric" required></label>
-            <label>Custo de compra do lote (R$)<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 100,00" inputmode="decimal" required></label>
-            <label>Despesas extras do lote (R$)<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
+            <label>Custo de compra do lote<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 100,00" inputmode="decimal" required></label>
+            <label>Despesas extras do lote<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
             <label>Taxa sobre a venda (%)<input id="calcFee" type="number" min="0" max="99.99" step="0.01" value="20" inputmode="decimal" required></label>
           </div>
           <div class="calc-actions"><button class="btn btn-primary" type="submit" id="calculateButton">Calcular preços</button><button class="btn btn-light" type="button" id="clearCalculator">Limpar</button></div>
@@ -132,7 +133,7 @@ function message(el, text, type='error') {
   el.className = 'login-message visible ' + type;
 }
 function hideMessage(el) { el.textContent = ''; el.className = 'login-message' }
-function money(value) { return Number(value).toLocaleString('pt-BR', {style:'currency',currency:'BRL'}); }
+function money(value, currency = 'BRL') { return Number(value).toLocaleString('pt-BR', {style:'currency',currency}); }
 function dateLabel(value) {
   if (!value) return 'Sem vencimento';
   const d = new Date(value);
@@ -161,17 +162,19 @@ function renderHistory() {
   historyItems.forEach(item => {
     const li = document.createElement('li'); li.className = 'history-item';
     const info = document.createElement('div');
+    const currency = item.currency || 'BRL';
     const title = document.createElement('strong');
-    title.textContent = item.quantity.toLocaleString('pt-BR') + ' unidades · taxa ' + item.feePercent + '%';
+    title.textContent = item.quantity.toLocaleString('pt-BR') + ' unidades · ' + currency + ' · taxa ' + item.feePercent + '%';
     const detail = document.createElement('small');
-    detail.textContent = new Date(item.savedAt).toLocaleString('pt-BR') + ' · Custo do lote: ' + money(item.totalCost);
+    detail.textContent = new Date(item.savedAt).toLocaleString('pt-BR') + ' · Custo do lote: ' + money(item.totalCost, currency);
     info.append(title, detail);
     const price = document.createElement('div'); price.className = 'history-price';
-    price.textContent = money(item.price20);
+    price.textContent = money(item.price20, currency);
     const priceLabel = document.createElement('small'); priceLabel.textContent = 'Preço com 20% de lucro';
     price.appendChild(priceLabel);
     const actions = document.createElement('button'); actions.className = 'btn btn-light btn-small'; actions.type = 'button'; actions.textContent = 'Ver';
     actions.addEventListener('click', () => {
+      $('calcCurrency').value = item.currency || 'BRL';
       $('calcQuantity').value = item.quantity;
       $('calcCost').value = item.purchaseCost.toFixed(2);
       $('calcExtras').value = item.extras.toFixed(2);
@@ -183,7 +186,7 @@ function renderHistory() {
     right.append(price, actions); li.append(info,right); list.appendChild(li);
   });
   $('statCount').textContent = String(historyItems.length);
-  $('statLast').textContent = historyItems.length ? money(historyItems[0].totalCost) : '—';
+  $('statLast').textContent = historyItems.length ? money(historyItems[0].totalCost, historyItems[0].currency || 'BRL') : '—';
 }
 function renderAccount(profile) {
   const active = accessIsActive(profile);
@@ -259,6 +262,7 @@ $('logoutButton').addEventListener('click', async () => {
 });
 function calculate(showErrors=true) {
   hideMessage(calcMessage);
+  const currency = $('calcCurrency').value;
   const quantity = Number($('calcQuantity').value);
   const purchaseCost = Number($('calcCost').value);
   const extras = Number($('calcExtras').value);
@@ -277,21 +281,21 @@ function calculate(showErrors=true) {
   const breakEven = unitCost / (1-fee);
   const price = margin => unitCost * (1+margin)/(1-fee);
   const result = {
-    quantity,purchaseCost,extras,feePercent,totalCost,unitCost,breakEven,
+    quantity,currency,purchaseCost,extras,feePercent,totalCost,unitCost,breakEven,
     price10:price(.10),price20:price(.20),price30:price(.30),
     lot10:price(.10)*quantity,lot20:price(.20)*quantity,lot30:price(.30)*quantity,
     savedAt:new Date().toISOString()
   };
   latestCalculation = result;
   const rows = [
-    ['Custo total do lote',money(totalCost),false],
-    ['Custo por unidade',money(unitCost),false],
-    ['Ponto de equilíbrio por unidade',money(breakEven),false],
-    ['Preço unitário · lucro 10%',money(result.price10),true],
-    ['Preço unitário · lucro 20%',money(result.price20),true],
-    ['Preço unitário · lucro 30%',money(result.price30),true],
-    ['Receita do lote · lucro 20%',money(result.lot20),false],
-    ['Lucro estimado do lote · meta 20%',money(result.lot20*(1-fee)-totalCost),false]
+    ['Custo total do lote',money(totalCost,currency),false],
+    ['Custo por unidade',money(unitCost,currency),false],
+    ['Ponto de equilíbrio por unidade',money(breakEven,currency),false],
+    ['Preço unitário · lucro 10%',money(result.price10,currency),true],
+    ['Preço unitário · lucro 20%',money(result.price20,currency),true],
+    ['Preço unitário · lucro 30%',money(result.price30,currency),true],
+    ['Receita do lote · lucro 20%',money(result.lot20,currency),false],
+    ['Lucro estimado do lote · meta 20%',money(result.lot20*(1-fee)-totalCost,currency),false]
   ];
   const grid = $('resultGrid'); grid.replaceChildren();
   rows.forEach(([label,value,featured]) => {
@@ -332,6 +336,7 @@ function exportText() {
   const r = latestCalculation;
   return [
     'PAINEL DO REVENDEDOR - CONVERSOR SANBA',
+    'Moeda: '+(r.currency || 'BRL'),
     'Quantidade no lote: '+r.quantity,
     'Custo de compra: '+money(r.purchaseCost),
     'Despesas extras: '+money(r.extras),
@@ -355,7 +360,8 @@ $('copyResults').addEventListener('click', async () => {
 $('downloadResults').addEventListener('click', () => {
   if (!latestCalculation) return;
   const r = latestCalculation;
-  const rows = [['Campo','Valor'],['Quantidade',r.quantity],['Custo de compra (R$)',r.purchaseCost.toFixed(2)],['Despesas extras (R$)',r.extras.toFixed(2)],['Custo total (R$)',r.totalCost.toFixed(2)],['Taxa (%)',r.feePercent],['Custo unitário (R$)',r.unitCost.toFixed(4)],['Ponto de equilíbrio (R$)',r.breakEven.toFixed(4)],['Preço unitário lucro 10% (R$)',r.price10.toFixed(4)],['Preço unitário lucro 20% (R$)',r.price20.toFixed(4)],['Preço unitário lucro 30% (R$)',r.price30.toFixed(4)],['Receita estimada lote meta 20% (R$)',r.lot20.toFixed(2)]];
+  const currency = r.currency || 'BRL';
+  const rows = [['Campo','Valor'],['Moeda',currency],['Quantidade',r.quantity],['Custo de compra (R$)',r.purchaseCost.toFixed(2)],['Despesas extras (R$)',r.extras.toFixed(2)],['Custo total (R$)',r.totalCost.toFixed(2)],['Taxa (%)',r.feePercent],['Custo unitário (R$)',r.unitCost.toFixed(4)],['Ponto de equilíbrio (R$)',r.breakEven.toFixed(4)],['Preço unitário lucro 10% (R$)',r.price10.toFixed(4)],['Preço unitário lucro 20% (R$)',r.price20.toFixed(4)],['Preço unitário lucro 30% (R$)',r.price30.toFixed(4)],['Receita estimada lote meta 20% (R$)',r.lot20.toFixed(2)]];
   const csv = '\uFEFF' + rows.map(row => row.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
   const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob); const a = document.createElement('a');
