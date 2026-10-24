@@ -252,7 +252,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
             <label>Moedas em cada pacote<input id="calcQuantity" type="number" min="1" step="1" value="1500" inputmode="numeric" required></label>
             <label>Total de moedas que você compra<input id="calcLotCoins" type="number" min="1" step="1" value="160000" inputmode="numeric" required></label>
             <label>Valor total do lote em dólares (US$)<input id="calcCost" type="number" min="0.01" step="0.01" value="100" placeholder="Ex.: 100,00" inputmode="decimal" required></label>
-            <label id="usdRateField">Cotação do dólar na moeda de venda<input id="calcUsdRate" type="number" min="0.000001" step="any" value="" inputmode="decimal" readonly required><small id="rateStatus" style="display:block;font-weight:500;color:#63748a;line-height:1.5;margin-top:6px">Consulta automática a cada 5 segundos. A taxa pode mudar apenas quando a fonte publicar uma atualização.</small></label>
+            <label id="usdRateField">Cotação do dólar na moeda de venda<input id="calcUsdRate" type="number" min="0.000001" step="any" value="" inputmode="decimal" readonly required><small id="rateStatus" style="display:block;font-weight:500;color:#63748a;line-height:1.5;margin-top:6px">A cotação é consultada ao abrir o painel e atualizada periodicamente. É uma taxa de referência e pode mudar quando a fonte publicar uma atualização.</small></label>
             <label>Por quanto vende cada pacote<input id="calcSalePrice" type="number" min="0.01" step="0.01" value="6.00" placeholder="Ex.: 6,00" inputmode="decimal" required><small style="display:block;font-weight:500;color:#63748a;line-height:1.5;margin-top:6px">Preço de referência do conversor principal para 1.500 moedas: R$ 6,00 · US$ 0,99 · Bs 1.450. Você pode ajustar o valor.</small></label>
             <label>Outros custos do lote (se houver)<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
             <label>Taxa sobre as vendas (%)<input id="calcFeePercent" type="number" min="0" max="100" step="0.1" value="0" inputmode="decimal" required><small style="display:block;font-weight:500;color:#63748a;line-height:1.5;margin-top:6px">Informe a taxa cobrada por plataforma ou intermediário. Use 0 se não houver taxa.</small></label>
@@ -886,6 +886,13 @@ function calculate(showErrors=true) {
   $('calcResults').style.display='block';
   return result;
 }
+// Se algum parâmetro mudar, invalida o resultado anterior para evitar salvar/copiar/exportar números desatualizados.
+['calcCurrency','calcQuantity','calcLotCoins','calcCost','calcUsdRate','calcSalePrice','calcExtras','calcFeePercent'].forEach(id => {
+  $(id).addEventListener('input', () => {
+    latestCalculation = null;
+    $('calcResults').style.display = 'none';
+  });
+});
 $('profitCalculator').addEventListener('submit', event => {
   event.preventDefault();
   const result = calculate(true);
@@ -896,10 +903,13 @@ $('profitCalculator').addEventListener('submit', event => {
 });
 $('clearCalculator').addEventListener('click', () => {
   $('calcQuantity').value = '1500'; $('calcLotCoins').value = '160000'; $('calcCost').value = '100'; $('calcUsdRate').value = $('calcCurrency').value === 'USD' ? '1' : ''; updateSuggestedSalePrice(); $('calcExtras').value = '0'; $('calcFeePercent').value = '0';
-  latestCalculation = null; $('calcResults').style.display = 'none'; hideMessage(calcMessage); $('calcCost').focus();
+  latestCalculation = null; $('calcResults').style.display = 'none'; hideMessage(calcMessage);
+  updateUsdRateField();
+  $('calcCost').focus();
 });
 $('saveCalculation').addEventListener('click', () => {
-  const result = latestCalculation || calculate(true);
+  // Sempre recalcula com os campos atuais para nunca salvar um resultado antigo.
+  const result = calculate(true);
   if (!result) return;
   const item = {...result,id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),savedAt:new Date().toISOString()};
   historyItems.unshift(item); historyItems = historyItems.slice(0,50);
