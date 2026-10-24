@@ -43,4 +43,4 @@ Documento de referência visual e funcional para manter o site consistente entre
 - Fazer testes ponta a ponta do cadastro, login, expiração de sessão e saída.
 - Configurar os segredos do Mercado Pago no Supabase e validar pagamento de teste e webhook antes de anunciar a compra como automática.
 - Revisar acessibilidade, links, estados de carregamento e mensagens de erro.
-- A página principal `index.html` exige autorização explícita antes de qualquer alteração.
+- Alterações na página principal devem preservar a validação do ID, os cálculos e o fluxo manual pelo WhatsApp.
