@@ -166,6 +166,12 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(15,118,110,.12
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 
+
+/* Acesso do revendedor: somente login nesta página. O cadastro é feito exclusivamente por convite, fora da tela de entrada. */
+#loginCard .auth-tabs #showRegisterTab,
+#loginCard #registerView { display:none !important; }
+#loginCard .auth-tabs { display:none !important; }
+#loginCard #loginView { display:block !important; }
 /* Segurança visual: o painel de convites permanece oculto até a validação do perfil Desenvolvedor pelo Supabase. */
 #resellerInviteAdminPanel[hidden]{display:none!important;visibility:hidden!important;}
 </style>
