@@ -149,7 +149,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 @media(max-width:760px){.hero:before{right:-120px;opacity:.65}.hero:after{right:-15px}}
 @media(prefers-reduced-motion:no-preference){.hero,.login-card,.panel-card,.account-card,.stat{transition:border-color .2s,box-shadow .2s,transform .2s}.login-card:hover,.panel-card:hover,.account-card:hover{border-color:rgba(103,232,249,.34);box-shadow:0 22px 58px rgba(0,0,0,.34),0 0 22px rgba(34,211,238,.04)}.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}}
 
-</style>
+.recharge-orders-panel{margin:16px 0 22px}.recharge-orders-list{display:grid;gap:10px}.recharge-order{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:13px;background:rgba(5,18,35,.55)}.recharge-order strong{display:block;font-size:13px;overflow-wrap:anywhere}.recharge-order small{display:block;color:var(--muted);font-size:10px;line-height:1.6;overflow-wrap:anywhere}.recharge-order-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:280px}.recharge-order-actions button{font-size:10px;padding:8px 9px}.recharge-status{display:inline-flex;margin-top:7px;padding:5px 8px;border:1px solid var(--line);border-radius:999px;font-size:10px;font-weight:800;color:#a5f3fc}@media(max-width:600px){.recharge-order{grid-template-columns:1fr}.recharge-order-actions{justify-content:flex-start;max-width:none}}</style>
 </head>
 <body>
 <main class="wrap">
@@ -231,6 +231,11 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 
   <section class="dashboard" id="dashboard" aria-label="Painel de ferramentas">
     <div class="section-head"><div><h2 id="welcomeTitle">Bem-vindo!</h2><p>Resumo rápido e ferramentas da sua conta.</p></div><button class="btn btn-light btn-small" id="logoutButton" type="button">Sair da conta</button></div>
+    <section class="panel-card recharge-orders-panel" id="rechargeOrdersPanel" hidden aria-labelledby="rechargeOrdersTitle">
+      <div class="section-head"><div><h2 id="rechargeOrdersTitle">📦 Pedidos de recarga dos clientes</h2><p>Pedidos sincronizados com as contas dos clientes. Esta área usa a sessão atual do painel.</p></div><button class="btn btn-light btn-small" id="refreshRechargeOrders" type="button">Atualizar pedidos</button></div>
+      <div id="rechargeOrdersMessage" class="login-message" role="status" aria-live="polite"></div>
+      <div id="rechargeOrdersList" class="recharge-orders-list"><div class="history-empty">Carregando pedidos…</div></div>
+    </section>
     <div class="stats">
       <article class="stat"><div><div class="stat-label">Cálculos salvos</div><div class="stat-note">Neste navegador</div></div><div class="stat-value" id="statCount">0</div></article>
       <article class="stat"><div><div class="stat-label">Custo total do lote</div><div class="stat-note">Seu cálculo mais recente</div></div><div class="stat-value" id="statLast">—</div></article>
@@ -465,6 +470,11 @@ async function showSignedIn(session) {
   currentProfile = profile;
   $('settingsMenuToggle').style.display = 'inline-flex';
   if ($('adminOrdersLink')) $('adminOrdersLink').style.display = profile.membership_tier === 'developer' ? 'inline-flex' : 'none';
+  const rechargePanel = $('rechargeOrdersPanel');
+  if (rechargePanel) {
+    rechargePanel.hidden = profile.membership_tier !== 'developer';
+    if (profile.membership_tier === 'developer') loadRechargeOrders();
+  }
   $('editUsername').value = profile.username || '';
   $('editEmail').value = profile.email || session.user.email || '';
   $('settingsPlanName').textContent = tierLabel(profile);
@@ -475,6 +485,40 @@ async function showSignedIn(session) {
   readHistory();
   renderHistory();
 }
+const rechargeStatusLabels={pending:'Aguardando pagamento',payment_confirmed:'Pagamento confirmado',processing:'Em processamento',completed:'Concluído',payment_rejected:'Pagamento não confirmado',cancelled:'Cancelado'};
+async function loadRechargeOrders(){
+  const list=$('rechargeOrdersList'),note=$('rechargeOrdersMessage');
+  if(!list||!currentProfile||currentProfile.membership_tier!=='developer'||!supabase)return;
+  list.innerHTML='<div class="history-empty">Carregando pedidos de recarga…</div>';hideMessage(note);
+  const {data,error}=await supabase.from('recharge_orders').select('id,user_id,sanba_id,coin_quantity,amount,currency,status,created_at,admin_note').order('created_at',{ascending:false}).limit(100);
+  if(error){list.textContent='Não foi possível carregar os pedidos. Verifique a conexão e atualize.';return}
+  if(!data||!data.length){list.innerHTML='<div class="history-empty">Ainda não há pedidos de recarga registrados.</div>';return}
+  list.replaceChildren();
+  data.forEach(o=>{
+    const card=document.createElement('article');card.className='recharge-order';
+    const info=document.createElement('div'),title=document.createElement('strong'),id=document.createElement('small'),coins=document.createElement('small'),date=document.createElement('small'),price=document.createElement('small'),status=document.createElement('span');
+    title.textContent=Number(o.amount).toLocaleString('pt-BR',{style:'currency',currency:o.currency||'BRL'})+' · '+Number(o.coin_quantity).toLocaleString('pt-BR')+' moedas';
+    id.textContent='Pedido: '+o.id+' · Usuário: '+o.user_id;
+    coins.textContent='ID Sanba: '+o.sanba_id;
+    date.textContent=new Date(o.created_at).toLocaleString('pt-BR');
+    price.textContent=o.admin_note?'Observação: '+o.admin_note:'';
+    status.className='recharge-status';status.textContent=rechargeStatusLabels[o.status]||o.status;
+    info.append(title,id,coins,date);if(o.admin_note)info.append(price);info.append(status);
+    const actions=document.createElement('div');actions.className='recharge-order-actions';
+    [['payment_confirmed','Confirmar pagamento'],['processing','Em processamento'],['completed','Concluir'],['payment_rejected','Recusar'],['cancelled','Cancelar']].filter(([s])=>s!==o.status).forEach(([next,label])=>{
+      const b=document.createElement('button');b.type='button';b.className='btn btn-light btn-small';b.textContent=label;b.addEventListener('click',()=>updateRechargeStatus(o.id,next,b));actions.appendChild(b);
+    });
+    card.append(info,actions);list.appendChild(card);
+  });
+}
+async function updateRechargeStatus(id,status,button){
+  if(!supabase||!currentProfile||currentProfile.membership_tier!=='developer')return;
+  button.disabled=true;
+  const {error}=await supabase.from('recharge_orders').update({status}).eq('id',id);
+  if(error){button.disabled=false;message($('rechargeOrdersMessage'),'Não foi possível atualizar o status. Tente novamente.');return}
+  await loadRechargeOrders();
+}
+$('refreshRechargeOrders')?.addEventListener('click',loadRechargeOrders);
 const settingsMenu = $('settingsMenu');
 const settingsToggle = $('settingsMenuToggle');
 function setSettingsMenu(open) {
