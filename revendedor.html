@@ -210,6 +210,23 @@ function renderHistory() {
   $('statCount').textContent=String(historyItems.length);
   $('statLast').textContent=historyItems.length?money(historyItems[0].totalCost,historyItems[0].currency||'BRL'):'—';
 }
+function applyAccessUI(profile) {
+  const active = accessIsActive(profile);
+  // Recursos pagos ficam ocultos para contas pendentes, suspensas ou vencidas.
+  document.querySelectorAll('.stats, .content-grid, .history-card').forEach(el => {
+    el.style.display = active ? '' : 'none';
+  });
+  if (active) {
+    loginCard.style.display = 'none';
+    form.style.display = '';
+    $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
+  } else {
+    loginCard.style.display = 'block';
+    form.style.display = 'none';
+    $('loginIntro').textContent = 'Sua conta existe, mas ainda não tem acesso ativo. Escolha um plano e fale com o suporte para confirmar o pagamento e liberar o acesso.';
+  }
+  dashboard.style.display = 'block';
+}
 function renderAccount(profile) {
   const active = accessIsActive(profile);
   $('welcomeTitle').textContent = 'Olá, ' + profile.username + '!';
@@ -225,7 +242,7 @@ function renderAccount(profile) {
   $('statAccess').textContent = active ? 'Ativo' : 'Pendente';
   $('statAccess').style.color = active ? '#047857' : '#9f1239';
   if (!active) {
-    message(accountMessage, 'Sua conta foi autenticada, mas o acesso ao painel não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
+    message(accountMessage, 'Sua conta foi autenticada, mas o acesso ao painel não está ativo ou venceu. Escolha um plano acima ou fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
 }
 async function showSignedIn(session) {
@@ -238,8 +255,7 @@ async function showSignedIn(session) {
     return;
   }
   currentProfile = profile;
-  loginCard.style.display = 'none';
-  dashboard.style.display = 'block';
+  applyAccessUI(profile);
   renderAccount(profile);
   readHistory();
   renderHistory();
@@ -278,7 +294,9 @@ form.addEventListener('submit', async event => {
 $('logoutButton').addEventListener('click', async () => {
   if (supabase) await supabase.auth.signOut();
   currentProfile = null; latestCalculation = null;
-  dashboard.style.display = 'none'; loginCard.style.display = 'block';
+  dashboard.style.display = 'none'; loginCard.style.display = 'block'; form.style.display = '';
+  $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
+  document.querySelectorAll('.stats, .content-grid, .history-card').forEach(el => { el.style.display = ''; });
   form.reset(); hideMessage(loginMessage); hideMessage(accountMessage); hideMessage(calcMessage);
   $('calcResults').style.display = 'none'; $('heroStatus').textContent = '🔐 Entre para acessar suas ferramentas';
 });
@@ -459,10 +477,25 @@ $('downloadResults').addEventListener('click',()=>{
   const csv='\\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\\r\\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='calculo-lote-sanba.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 });
+// Reavalia o vencimento enquanto a página permanece aberta.
+setInterval(() => {
+  if (currentProfile) {
+    applyAccessUI(currentProfile);
+    renderAccount(currentProfile);
+  }
+}, 60000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && currentProfile) {
+    applyAccessUI(currentProfile);
+    renderAccount(currentProfile);
+  }
+});
 if (supabase) {
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_OUT') {
-      currentProfile = null; dashboard.style.display='none'; loginCard.style.display='block';
+      currentProfile = null; dashboard.style.display='none'; loginCard.style.display='block'; form.style.display='';
+      $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
+      document.querySelectorAll('.stats, .content-grid, .history-card').forEach(el => { el.style.display=''; });
     }
   });
   supabase.auth.getSession().then(({data,error}) => {
