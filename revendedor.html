@@ -505,9 +505,6 @@ async function loadRechargeOrders(){
     status.className='recharge-status';status.textContent=rechargeStatusLabels[o.status]||o.status;
     info.append(title,id,coins,date);if(o.admin_note)info.append(price);info.append(status);
     const actions=document.createElement('div');actions.className='recharge-order-actions';
-    [['payment_confirmed','Confirmar pagamento'],['processing','Em processamento'],['completed','Concluir'],['payment_rejected','Recusar'],['cancelled','Cancelar']].filter(([s])=>s!==o.status).forEach(([next,label])=>{
-      const b=document.createElement('button');b.type='button';b.className='btn btn-light btn-small';b.textContent=label;b.addEventListener('click',()=>updateRechargeStatus(o.id,next,b));actions.appendChild(b);
-    });
     const expiresAt = new Date(new Date(o.created_at).getTime() + 15 * 60 * 1000);
     if(o.status === 'pending'){
       const deadline=document.createElement('small');
