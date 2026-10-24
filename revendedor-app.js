@@ -210,6 +210,7 @@ async function showSignedIn(session) {
   const inviteAdminPanel = $('resellerInviteAdminPanel');
   if (inviteAdminPanel) {
     inviteAdminPanel.hidden = profile.membership_tier !== 'developer' || !accessIsActive(profile);
+    $('quickInviteLink').hidden = inviteAdminPanel.hidden;
     if (!inviteAdminPanel.hidden) loadResellerAdminData();
   }
   const rechargePanel = $('rechargeOrdersPanel');
@@ -288,13 +289,31 @@ function setSettingsMenu(open) {
   settingsToggle.setAttribute('aria-expanded', String(open));
   settingsToggle.setAttribute('aria-label', open ? 'Fechar configurações' : 'Abrir configurações');
 }
-settingsToggle.addEventListener('click', () => setSettingsMenu(!settingsMenu.classList.contains('open')));
+const quickMenu = $('quickMenu');
+function setQuickMenu(open) {
+  quickMenu.classList.toggle('open', open);
+  quickMenu.setAttribute('aria-hidden', String(!open));
+  settingsToggle.setAttribute('aria-expanded', String(open));
+  settingsToggle.setAttribute('aria-label', open ? 'Fechar menu rápido' : 'Abrir menu rápido');
+}
+settingsToggle.addEventListener('click', () => setQuickMenu(!quickMenu.classList.contains('open')));
+$('quickSettingsLink').addEventListener('click', () => {
+  setQuickMenu(false);
+  setSettingsMenu(true);
+});
+$('quickInviteLink').addEventListener('click', () => {
+  setQuickMenu(false);
+  const panel = $('resellerInviteAdminPanel');
+  if (panel && !panel.hidden) panel.scrollIntoView({behavior:'smooth',block:'start'});
+});
+
 $('settingsMenuClose').addEventListener('click', () => setSettingsMenu(false));
 document.addEventListener('click', event => {
-  if (!settingsMenu.contains(event.target) && !settingsToggle.contains(event.target)) setSettingsMenu(false);
+  if (!settingsMenu.contains(event.target) && !settingsToggle.contains(event.target) && !quickMenu.contains(event.target)) setSettingsMenu(false);
+  if (!quickMenu.contains(event.target) && !settingsToggle.contains(event.target)) setQuickMenu(false);
 });
 document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') setSettingsMenu(false);
+  if (event.key === 'Escape') { setSettingsMenu(false); setQuickMenu(false); }
 });
 $('profileSettingsForm').addEventListener('submit', async event => {
   event.preventDefault();
@@ -802,7 +821,7 @@ document.addEventListener('visibilitychange', () => {
 if (supabase) {
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_OUT') {
-      currentProfile = null; $('settingsMenuToggle').style.display='none'; setSettingsMenu(false); dashboard.style.display='none'; loginCard.style.display='block'; form.style.display='';
+      currentProfile = null; $('settingsMenuToggle').style.display='none'; setSettingsMenu(false); setQuickMenu(false); $('quickInviteLink').hidden=true; dashboard.style.display='none'; loginCard.style.display='block'; form.style.display='';
       $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
       document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => { el.style.display=''; });
     }
