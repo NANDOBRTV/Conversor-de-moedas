@@ -4,6 +4,9 @@
 create table if not exists public.reseller_profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
   username text not null unique,
+  email text,
+  requested_plan text not null default 'monthly'
+    check (requested_plan in ('monthly', 'one_time')),
   access_status text not null default 'pending'
     check (access_status in ('pending', 'active', 'suspended')),
   plan_name text not null default 'premium',
@@ -45,3 +48,46 @@ drop trigger if exists reseller_profiles_updated_at on public.reseller_profiles;
 create trigger reseller_profiles_updated_at
 before update on public.reseller_profiles
 for each row execute function public.set_updated_at();
+
+
+-- Compatibilidade com projetos onde a tabela já existia.
+alter table public.reseller_profiles add column if not exists email text;
+alter table public.reseller_profiles
+  add column if not exists requested_plan text not null default 'monthly';
+
+-- Perfil criado automaticamente quando alguém se cadastra pelo formulário do site.
+-- O perfil começa pendente; cadastro nunca libera o painel pago automaticamente.
+create or replace function public.handle_new_reseller_signup()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  chosen_username text;
+  chosen_plan text;
+begin
+  chosen_username := lower(trim(coalesce(new.raw_user_meta_data ->> 'username', '')));
+  chosen_plan := coalesce(new.raw_user_meta_data ->> 'requested_plan', 'monthly');
+
+  if chosen_username !~ '^[a-z0-9_.-]{3,30}$' then
+    raise exception 'Nome de usuário inválido';
+  end if;
+
+  if chosen_plan not in ('monthly', 'one_time') then
+    chosen_plan := 'monthly';
+  end if;
+
+  insert into public.reseller_profiles
+    (user_id, username, email, requested_plan, access_status, plan_name)
+  values
+    (new.id, chosen_username, lower(new.email), chosen_plan, 'pending', 'pendente');
+
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created_reseller on auth.users;
+create trigger on_auth_user_created_reseller
+after insert on auth.users
+for each row execute procedure public.handle_new_reseller_signup();
