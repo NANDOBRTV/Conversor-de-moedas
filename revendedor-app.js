@@ -149,7 +149,7 @@ function renderAccount(profile) {
       : resellerPending
         ? '⌛ Solicitação de revendedor aguardando aprovação'
         : tier === 'common' && accountActive
-          ? '✓ Conta Comum ativa · escolha um plano para liberar ferramentas premium'
+          ? '✓ Revendedor Comum ativo · ferramentas básicas liberadas'
           : tier === 'common'
             ? '⚠ Conta sem acesso ativo'
             : '⚠ Conta autenticada · acesso pendente';
