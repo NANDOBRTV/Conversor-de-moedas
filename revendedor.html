@@ -537,6 +537,15 @@ function renderAccount(profile) {
 }
 async function showSignedIn(session) {
   if (!session || !supabase) return false;
+
+  // Assim que o Supabase confirma a sessão, sai da tela de login.
+  // Se a consulta do perfil falhar, o usuário verá a mensagem dentro do painel,
+  // em vez de ficar preso na tela de entrada sem saber o motivo.
+  loginCard.style.display = 'none';
+  dashboard.style.display = 'block';
+  $('welcomeTitle').textContent = 'Carregando seu painel…';
+  message(accountMessage, 'Login confirmado. Estamos carregando os dados da sua conta.', 'success');
+
   const {data:profile,error} = await supabase.from('reseller_profiles')
     .select('username, email, requested_plan, access_status, plan_name, access_until, membership_tier, reseller_application_status, reseller_requested_at, reseller_reviewed_at')
     .eq('user_id',session.user.id).maybeSingle();
@@ -546,7 +555,10 @@ async function showSignedIn(session) {
       : 'Não foi possível consultar o perfil da conta.';
     const notice = 'A senha foi validada, mas o painel não conseguiu carregar os dados da conta. ' + detail + ' Seus campos foram preservados; tente novamente e, se persistir, informe esta mensagem ao suporte.';
     message(accountMessage, notice, 'error');
-    message(loginMessage, notice, 'error');
+    // Mantém o painel aberto para exibir o diagnóstico, em vez de retornar ao login.
+    dashboard.style.display = 'block';
+    loginCard.style.display = 'none';
+    $('welcomeTitle').textContent = 'Painel conectado, mas perfil indisponível';
     return false;
   }
   currentProfile = profile;
@@ -927,7 +939,14 @@ form.addEventListener('submit', async event => {
     }
     passwordInput.value = '';
   } catch (err) {
-    message(loginMessage, err && err.message ? err.message : 'Falha de conexão. Tente novamente mais tarde.');
+    const errorText = err && err.message ? err.message : 'Falha de conexão. Tente novamente mais tarde.';
+    // Se a sessão já foi iniciada, mostre o erro dentro do painel; não esconda o
+    // diagnóstico atrás do formulário de login.
+    if (dashboard.style.display === 'block' && loginCard.style.display === 'none') {
+      message(accountMessage, errorText, 'error');
+    } else {
+      message(loginMessage, errorText, 'error');
+    }
     // Preserva os campos quando a falha ocorre depois de autenticar ou durante uma
     // indisponibilidade. Limpa apenas a senha quando as credenciais são rejeitadas.
     if (err && (err.status === 400 || err.status === 401)) passwordInput.value = '';
