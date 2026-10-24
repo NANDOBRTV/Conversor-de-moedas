@@ -15,6 +15,8 @@
 
 ## Alterações concluídas
 
+- **Correção do pós-login:** a sessão autenticada agora abre o painel imediatamente antes da consulta ao perfil. Se a consulta falhar, o usuário permanece no painel e recebe o diagnóstico na área da conta, em vez de ficar preso na tela de login. Commit: `51aba81edea3adf515f6e6adfa8613e5444ecd98`.
+
 1. **Tela do revendedor:** a página padrão mostra apenas o login. O cadastro é mantido somente para quem abre um link com convite, para não quebrar o fluxo de convites individuais.
 2. **Código-fonte sincronizado:** as versões de `login-by-username` e `create-checkout` no GitHub foram sincronizadas com as funções ativas do Supabase.
 3. **Fontes faltantes adicionadas:** `create-customer-order`, `manage-customer-orders` e `manage-reseller-invites` agora têm seus arquivos no repositório. Isso reduz a divergência entre produção e código versionado.
