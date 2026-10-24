@@ -199,6 +199,8 @@ body.invite-mode #loginCard #loginView { display:none; }
     <section class="quick-menu" id="quickMenu" aria-hidden="true" aria-label="Menu rápido">
       <button class="quick-menu-item" id="quickSettingsLink" type="button">⚙️ Configurações</button>
       <a class="quick-menu-item" id="quickInviteLink" href="./convites-revendedores.html" hidden>🔐 Gerador de convites de revendedores ↗</a>
+      <button class="quick-menu-item" id="quickPendingOrdersLink" type="button" disabled hidden title="Função será configurada depois">🕒 Pedidos para aprovação</button>
+      <button class="quick-menu-item" id="quickApprovedOrdersLink" type="button" disabled hidden title="Função será configurada depois">✅ Pedidos aprovados</button>
     </section>
     <section class="settings-menu" id="settingsMenu" aria-hidden="true" aria-label="Menu de configurações">
       <div class="settings-menu-head"><h2>⚙️ Configurações</h2><button class="settings-menu-close" id="settingsMenuClose" type="button" aria-label="Fechar configurações">×</button></div>
@@ -370,6 +372,6 @@ body.invite-mode #loginCard #loginView { display:none; }
 })();
 </script>
 <script src="./supabase-config.js"></script>
-<script src="./revendedor-loader.js?v=20261024-6" defer></script>
+<script src="./revendedor-loader.js?v=20261024-7" defer></script>
 </body>
 </html>
