@@ -21,16 +21,18 @@ Deno.serve(async (req: Request) => {
     return json({ error: "Origem não autorizada." }, 403);
   }
 
-  let body: { username?: unknown; password?: unknown };
+  let body: { identifier?: unknown; username?: unknown; password?: unknown };
   try {
     body = await req.json();
   } catch {
     return json({ error: "Pedido inválido." }, 400);
   }
 
-  const username = typeof body.username === "string" ? body.username.trim().toLowerCase() : "";
+  const identifier = typeof body.identifier === "string" ? body.identifier.trim().toLowerCase() : (typeof body.username === "string" ? body.username.trim().toLowerCase() : "");
   const password = typeof body.password === "string" ? body.password : "";
-  if (!/^[A-Za-z0-9_.-]{3,30}$/.test(username) || password.length < 1 || password.length > 128) {
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+  const isUsername = /^[A-Za-z0-9_.-]{3,30}$/.test(identifier);
+  if ((!isEmail && !isUsername) || password.length < 1 || password.length > 128) {
     return json({ error: "Usuário ou senha inválidos." }, 400);
   }
 
@@ -49,7 +51,7 @@ Deno.serve(async (req: Request) => {
     const { data: profile, error: profileError } = await admin
       .from("reseller_profiles")
       .select("user_id")
-      .eq("username", username)
+      .eq(isEmail ? "email" : "username", identifier)
       .maybeSingle();
 
     if (profileError || !profile) {
