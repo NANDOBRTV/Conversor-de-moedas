@@ -1,16 +1,26 @@
-// Carregador externo compatível com a política CSP do GitHub Pages.
-// Se o módulo principal não carregar, mostra o problema no próprio formulário.
+// Carrega o módulo de autenticação e exibe erros de inicialização em vez de deixar o login travado.
 (function () {
-  function showLoadError() {
+  var finished = false;
+  function showLoadError(text) {
+    if (finished) return;
+    finished = true;
     var message = document.getElementById('loginMessage');
     if (message) {
-      message.textContent = 'Não foi possível carregar o sistema de login. Atualize a página; se continuar, informe ao suporte que o arquivo revendedor-app.js não carregou.';
+      message.textContent = text || 'O sistema de login não conseguiu iniciar. Recarregue a página; se continuar, informe ao suporte.';
       message.className = 'login-message visible error';
     }
   }
   var script = document.createElement('script');
   script.type = 'module';
-  script.src = './revendedor-app.js?v=20261024-2';
-  script.onerror = showLoadError;
+  script.src = './revendedor-app.js?v=20261024-3';
+  script.onerror = function () {
+    showLoadError('Não foi possível baixar o sistema de login. Confira sua conexão e recarregue a página.');
+  };
   document.head.appendChild(script);
+  // Também detecta erro de sintaxe/importação, que nem sempre aciona script.onerror.
+  window.setTimeout(function () {
+    if (!window.SANBA_RESELLER_APP_READY) {
+      showLoadError('O sistema de login falhou ao iniciar. Atualize a página; se continuar, informe ao suporte.');
+    }
+  }, 6000);
 })();
