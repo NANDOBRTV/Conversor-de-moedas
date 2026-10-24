@@ -680,7 +680,7 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
       return;
     }
     const order=JSON.parse(anchor.dataset.order);
-    if(!/^\\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
+    if(!/^\d{8}$/.test(order.sanba_id)||!Number.isInteger(order.coin_quantity)||order.coin_quantity<1000||!Number.isFinite(Number(order.amount))||Number(order.amount)<=0||!['BRL','USD','VES'].includes(order.currency))throw new Error('Confira o ID Sanba e os dados calculados antes de continuar.');
     const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending'}).select('id').single();
     if(error)throw error;
     const finalWhatsAppUrl=new URL(targetUrl);
