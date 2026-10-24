@@ -237,13 +237,13 @@ body.invite-mode #loginCard #loginView { display:none !important; }
         <button class="btn btn-primary login-submit" type="submit" id="loginSubmit">Entrar no painel</button>
         <div class="login-message error" id="loginMessage" role="alert" aria-live="polite"></div>
       </form>
-      <p class="footnote">O cadastro de revendedor exige um convite individual enviado pelo desenvolvedor.</p>
+      <p class="footnote">O cadastro é gratuito e aberto. Após criar a conta, sua solicitação de revendedor será analisada pelo desenvolvedor.</p>
     </div>
 
     <div id="registerView" style="display:none">
       <h2>Crie sua conta</h2>
       <p class="subtext">Informe seus dados para se cadastrar no Painel do Revendedor Sanba.</p>
-      <p class="footnote" id="inviteRequiredNotice">O cadastro de revendedor só pode ser solicitado por um link de convite individual válido. Peça um convite ao desenvolvedor do Conversor Sanba.</p>
+      <p class="footnote" id="inviteRequiredNotice">Você pode criar sua conta sem convite. O acesso às ferramentas de revendedor depende de aprovação manual do desenvolvedor.</p>
       <form id="registerForm" autocomplete="on" style="display:none">
         <label class="field"><span>Seu e-mail</span><input id="registerEmail" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required maxlength="254"></label>
         <label class="field"><span>Nome de usuário</span><input id="registerUsername" name="username" type="text" placeholder="Escolha seu usuário" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" autocapitalize="none" spellcheck="false"></label>
