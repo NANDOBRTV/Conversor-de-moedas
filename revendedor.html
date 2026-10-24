@@ -168,11 +168,11 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(15,118,110,.12
 
 
 /* A página pública abre somente no login. O cadastro só aparece em links com convite. */
-#loginCard .auth-tabs { display:none !important; }
-#loginCard #registerView { display:none !important; }
-#loginCard #loginView { display:block !important; }
-body.invite-mode #loginCard #registerView { display:block !important; }
-body.invite-mode #loginCard #loginView { display:none !important; }
+#loginCard .auth-tabs { display:grid; }
+#loginCard #registerView { display:none; }
+#loginCard #loginView { display:block; }
+body.invite-mode #loginCard #registerView { display:block; }
+body.invite-mode #loginCard #loginView { display:none; }
 /* Segurança visual: convites só aparecem depois da autorização do perfil Desenvolvedor no backend. */
 #resellerInviteAdminPanel[hidden]{display:none!important;visibility:hidden!important;}
 </style>
@@ -231,7 +231,7 @@ body.invite-mode #loginCard #loginView { display:none !important; }
     <div id="loginView">
       <h2 id="loginTitle">Entrar na sua conta</h2>
       <p class="subtext" id="loginIntro">Acesse seu painel com nome de usuário e senha.</p>
-      <form id="resellerLoginForm" autocomplete="on" method="post" action="#" onsubmit="document.getElementById('loginMessage').textContent='Verificando conexão com o painel…';document.getElementById('loginMessage').className='login-message visible success';return false">
+      <form id="resellerLoginForm" autocomplete="on" method="post" action="#">
         <label class="field"><span>Nome de usuário</span><input id="username" name="username" type="text" placeholder="Seu nome de usuário" autocomplete="username" required maxlength="80" autocapitalize="none" spellcheck="false"></label>
         <label class="field"><span>Senha</span><div class="password-wrap"><input id="password" name="password" type="password" placeholder="Sua senha" autocomplete="current-password" required maxlength="128"><button class="btn btn-light btn-small" type="button" id="togglePassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></label>
         <button class="btn btn-primary login-submit" type="submit" id="loginSubmit">Entrar no painel</button>
@@ -355,6 +355,6 @@ body.invite-mode #loginCard #loginView { display:none !important; }
 </main>
 
 <script src="./supabase-config.js"></script>
-<script src="./revendedor-loader.js?v=20261024-2" defer></script>
+<script src="./revendedor-loader.js?v=20261024-3" defer></script>
 </body>
 </html>
