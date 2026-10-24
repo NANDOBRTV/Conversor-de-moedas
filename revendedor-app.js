@@ -125,6 +125,8 @@ function applyAccessUI(profile) {
   const activeReseller = profile?.reseller_application_status === 'approved';
   const active = accessIsActive(profile) && (tier !== 'common' || activeReseller);
   $('accountPurchase').style.display = tier === 'common' && profile.reseller_application_status === 'approved' ? 'grid' : 'none';
+  const goldBenefits = $('goldBenefits');
+  if (goldBenefits) goldBenefits.hidden = !(tier === 'gold' && active);
   // Recursos pagos ficam ocultos para contas pendentes, suspensas ou vencidas.
   document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => {
     el.style.display = active ? '' : 'none';
@@ -174,7 +176,11 @@ function renderAccount(profile) {
   $('accountStatus').appendChild(badge);
   $('statAccess').textContent = resellerApproved && accountActive ? 'Revendedor ativo' : premiumActive ? tierLabel(profile) : tier === 'common' && accountActive ? 'Conta comum' : tier === 'common' ? 'Acesso inativo' : 'Pendente';
   $('statAccess').style.color = accountActive ? '#047857' : '#9f1239';
-  if (resellerApproved && accountActive) {
+  if (tier === 'gold' && premiumActive) {
+    message(accountMessage, 'Plano Ouro ativo: calculadora de revenda e histórico de até 50 cálculos recentes liberados por 30 dias. Copiar resultados e exportar CSV são exclusivos do Diamante.', 'success');
+  } else if (tier === 'diamond' && premiumActive) {
+    message(accountMessage, 'Plano Diamante ativo: calculadora, histórico, cópia dos resultados e exportação CSV liberados. O acesso permanece sujeito à validade registrada na conta.', 'success');
+  } else if (resellerApproved && accountActive) {
     message(accountMessage, 'Sua solicitação de revendedor foi aprovada. Você já pode usar as ferramentas básicas de revenda. Ouro e Diamante continuam sujeitos às regras próprias de pagamento e aprovação.', 'success');
   } else if (resellerPending) {
     message(accountMessage, 'Seu cadastro foi recebido. O acesso de revendedor será liberado somente após a aprovação manual do desenvolvedor.', 'error');
