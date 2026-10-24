@@ -77,10 +77,18 @@ function writeHistory() {
   try { localStorage.setItem(HISTORY_KEY, JSON.stringify(historyItems.slice(0,50))); return true; }
   catch (e) { message(accountMessage, 'O navegador não permitiu salvar o histórico. Confira o espaço disponível ou as configurações de privacidade.'); return false; }
 }
+function historyLimitFor(profile = currentProfile) {
+  return membershipTier(profile) === 'common' ? 5 : 50;
+}
 function renderHistory() {
   const list = $('historyList'); list.replaceChildren();
-  $('historyEmpty').style.display = historyItems.length ? 'none' : 'block';
-  historyItems.forEach(item => {
+  const visibleHistory = historyItems.slice(0, historyLimitFor());
+  $('historyEmpty').style.display = visibleHistory.length ? 'none' : 'block';
+  const historyDescription = document.querySelector('#historyTitle')?.parentElement?.querySelector('p');
+  if (historyDescription) historyDescription.textContent = membershipTier(currentProfile) === 'common'
+    ? 'Plano Comum: mostra os 5 cálculos mais recentes, guardados neste navegador.'
+    : 'Guardado neste navegador, neste aparelho. Até 50 cálculos recentes.';
+  visibleHistory.forEach(item => {
     const li=document.createElement('li'); li.className='history-item';
     const info=document.createElement('div'), currency=item.currency||'BRL';
     const title=document.createElement('strong');
@@ -769,12 +777,22 @@ $('clearCalculator').addEventListener('click', () => {
   $('calcCost').focus();
 });
 $('saveCalculation').addEventListener('click', () => {
+  if (!currentProfile || !accessIsActive(currentProfile) ||
+      (membershipTier(currentProfile) === 'common' && currentProfile.reseller_application_status !== 'approved')) {
+    message(calcMessage, 'O histórico está disponível somente para revendedores com acesso ativo.');
+    return;
+  }
   // Sempre recalcula com os campos atuais para nunca salvar um resultado antigo.
   const result = calculate(true);
   if (!result) return;
   const item = {...result,id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),savedAt:new Date().toISOString()};
   historyItems.unshift(item); historyItems = historyItems.slice(0,50);
-  if (writeHistory()) { renderHistory(); message(calcMessage, 'Cálculo salvo neste navegador.', 'success'); }
+  if (writeHistory()) {
+    renderHistory();
+    message(calcMessage, membershipTier(currentProfile) === 'common'
+      ? 'Cálculo salvo. O plano Comum mostra os 5 cálculos mais recentes.'
+      : 'Cálculo salvo neste navegador.', 'success');
+  }
 });
 $('clearHistory').addEventListener('click', () => {
   if (!historyItems.length) { message(accountMessage,'O histórico já está vazio.','success'); return; }
