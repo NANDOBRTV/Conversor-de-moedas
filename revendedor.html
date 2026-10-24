@@ -525,13 +525,18 @@ function renderAccount(profile) {
   } else hideMessage(accountMessage);
 }
 async function showSignedIn(session) {
-  if (!session || !supabase) return;
+  if (!session || !supabase) return false;
   const {data:profile,error} = await supabase.from('reseller_profiles')
     .select('username, email, requested_plan, access_status, plan_name, access_until, membership_tier, reseller_application_status, reseller_requested_at, reseller_reviewed_at')
     .eq('user_id',session.user.id).maybeSingle();
   if (error || !profile) {
-    message(accountMessage, 'A sessão foi iniciada, mas não conseguimos carregar o perfil. Tente sair e entrar novamente. Se continuar, fale com o suporte.');
-    return;
+    const detail = error && error.code === 'PGRST116'
+      ? 'O perfil da conta não foi encontrado.'
+      : 'Não foi possível consultar o perfil da conta.';
+    const notice = 'A senha foi validada, mas o painel não conseguiu carregar os dados da conta. ' + detail + ' Seus campos foram preservados; tente novamente e, se persistir, informe esta mensagem ao suporte.';
+    message(accountMessage, notice, 'error');
+    message(loginMessage, notice, 'error');
+    return false;
   }
   currentProfile = profile;
   $('settingsMenuToggle').style.display = 'inline-flex';
@@ -556,6 +561,8 @@ async function showSignedIn(session) {
   renderAccount(profile);
   readHistory();
   renderHistory();
+  hideMessage(loginMessage);
+  return true;
 }
 const rechargeStatusLabels={pending:'Aguardando pagamento',payment_confirmed:'Pagamento confirmado',processing:'Em processamento',completed:'Concluído',payment_rejected:'Pagamento não confirmado',cancelled:'Cancelado'};
 async function loadRechargeOrders(){
@@ -902,13 +909,16 @@ form.addEventListener('submit', async event => {
     if (!result.access_token || !result.refresh_token) throw new Error('O serviço de login respondeu sem uma sessão válida. Tente novamente.');
     const {error} = await supabase.auth.setSession({access_token:result.access_token,refresh_token:result.refresh_token});
     if (error) throw new Error('Não foi possível iniciar a sessão. Tente novamente.');
-    passwordInput.value = '';
     const {data} = await supabase.auth.getSession();
-    await showSignedIn(data.session);
+    const profileLoaded = await showSignedIn(data.session);
+    if (!profileLoaded) {
+      throw new Error('A senha foi validada, mas o perfil não carregou. Seus dados foram preservados; tente novamente em instantes.');
+    }
+    passwordInput.value = '';
   } catch (err) {
     message(loginMessage, err && err.message ? err.message : 'Falha de conexão. Tente novamente mais tarde.');
-    // Só limpa a senha quando o servidor rejeita as credenciais; em falhas temporárias
-    // (rede, serviço indisponível ou limite de tentativas), preserva o formulário.
+    // Preserva os campos quando a falha ocorre depois de autenticar ou durante uma
+    // indisponibilidade. Limpa apenas a senha quando as credenciais são rejeitadas.
     if (err && (err.status === 400 || err.status === 401)) passwordInput.value = '';
   } finally { submit.disabled = false; submit.textContent = 'Entrar no painel'; }
 });
