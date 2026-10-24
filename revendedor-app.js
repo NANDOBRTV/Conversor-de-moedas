@@ -286,8 +286,6 @@ const settingsToggle = $('settingsMenuToggle');
 function setSettingsMenu(open) {
   settingsMenu.classList.toggle('open', open);
   settingsMenu.setAttribute('aria-hidden', String(!open));
-  settingsToggle.setAttribute('aria-expanded', String(open));
-  settingsToggle.setAttribute('aria-label', open ? 'Fechar configurações' : 'Abrir configurações');
 }
 const quickMenu = $('quickMenu');
 function setQuickMenu(open) {
