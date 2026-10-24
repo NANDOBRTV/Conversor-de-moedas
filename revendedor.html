@@ -19,6 +19,10 @@
 .side-stack{display:grid;gap:15px}.account-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:var(--shadow)}.account-top{display:flex;align-items:center;gap:11px;margin-bottom:14px}.avatar{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--mint);font-size:21px}.account-top h3{margin:0;font-size:15px;overflow-wrap:anywhere}.account-top p{margin:3px 0 0;color:var(--muted);font-size:11px}.detail-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid #edf1f5;font-size:12px}.detail-row span{color:var(--muted)}.detail-row strong{text-align:right;overflow-wrap:anywhere}.badge{display:inline-flex;padding:4px 7px;border-radius:7px;font-size:10px;font-weight:900;background:#dcfce7;color:#166534}.badge.inactive{background:#fff1f2;color:#9f1239}.helper{background:#f0fdfa;border:1px solid #ccfbf1;border-radius:15px;padding:15px}.helper h3{font-size:13px;margin:0 0 5px}.helper p{font-size:11px;line-height:1.6;color:#365b59;margin:0}
 .history-card{margin-top:15px}.history-empty{padding:20px;border:1px dashed #cbd5e1;border-radius:12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}.history-list{list-style:none;margin:0;padding:0;display:grid;gap:9px}.history-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px}.history-item strong{display:block;font-size:12px}.history-item small{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.5}.history-price{text-align:right;white-space:nowrap;font-weight:900;font-size:13px}.history-price small{font-weight:500}.history-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.notice{font-size:10px;color:var(--muted);line-height:1.7;margin:20px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff}.footer{text-align:center;font-size:10px;color:var(--muted);line-height:1.7;margin-top:22px}
 
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;background:#f1f5f9;border-radius:13px;margin-bottom:22px}
+.auth-tab{border:0;border-radius:9px;padding:11px 14px;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:850;cursor:pointer}
+.auth-tab.active{background:#fff;color:var(--brand-dark);box-shadow:0 1px 4px rgba(15,23,42,.12)}
+.auth-tab:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .signup-divider{height:1px;background:var(--line);margin:22px 0}
 .signup-heading{font-size:16px;margin:0 0 7px}
 .account-purchase{display:grid;gap:9px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
@@ -55,41 +59,37 @@
     <div class="hero-mark" aria-hidden="true">🧮</div>
   </header>
 
-  <section class="login-card" id="loginCard" aria-labelledby="loginTitle">
-    <h2 id="loginTitle">Entrar na sua conta</h2><p class="subtext" id="loginIntro">Use seu nome de usuário e senha para abrir seu painel de revendedor.</p>
-    <form id="resellerLoginForm" autocomplete="on">
-      <label class="field"><span>Nome de usuário</span><input id="username" name="username" type="text" placeholder="Seu nome de usuário" autocomplete="username" required maxlength="80" autocapitalize="none" spellcheck="false"></label>
-      <label class="field"><span>Senha</span><div class="password-wrap"><input id="password" name="password" type="password" placeholder="Sua senha" autocomplete="current-password" required maxlength="128"><button class="btn btn-light btn-small" type="button" id="togglePassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></label>
-      <button class="btn btn-primary login-submit" type="submit" id="loginSubmit">Entrar no painel</button>
-      <div class="login-message error" id="loginMessage" role="alert" aria-live="polite"></div>
-    </form>
-    <div class="signup-divider" aria-hidden="true"></div>
-    <h3 class="signup-heading">Ainda não tem conta? Cadastre-se</h3>
-    <p class="subtext">Crie seu acesso com e-mail, nome de usuário e senha. O painel pago será liberado depois que o pagamento for confirmado manualmente.</p>
-    <form id="registerForm" autocomplete="on">
-      <label class="field"><span>Seu e-mail</span><input id="registerEmail" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required maxlength="254"></label>
-      <label class="field"><span>Escolha um nome de usuário</span><input id="registerUsername" name="username" type="text" placeholder="ex.: fernando123" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" autocapitalize="none" spellcheck="false"></label>
-      <label class="field"><span>Crie uma senha</span><input id="registerPassword" name="new-password" type="password" placeholder="Use pelo menos 8 caracteres" autocomplete="new-password" required minlength="8" maxlength="128"></label>
-      <button class="btn btn-dark login-submit" type="submit" id="registerSubmit">Criar minha conta</button>
-      <div class="login-message error" id="registerMessage" role="status" aria-live="polite"></div>
-    </form>
-    <p class="footnote">Use um e-mail que você consegue acessar. Ele será usado para identificar sua conta e liberar o plano após a confirmação do pagamento.</p>
-    <p class="footnote">Sua senha é processada pelo serviço de autenticação. Não compartilhe sua senha.</p>
-    <div class="plans" aria-label="Planos do Painel de Revendedor">
-      <article class="plan-option">
-        <h3>Plano mensal</h3>
-        <div class="plan-price">R$ 9,90 <small>/ mês</small></div>
-        <p>Acesso por períodos mensais. A renovação é confirmada manualmente pelo suporte após o pagamento.</p>
-        <a class="btn btn-light" href="#registerForm">Criar conta para escolher</a>
-      </article>
-      <article class="plan-option featured">
-        <h3>Pagamento único</h3>
-        <div class="plan-price">R$ 49,90 <small>/ uma vez</small></div>
-        <p>Sem cobrança recorrente. A continuidade do acesso segue as condições de manutenção do serviço informadas na compra.</p>
-        <a class="btn btn-primary" href="#registerForm">Criar conta para escolher</a>
-      </article>
+  <section class="login-card" id="loginCard" aria-label="Acesso do revendedor">
+    <div class="auth-tabs" role="tablist" aria-label="Escolha entrar ou registrar">
+      <button class="auth-tab active" type="button" id="showLoginTab" role="tab" aria-selected="true" aria-controls="loginView">Entrar</button>
+      <button class="auth-tab" type="button" id="showRegisterTab" role="tab" aria-selected="false" aria-controls="registerView">Registrar</button>
     </div>
-    <p class="plan-note">Primeiro crie sua conta. Depois de entrar, você poderá solicitar o plano pelo próprio painel. O pagamento é confirmado manualmente antes da liberação.</p>
+
+    <div id="loginView">
+      <h2 id="loginTitle">Entrar na sua conta</h2>
+      <p class="subtext" id="loginIntro">Acesse seu painel com nome de usuário e senha.</p>
+      <form id="resellerLoginForm" autocomplete="on">
+        <label class="field"><span>Nome de usuário</span><input id="username" name="username" type="text" placeholder="Seu nome de usuário" autocomplete="username" required maxlength="80" autocapitalize="none" spellcheck="false"></label>
+        <label class="field"><span>Senha</span><div class="password-wrap"><input id="password" name="password" type="password" placeholder="Sua senha" autocomplete="current-password" required maxlength="128"><button class="btn btn-light btn-small" type="button" id="togglePassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></label>
+        <button class="btn btn-primary login-submit" type="submit" id="loginSubmit">Entrar no painel</button>
+        <div class="login-message error" id="loginMessage" role="alert" aria-live="polite"></div>
+      </form>
+      <p class="footnote">Ainda não tem uma conta? Toque em <strong>Registrar</strong> para criar gratuitamente seu cadastro.</p>
+    </div>
+
+    <div id="registerView" style="display:none">
+      <h2>Crie sua conta</h2>
+      <p class="subtext">Informe seus dados para se cadastrar no Painel do Revendedor Sanba.</p>
+      <form id="registerForm" autocomplete="on">
+        <label class="field"><span>Seu e-mail</span><input id="registerEmail" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required maxlength="254"></label>
+        <label class="field"><span>Nome de usuário</span><input id="registerUsername" name="username" type="text" placeholder="Escolha seu usuário" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" autocapitalize="none" spellcheck="false"></label>
+        <label class="field"><span>Crie uma senha</span><input id="registerPassword" name="new-password" type="password" placeholder="Pelo menos 8 caracteres" autocomplete="new-password" required minlength="8" maxlength="128"></label>
+        <button class="btn btn-dark login-submit" type="submit" id="registerSubmit">Criar minha conta</button>
+        <div class="login-message error" id="registerMessage" role="status" aria-live="polite"></div>
+      </form>
+      <p class="footnote">Use um e-mail válido. O acesso pago é liberado depois que o pagamento do plano escolhido for confirmado manualmente.</p>
+      <p class="footnote">Já tem conta? Toque em <strong>Entrar</strong>.</p>
+    </div>
   </section>
 
   <section class="dashboard" id="dashboard" aria-label="Painel de ferramentas">
@@ -171,6 +171,24 @@ const accountMessage = $('accountMessage');
 const loginCard = $('loginCard');
 const dashboard = $('dashboard');
 const calcMessage = $('calcMessage');
+const loginView = $('loginView');
+const registerView = $('registerView');
+const showLoginTab = $('showLoginTab');
+const showRegisterTab = $('showRegisterTab');
+function setAuthView(view) {
+  const isLogin = view === 'login';
+  loginView.style.display = isLogin ? 'block' : 'none';
+  registerView.style.display = isLogin ? 'none' : 'block';
+  showLoginTab.classList.toggle('active', isLogin);
+  showRegisterTab.classList.toggle('active', !isLogin);
+  showLoginTab.setAttribute('aria-selected', String(isLogin));
+  showRegisterTab.setAttribute('aria-selected', String(!isLogin));
+  if (isLogin) $('username').focus({ preventScroll: true });
+  else $('registerEmail').focus({ preventScroll: true });
+}
+showLoginTab.addEventListener('click', () => setAuthView('login'));
+showRegisterTab.addEventListener('click', () => setAuthView('register'));
+
 const HISTORY_KEY = 'sanba_reseller_calculation_history_v1';
 const validConfig = typeof config.url === 'string' && config.url.startsWith('https://') &&
   typeof config.anonKey === 'string' && config.anonKey.length > 20 &&
@@ -244,7 +262,8 @@ function applyAccessUI(profile) {
   if (active) {
     loginCard.style.display = 'none';
     form.style.display = '';
-    $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
+    setAuthView('login');
+  $('loginIntro').textContent = 'Acesse seu painel com nome de usuário e senha.';
   } else {
     loginCard.style.display = 'none';
     form.style.display = 'none';
@@ -377,7 +396,8 @@ $('logoutButton').addEventListener('click', async () => {
   if (supabase) await supabase.auth.signOut();
   currentProfile = null; latestCalculation = null;
   dashboard.style.display = 'none'; loginCard.style.display = 'block'; form.style.display = '';
-  $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
+  setAuthView('login');
+      $('loginIntro').textContent = 'Acesse seu painel com nome de usuário e senha.';
   document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => { el.style.display = ''; });
   form.reset(); hideMessage(loginMessage); hideMessage(accountMessage); hideMessage(calcMessage);
   $('calcResults').style.display = 'none'; $('heroStatus').textContent = '🔐 Entre para acessar suas ferramentas';
