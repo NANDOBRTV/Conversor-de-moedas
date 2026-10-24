@@ -197,7 +197,6 @@ function renderAccount(profile) {
   $('accountStatus').appendChild(badge);
   $('statAccess').textContent = active ? 'Ativo' : 'Pendente';
   $('statAccess').style.color = active ? '#047857' : '#9f1239';
-  $('premiumCalculator').style.display = '';
   if (!active) {
     message(accountMessage, 'Sua conta foi autenticada, mas o acesso ao painel não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
