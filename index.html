@@ -209,6 +209,53 @@ button,a,select{ -webkit-tap-highlight-color:transparent }
 .premium-label{font-size:10px;letter-spacing:1.8px;font-weight:900;color:#0f766e;margin:0 0 8px}
 .premium-benefits{padding-left:20px;margin:12px 0;color:#334155;font-size:13px;line-height:1.7}
 .premium-status{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:10px;border-radius:9px;font-size:12px;font-weight:800;text-align:center;margin-top:12px}
+
+/* SANBA FUTURISTA — camada visual */
+:root{color-scheme:dark}
+body{position:relative;isolation:isolate;background:#050b18;color:#e6f3ff;padding-top:24px;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(ellipse at 15% 10%,rgba(0,217,255,.19),transparent 38%),radial-gradient(ellipse at 88% 72%,rgba(124,58,237,.20),transparent 36%),linear-gradient(135deg,#050b18 0%,#0a1730 55%,#080d20 100%)}
+body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(69,212,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(69,212,255,.10) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 92%)}
+.card{background:linear-gradient(155deg,rgba(15,28,53,.96),rgba(7,15,32,.97));color:#e6f3ff;border:1px solid rgba(75,219,255,.28);border-radius:24px;box-shadow:0 0 0 1px rgba(255,255,255,.025),0 24px 80px rgba(0,0,0,.45),0 0 42px rgba(0,195,255,.09);backdrop-filter:blur(18px)}
+h1{color:#f1faff;text-shadow:0 0 24px rgba(0,217,255,.2)}
+.brand-mark{filter:drop-shadow(0 0 12px rgba(0,217,255,.38))}
+.sub,.info,.creator-credit{color:#9db4d2}
+label{color:#a9bfdc}
+select,input{color:#f0f8ff;background:rgba(4,12,28,.85);border:1px solid #294565;border-radius:12px}
+select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 0 3px rgba(34,211,238,.13)}
+#currencySelect{color:#75eaff}
+#userId.invalido{background:#321827}#userId.valido{background:#092d2d}
+.hint{color:#8fa8c8}.hint.ok{color:#5eead4}.hint.warn{color:#fda4af}
+.auto-detect,.operator-notice,.policy-panel,.admin-panel,.active-mode-label{background:rgba(14,31,57,.88);border-color:#294765;color:#b9d2ee}
+.operator-notice strong,.policy-panel summary,.policy-panel h2{color:#67e8f9}
+.tabs{background:rgba(3,10,25,.8);border:1px solid #203854}
+.tab{color:#9db4d2}
+.tab.active,.tab[data-m="c"].active{background:linear-gradient(120deg,#0891b2,#2563eb);color:#fff;box-shadow:0 0 22px rgba(34,211,238,.22)}
+.tab[data-m="r"].active{background:linear-gradient(120deg,#6d28d9,#2563eb);color:#fff;box-shadow:0 0 22px rgba(139,92,246,.22)}
+.minimo,.minimo b{color:#a9bfdc}
+.erro{background:#321827;border-color:#fb7185;color:#fecdd3}
+.result{background:linear-gradient(135deg,#075985,#0f766e 58%,#164e63);border:1px solid rgba(103,232,249,.5);box-shadow:inset 0 1px rgba(255,255,255,.12),0 0 30px rgba(6,182,212,.18)}
+.result .det{background:rgba(3,14,30,.4);border:1px solid rgba(255,255,255,.13)}
+.pgto{background:#30240d;border-color:#a16207;color:#fde68a}.pgto b{color:#fcd34d}
+.brl{background:#10233f;border-color:#2c527b;color:#bae6fd}
+.needid{background:#30240d;border-color:#d97706;color:#fde68a}
+.wpp{box-shadow:0 0 24px rgba(37,211,102,.2);border:1px solid rgba(167,243,208,.35)}
+.brand-footer{border-top-color:#263a56}
+.pix-text{background:rgba(13,148,136,.16);color:#5eead4;border:1px solid rgba(94,234,212,.25)}
+.brand-slogan{color:#9cecf4}
+.creator-credit strong{color:#e0f2fe}
+.footer-info{color:#6f88a8}
+.license-seal{color:#91a6c2}
+.clear-btn{background:#281522;color:#fda4af;border-color:#fb7185}
+.copy-btn{background:linear-gradient(110deg,#0891b2,#2563eb);box-shadow:0 8px 22px rgba(37,99,235,.22)}
+.print-btn,.mini-btn{background:#0b1930;color:#cbeafe;border-color:#345475}
+.summary{background:#092d32;border-color:#0d9488;color:#99f6e4}
+.important-notice,.region-warning{background:#2b2112;color:#fde68a;border-color:#a16207}
+.detect-status{background:#082e3a;color:#a5f3fc;border-color:#0891b2}
+.id-error{background:#321827;color:#fecdd3;border-color:#fb7185}
+.site-mini-menu{background:#0b1830;border-color:#294765;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.site-mini-menu a,.site-mini-menu button{color:#d8edff}
+@media(max-width:520px){body{padding:12px 10px}.card{border-radius:20px;padding:20px 16px}}
+
 </style>
 </head>
 <body>
