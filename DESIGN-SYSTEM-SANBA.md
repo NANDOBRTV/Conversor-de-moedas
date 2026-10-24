@@ -20,6 +20,12 @@ Documento de referência visual e funcional para manter o site consistente entre
 | Texto secundário | `#63748A` | instruções e metadados |
 | Erro | `#9F1239` | erros e alertas que exigem atenção |
 
+## Identidade visual e recursos
+- **Favicon oficial:** `favicon.svg`, símbolo de moeda com a marca Sanba, compartilhado pela calculadora e pelo painel do revendedor.
+- **Marca dos cabeçalhos:** ícones vetoriais para manter nitidez em telas de alta densidade sem depender de imagens externas.
+- **Metadados:** título, descrição e cor de tema definidos para cada página.
+- **Acessibilidade:** ícones decorativos ignorados por leitores de tela; títulos e ações continuam identificados por texto.
+
 ## Componentes
 - **Botão primário:** verde-petróleo, texto branco, rótulo com verbo e ação clara.
 - **Botão secundário:** branco com borda suave.
