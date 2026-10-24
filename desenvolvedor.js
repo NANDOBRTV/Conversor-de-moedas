@@ -27,7 +27,7 @@ async function loadRevenueSummary(){
   const {data,error}=await sb.functions.invoke("manage-revenue-orders",{body:{action:"list_orders"}});
   if(error||!data||data.error)throw new Error(data?.error||error?.message||"Não foi possível carregar o relatório.");
   const orders=data.orders||[];
-  const paid=orders.filter(o=>["payment_confirmed","in_progress","delivered","refunded"].includes(o.status));
+  const paid=orders.filter(o=>["payment_confirmed","in_progress","delivered"].includes(o.status)||(o.status==="refunded"&&Boolean(o.payment_confirmed_at)));
   const refunded=orders.filter(o=>o.status==="refunded");
   const pending=orders.filter(o=>o.status==="pending");
   const paidTotal=paid.reduce((s,o)=>s+Number(o.amount||0),0);
