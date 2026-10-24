@@ -19,6 +19,12 @@
 .side-stack{display:grid;gap:15px}.account-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:var(--shadow)}.account-top{display:flex;align-items:center;gap:11px;margin-bottom:14px}.avatar{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--mint);font-size:21px}.account-top h3{margin:0;font-size:15px;overflow-wrap:anywhere}.account-top p{margin:3px 0 0;color:var(--muted);font-size:11px}.detail-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid #edf1f5;font-size:12px}.detail-row span{color:var(--muted)}.detail-row strong{text-align:right;overflow-wrap:anywhere}.badge{display:inline-flex;padding:4px 7px;border-radius:7px;font-size:10px;font-weight:900;background:#dcfce7;color:#166534}.badge.inactive{background:#fff1f2;color:#9f1239}.helper{background:#f0fdfa;border:1px solid #ccfbf1;border-radius:15px;padding:15px}.helper h3{font-size:13px;margin:0 0 5px}.helper p{font-size:11px;line-height:1.6;color:#365b59;margin:0}
 .history-card{margin-top:15px}.history-empty{padding:20px;border:1px dashed #cbd5e1;border-radius:12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}.history-list{list-style:none;margin:0;padding:0;display:grid;gap:9px}.history-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px}.history-item strong{display:block;font-size:12px}.history-item small{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.5}.history-price{text-align:right;white-space:nowrap;font-weight:900;font-size:13px}.history-price small{font-weight:500}.history-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.notice{font-size:10px;color:var(--muted);line-height:1.7;margin:20px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff}.footer{text-align:center;font-size:10px;color:var(--muted);line-height:1.7;margin-top:22px}
 
+.signup-divider{height:1px;background:var(--line);margin:22px 0}
+.signup-heading{font-size:16px;margin:0 0 7px}
+.account-purchase{display:grid;gap:9px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
+.account-purchase h3{font-size:14px;margin:0}
+.account-purchase p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 3px}
+.account-purchase .btn{width:100%}
 .plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
 .plan-option{border:1px solid var(--line);border-radius:15px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:9px;min-width:0}
 .plan-option.featured{border:2px solid var(--brand);background:#f0fdfa}
@@ -57,22 +63,33 @@
       <button class="btn btn-primary login-submit" type="submit" id="loginSubmit">Entrar no painel</button>
       <div class="login-message error" id="loginMessage" role="alert" aria-live="polite"></div>
     </form>
-    <p class="footnote">Sua senha é processada pelo serviço de autenticação. Não compartilhe sua senha. Se ainda não tem acesso, escolha um plano abaixo e solicite a criação da conta.</p>
+    <div class="signup-divider" aria-hidden="true"></div>
+    <h3 class="signup-heading">Ainda não tem conta? Cadastre-se</h3>
+    <p class="subtext">Crie seu acesso com e-mail, nome de usuário e senha. O painel pago será liberado depois que o pagamento for confirmado manualmente.</p>
+    <form id="registerForm" autocomplete="on">
+      <label class="field"><span>Seu e-mail</span><input id="registerEmail" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required maxlength="254"></label>
+      <label class="field"><span>Escolha um nome de usuário</span><input id="registerUsername" name="username" type="text" placeholder="ex.: fernando123" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" autocapitalize="none" spellcheck="false"></label>
+      <label class="field"><span>Crie uma senha</span><input id="registerPassword" name="new-password" type="password" placeholder="Use pelo menos 8 caracteres" autocomplete="new-password" required minlength="8" maxlength="128"></label>
+      <button class="btn btn-dark login-submit" type="submit" id="registerSubmit">Criar minha conta</button>
+      <div class="login-message error" id="registerMessage" role="status" aria-live="polite"></div>
+    </form>
+    <p class="footnote">Use um e-mail que você consegue acessar. Ele será usado para identificar sua conta e liberar o plano após a confirmação do pagamento.</p>
+    <p class="footnote">Sua senha é processada pelo serviço de autenticação. Não compartilhe sua senha.</p>
     <div class="plans" aria-label="Planos do Painel de Revendedor">
       <article class="plan-option">
         <h3>Plano mensal</h3>
         <div class="plan-price">R$ 9,90 <small>/ mês</small></div>
         <p>Acesso por períodos mensais. A renovação é confirmada manualmente pelo suporte após o pagamento.</p>
-        <a class="btn btn-light" href="https://wa.me/5582996843269?text=Ol%C3%A1%21%20Quero%20assinar%20o%20Plano%20Mensal%20do%20Painel%20de%20Revendedor%20Sanba%20por%20R%24%209%2C90%20por%20m%C3%AAs.%20Como%20fa%C3%A7o%20para%20pagar%20e%20criar%20minha%20conta%3F" target="_blank" rel="noopener noreferrer">Solicitar plano mensal</a>
+        <a class="btn btn-light" href="#registerForm">Criar conta para escolher</a>
       </article>
       <article class="plan-option featured">
         <h3>Pagamento único</h3>
         <div class="plan-price">R$ 49,90 <small>/ uma vez</small></div>
         <p>Sem cobrança recorrente. A continuidade do acesso segue as condições de manutenção do serviço informadas na compra.</p>
-        <a class="btn btn-primary" href="https://wa.me/5582996843269?text=Ol%C3%A1%21%20Quero%20comprar%20o%20Painel%20de%20Revendedor%20Sanba%20por%20pagamento%20%C3%BAnico%20de%20R%24%2049%2C90.%20Como%20fa%C3%A7o%20para%20pagar%20e%20criar%20minha%20conta%3F" target="_blank" rel="noopener noreferrer">Solicitar pagamento único</a>
+        <a class="btn btn-primary" href="#registerForm">Criar conta para escolher</a>
       </article>
     </div>
-    <p class="plan-note">O pedido e o pagamento são tratados manualmente pelo WhatsApp. A conta é criada e liberada somente após a confirmação do pagamento. Não envie senha ou dados bancários pelo formulário do site.</p>
+    <p class="plan-note">Primeiro crie sua conta. Depois de entrar, você poderá solicitar o plano pelo próprio painel. O pagamento é confirmado manualmente antes da liberação.</p>
   </section>
 
   <section class="dashboard" id="dashboard" aria-label="Painel de ferramentas">
@@ -115,7 +132,15 @@
           <div class="detail-row"><span>Plano</span><strong id="accountPlan">—</strong></div>
           <div class="detail-row"><span>Status</span><strong id="accountStatus">—</strong></div>
           <div class="detail-row"><span>Validade</span><strong id="accountUntil">—</strong></div>
+          <p class="footnote">E-mail: <strong id="accountEmail">—</strong></p>
           <p class="footnote">Para alterar seu plano ou corrigir o acesso, fale com o suporte. A validade é exibida conforme os dados cadastrados na conta.</p>
+          <div class="account-purchase" id="accountPurchase">
+            <h3>Planos e compra</h3>
+            <p>Escolha o plano. O pedido será enviado pelo WhatsApp com seu usuário e e-mail para conferência manual.</p>
+            <button class="btn btn-light" type="button" id="requestMonthly">Solicitar plano mensal · R$ 9,90</button>
+            <button class="btn btn-primary" type="button" id="requestOneTime">Solicitar pagamento único · R$ 49,90</button>
+            <div class="login-message error" id="purchaseMessage" role="status" aria-live="polite"></div>
+          </div>
         </section>
         <section class="helper"><h3>💡 Como usar</h3><p>A compra do lote é em dólares. A cotação é buscada automaticamente: Real usa uma taxa de referência de câmbio; Bolívar usa a taxa publicada pelo BCV. Essas taxas não são necessariamente cotação de mercado em tempo real e podem mudar conforme a fonte.</p></section>
       </div>
@@ -232,6 +257,7 @@ function renderAccount(profile) {
   $('welcomeTitle').textContent = 'Olá, ' + profile.username + '!';
   $('heroStatus').textContent = active ? '✓ Acesso ' + (profile.plan_name || 'ativo') + ' liberado' : '⚠ Conta autenticada · acesso pendente';
   $('accountUsername').textContent = profile.username || '—';
+  $('accountEmail').textContent = profile.email || 'E-mail não informado';
   $('accountPlan').textContent = profile.plan_name || 'Não informado';
   $('accountUntil').textContent = dateLabel(profile.access_until);
   $('accountStatus').replaceChildren();
@@ -248,7 +274,7 @@ function renderAccount(profile) {
 async function showSignedIn(session) {
   if (!session || !supabase) return;
   const {data:profile,error} = await supabase.from('reseller_profiles')
-    .select('username, access_status, plan_name, access_until')
+    .select('username, email, requested_plan, access_status, plan_name, access_until')
     .eq('user_id',session.user.id).maybeSingle();
   if (error || !profile) {
     message(accountMessage, 'A sessão foi iniciada, mas não conseguimos carregar o perfil. Tente sair e entrar novamente. Se continuar, fale com o suporte.');
@@ -260,6 +286,62 @@ async function showSignedIn(session) {
   readHistory();
   renderHistory();
 }
+function requestPurchase(plan) {
+  if (!currentProfile || !currentProfile.username || !currentProfile.email) {
+    message($('purchaseMessage'), 'Não conseguimos identificar sua conta. Saia e entre novamente ou fale com o suporte.');
+    return;
+  }
+  const monthly = plan === 'monthly';
+  const planName = monthly ? 'Plano mensal' : 'Pagamento único';
+  const price = monthly ? 'R$ 9,90 por mês' : 'R$ 49,90';
+  const msg = 'Olá! Quero solicitar o ' + planName + ' do Painel de Revendedor Sanba (' + price + '). Usuário: ' + currentProfile.username + '. E-mail da conta: ' + currentProfile.email + '. Por favor, me informe como pagar. Sei que o acesso será ativado após a confirmação do pagamento.';
+  const url = 'https://wa.me/5582996843269?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+$('requestMonthly').addEventListener('click', () => requestPurchase('monthly'));
+$('requestOneTime').addEventListener('click', () => requestPurchase('one_time'));
+$('registerForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const registerMessage = $('registerMessage');
+  hideMessage(registerMessage);
+  if (!supabase) { message(registerMessage, 'O Supabase ainda não está configurado para cadastro.'); return; }
+  const email = $('registerEmail').value.trim().toLowerCase();
+  const username = $('registerUsername').value.trim().toLowerCase();
+  const password = $('registerPassword').value;
+  if (!/^[a-z0-9_.-]{3,30}$/.test(username)) {
+    message(registerMessage, 'O nome de usuário deve ter de 3 a 30 caracteres: letras sem acento, números, ponto, hífen ou sublinhado.');
+    return;
+  }
+  if (password.length < 8) {
+    message(registerMessage, 'Use uma senha com pelo menos 8 caracteres.');
+    return;
+  }
+  const submit = $('registerSubmit');
+  submit.disabled = true; submit.textContent = 'Criando sua conta…';
+  try {
+    const {data,error} = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username, requested_plan: 'monthly' } }
+    });
+    if (error) throw error;
+    $('registerPassword').value = '';
+    if (data.session) {
+      message(registerMessage, 'Conta criada! Seu acesso está pendente até você solicitar um plano e o pagamento ser confirmado.', 'success');
+      await showSignedIn(data.session);
+    } else {
+      message(registerMessage, 'Cadastro recebido. Se o Supabase exigir confirmação, abra o e-mail enviado e confirme o endereço. Depois entre com seu nome de usuário e senha. O painel pago será liberado após a confirmação do pagamento.', 'success');
+    }
+  } catch (error) {
+    const raw = String(error && error.message || '');
+    const safe = /already registered|already exists|duplicate key|unique constraint/i.test(raw)
+      ? 'Este e-mail ou nome de usuário já está cadastrado. Tente entrar ou use outro nome de usuário.'
+      : (raw || 'Não foi possível criar a conta agora. Tente novamente.');
+    message(registerMessage, safe);
+  } finally {
+    submit.disabled = false; submit.textContent = 'Criar minha conta';
+  }
+});
 $('togglePassword').addEventListener('click', () => {
   const show = passwordInput.type === 'password';
   passwordInput.type = show ? 'text' : 'password';
