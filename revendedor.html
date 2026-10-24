@@ -282,9 +282,9 @@ function applyAccessUI(profile) {
   dashboard.style.display = 'block';
 }
 function renderAccount(profile) {
-  const active = accessIsActive(profile);
-  $('welcomeTitle').textContent = 'Olá, ' + profile.username + '!';
   const tier = membershipTier(profile);
+  const active = accessIsActive(profile) && tier !== 'common';
+  $('welcomeTitle').textContent = 'Olá, ' + profile.username + '!';
   $('heroStatus').textContent = active ? '✓ Acesso ' + tierLabel(profile) + ' liberado' : tier === 'common' ? 'Conta Comum · escolha um plano para virar Premium' : '⚠ Conta autenticada · acesso pendente';
   $('accountUsername').textContent = profile.username || '—';
   $('accountEmail').textContent = profile.email || 'E-mail não informado';
