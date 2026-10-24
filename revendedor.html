@@ -681,10 +681,10 @@ $('registerForm').addEventListener('submit', async event => {
     if (error) throw error;
     $('registerPassword').value = '';
     if (data.session) {
-      message(registerMessage, 'Conta criada! Seu acesso está pendente até você solicitar um plano e o pagamento ser confirmado.', 'success');
+      message(registerMessage, 'Conta criada! Seu Plano Comum (básico) já está ativo. Se quiser as ferramentas premium, escolha Ouro ou Diamante.', 'success');
       await showSignedIn(data.session);
     } else {
-      message(registerMessage, 'Cadastro recebido. Se o Supabase exigir confirmação, abra o e-mail enviado e confirme o endereço. Depois entre com seu nome de usuário e senha. O painel pago será liberado após a conferência manual do pagamento.', 'success');
+      message(registerMessage, 'Cadastro recebido. Se o Supabase exigir confirmação, abra o e-mail enviado e confirme o endereço. Depois entre com seu nome de usuário e senha. O Plano Comum será ativado automaticamente; os planos Ouro e Diamante exigem pagamento e aprovação manual.', 'success');
     }
   } catch (error) {
     const raw = String(error && error.message || '');
