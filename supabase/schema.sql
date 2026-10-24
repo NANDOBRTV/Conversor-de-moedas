@@ -73,41 +73,36 @@ where rp.user_id = au.id
 -- Perfil criado automaticamente quando alguém se cadastra pelo formulário do site.
 -- O perfil começa pendente; cadastro nunca libera o painel pago automaticamente.
 create or replace function public.handle_new_reseller_signup()
-returns trigger
-language plpgsql
-security definer
-set search_path = ''
-as $$
+returns trigger language plpgsql security definer set search_path = ''
+as $function$
 declare
   chosen_username text;
-  chosen_plan text;
+  account_type text;
 begin
-  chosen_username := lower(trim(coalesce(new.raw_user_meta_data ->> 'username', '')));
-  chosen_plan := coalesce(new.raw_user_meta_data ->> 'requested_plan', 'monthly');
-
+  chosen_username := lower(trim(coalesce(new.raw_user_meta_data ->> 'username','')));
+  account_type := lower(trim(coalesce(new.raw_user_meta_data ->> 'account_type','')));
   if chosen_username !~ '^[a-z0-9_.-]{3,30}$' then
     raise exception 'Nome de usuário inválido';
   end if;
-
-  if chosen_plan not in ('monthly', 'one_time') then
-    chosen_plan := 'monthly';
+  if account_type = 'customer' then
+    insert into public.reseller_profiles
+      (user_id,username,email,requested_plan,access_status,plan_name,membership_tier,access_until,reseller_application_status)
+    values (new.id,chosen_username,lower(new.email),'monthly','active','Comum','common',null,'not_requested');
+    return new;
   end if;
-
+  if account_type <> 'reseller' then
+    raise exception 'Tipo de cadastro inválido';
+  end if;
+  -- Cadastro aberto, sem convite e sem privilégios premium.
+  -- A solicitação precisa de aprovação manual do desenvolvedor.
   insert into public.reseller_profiles
-    (user_id, username, email, requested_plan, access_status, plan_name, membership_tier)
-  values
-    (new.id, chosen_username, lower(new.email), chosen_plan, 'pending', 'pendente', 'common');
-
+    (user_id,username,email,requested_plan,access_status,plan_name,membership_tier,access_until,
+     reseller_application_status,reseller_invite_id,reseller_requested_at)
+  values (new.id,chosen_username,lower(new.email),'monthly','pending','Aguardando aprovação','common',null,
+     'pending',null,pg_catalog.now());
   return new;
 end;
-$$;
-
-drop trigger if exists on_auth_user_created_reseller on auth.users;
-create trigger on_auth_user_created_reseller
-after insert on auth.users
-for each row execute procedure public.handle_new_reseller_signup();
-
--- A função é executada pelo trigger; não deve ser chamada diretamente pela API pública.
+$function$;
 revoke execute on function public.handle_new_reseller_signup() from public, anon, authenticated;
 
 
@@ -403,8 +398,8 @@ before update on public.recharge_orders
 for each row execute function public.set_recharge_orders_updated_at();
 revoke execute on function public.set_recharge_orders_updated_at() from public, anon, authenticated;
 
--- Cadastro de cliente é permitido sem convite, mas não concede acesso de revendedor.
--- Cadastro de revendedor exige convite individual, não expirado e de uso único.
+-- Cadastro de revendedor é aberto, mas toda solicitação fica pendente de aprovação manual.
+-- Convites administrativos continuam opcionais e não são exigidos para cadastrar.
 create or replace function public.handle_new_reseller_signup()
 returns trigger language plpgsql security definer set search_path = ''
 as $function$
