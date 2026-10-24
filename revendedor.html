@@ -894,7 +894,11 @@ form.addEventListener('submit', async event => {
       body:JSON.stringify({username:user,password:pass})
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(result.error || 'Não foi possível entrar. Confira seu usuário e senha.');
+    if (!response.ok) {
+      const loginError = new Error(result.error || 'Não foi possível entrar. Confira seu usuário e senha.');
+      loginError.status = response.status;
+      throw loginError;
+    }
     if (!result.access_token || !result.refresh_token) throw new Error('O serviço de login respondeu sem uma sessão válida. Tente novamente.');
     const {error} = await supabase.auth.setSession({access_token:result.access_token,refresh_token:result.refresh_token});
     if (error) throw new Error('Não foi possível iniciar a sessão. Tente novamente.');
@@ -903,7 +907,9 @@ form.addEventListener('submit', async event => {
     await showSignedIn(data.session);
   } catch (err) {
     message(loginMessage, err && err.message ? err.message : 'Falha de conexão. Tente novamente mais tarde.');
-    passwordInput.value = '';
+    // Só limpa a senha quando o servidor rejeita as credenciais; em falhas temporárias
+    // (rede, serviço indisponível ou limite de tentativas), preserva o formulário.
+    if (err && (err.status === 400 || err.status === 401)) passwordInput.value = '';
   } finally { submit.disabled = false; submit.textContent = 'Entrar no painel'; }
 });
 $('logoutButton').addEventListener('click', async () => {
