@@ -52,19 +52,31 @@ Deno.serve(async (req: Request) => {
       }
       if (order.status === "approved" && String(order.payment_id) === paymentId) return json({ received: true, already_processed: true });
       const { data: profile } = await admin.from("reseller_profiles").select("membership_tier").eq("user_id", order.user_id).maybeSingle();
-      if (!profile || profile.membership_tier !== "common") {
+      if (!profile || profile.membership_tier === "developer") {
         await admin.from("payment_orders").update({ payment_id: paymentId }).eq("id", order.id);
         return json({ received: true, profile_unchanged: true });
       }
       const now = new Date();
+      if (profile.membership_tier === order.plan_tier) {
+        const { error: retryError } = await admin.from("payment_orders").update({
+          status: "approved", payment_id: paymentId, approved_at: now.toISOString()
+        }).eq("id", order.id);
+        if (retryError) return json({ error: "Pagamento confirmado; atualização do pedido será repetida." }, 500);
+        return json({ received: true, already_activated: true });
+      }
+      if (profile.membership_tier !== "common") {
+        await admin.from("payment_orders").update({ payment_id: paymentId }).eq("id", order.id);
+        return json({ received: true, profile_unchanged: true });
+      }
       const accessUntil = order.plan_tier === "gold" ? new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString() : null;
-      const { error: profileUpdateError } = await admin.from("reseller_profiles").update({
+      const { data: updatedProfile, error: profileUpdateError } = await admin.from("reseller_profiles").update({
         membership_tier: order.plan_tier, access_status: "active",
         plan_name: order.plan_tier === "gold" ? "Ouro" : "Diamante",
         requested_plan: order.plan_tier === "gold" ? "monthly" : "one_time",
         access_until: accessUntil
-      }).eq("user_id", order.user_id).eq("membership_tier", "common");
+      }).eq("user_id", order.user_id).eq("membership_tier", "common").select("user_id").maybeSingle();
       if (profileUpdateError) return json({ error: "Pagamento confirmado, mas não foi possível atualizar o perfil." }, 500);
+      if (!updatedProfile) return json({ error: "Pagamento aprovado, mas o perfil mudou durante o processamento; precisa de revisão." }, 409);
       const { error: orderUpdateError } = await admin.from("payment_orders").update({
         status: "approved", payment_id: paymentId, approved_at: now.toISOString()
       }).eq("id", order.id);
