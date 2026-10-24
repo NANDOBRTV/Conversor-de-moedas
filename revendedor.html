@@ -231,7 +231,7 @@ body.invite-mode #loginCard #loginView { display:none !important; }
     <div id="loginView">
       <h2 id="loginTitle">Entrar na sua conta</h2>
       <p class="subtext" id="loginIntro">Acesse seu painel com nome de usuário e senha.</p>
-      <form id="resellerLoginForm" autocomplete="on" method="post" action="#" onsubmit="return false">
+      <form id="resellerLoginForm" autocomplete="on" method="post" action="#" onsubmit="document.getElementById('loginMessage').textContent='Verificando conexão com o painel…';document.getElementById('loginMessage').className='login-message visible success';return false">
         <label class="field"><span>Nome de usuário</span><input id="username" name="username" type="text" placeholder="Seu nome de usuário" autocomplete="username" required maxlength="80" autocapitalize="none" spellcheck="false"></label>
         <label class="field"><span>Senha</span><div class="password-wrap"><input id="password" name="password" type="password" placeholder="Sua senha" autocomplete="current-password" required maxlength="128"><button class="btn btn-light btn-small" type="button" id="togglePassword" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div></label>
         <button class="btn btn-primary login-submit" type="submit" id="loginSubmit">Entrar no painel</button>
@@ -355,6 +355,6 @@ body.invite-mode #loginCard #loginView { display:none !important; }
 </main>
 
 <script src="./supabase-config.js"></script>
-<script type="module" src="./revendedor-app.js?v=20261024-1"></script>
+<script src="./revendedor-loader.js?v=20261024-2" defer></script>
 </body>
 </html>
