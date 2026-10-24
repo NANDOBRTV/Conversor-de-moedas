@@ -55,6 +55,14 @@ alter table public.reseller_profiles add column if not exists email text;
 alter table public.reseller_profiles
   add column if not exists requested_plan text not null default 'monthly';
 
+-- Preenche o e-mail dos perfis criados antes deste cadastro automático.
+update public.reseller_profiles as rp
+set email = lower(au.email)
+from auth.users as au
+where rp.user_id = au.id
+  and (rp.email is null or trim(rp.email) = '');
+
+
 -- Perfil criado automaticamente quando alguém se cadastra pelo formulário do site.
 -- O perfil começa pendente; cadastro nunca libera o painel pago automaticamente.
 create or replace function public.handle_new_reseller_signup()
