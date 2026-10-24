@@ -33,17 +33,14 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 </head>
 <body>
 <main class="wrap">
-<header class="top"><div class="brand">Conversor <span>Sanba</span> · Administração</div><nav class="nav"><a href="./revendedor.html?versao=20261024-6">← Voltar ao painel</a><a href="https://wa.me/5582996843269?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20Painel%20Sanba." target="_blank" rel="noopener noreferrer">Suporte ↗</a></nav></header>
+<header class="top"><div class="brand">Conversor <span>Sanba</span> · Administração</div><nav class="nav"><a href="./revendedor.html?versao=20261024-8">← Voltar ao painel</a><a href="https://wa.me/5582996843269?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20o%20Painel%20Sanba." target="_blank" rel="noopener noreferrer">Suporte ↗</a></nav></header>
 <section class="hero"><div class="eyebrow">Área restrita · Desenvolvedor</div><h1>🔐 Gerador de convites</h1><p>Crie links individuais para novos revendedores, acompanhe solicitações de cadastro e gerencie convites já emitidos. Cada convite vale por 7 dias e só pode ser usado uma vez.</p></section>
 <section class="panel-card" id="accessPanel">
 <div id="accessMessage" class="login-message visible" role="status" aria-live="polite">Verificando sua sessão e suas permissões…</div>
 <div id="adminPanel" hidden>
-<div class="section-head"><div><h2>Administração de revendedores</h2><p>Gerencie convites, cadastros e pedidos em áreas separadas.</p></div><button class="btn btn-light" id="refreshResellerAdmin" type="button">Atualizar listas</button></div>
-<div class="admin-tabs" role="tablist" aria-label="Áreas administrativas">
-<button class="tab-button active" id="showInvitesTab" type="button" role="tab" aria-selected="true" aria-controls="inviteSection">🔐 Convites</button>
-<button class="tab-button" id="showOrdersTab" type="button" role="tab" aria-selected="false" aria-controls="ordersSection">📦 Pedidos</button>
-</div>
-<section id="inviteSection" role="tabpanel" aria-labelledby="showInvitesTab">
+<div class="section-head"><div><h2>Administração de revendedores</h2><p>Gerencie convites e solicitações de cadastro. A gestão de pedidos fica em uma página separada.</p></div><button class="btn btn-light" id="refreshResellerAdmin" type="button">Atualizar listas</button></div>
+
+<section id="inviteSection">
 <form id="createResellerInviteForm">
 <label class="field"><span>E-mail específico (opcional)</span><input id="resellerInviteEmail" type="email" maxlength="254" placeholder="revendedor@exemplo.com" autocomplete="email"></label>
 <button class="btn btn-primary" id="createResellerInvite" type="submit">Gerar convite individual</button>
@@ -56,26 +53,10 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 <div class="settings-divider"></div><h3 class="settings-section-title">Convites emitidos</h3>
 <div id="resellerInvitesList" class="history-list"><div class="history-empty">Carregando convites…</div></div>
 </section>
-<section id="ordersSection" role="tabpanel" aria-labelledby="showOrdersTab" hidden>
-<div class="section-head"><div><h2>📦 Pedidos para revendedores</h2><p>Registre os interessados, a quantidade de compra e o total mensal de vendas informado.</p></div><button class="btn btn-light" id="refreshOrders" type="button">Atualizar pedidos</button></div>
-<div class="metric-grid"><article class="metric"><span>Total mensal de vendas</span><strong id="monthlySalesTotal">R$ 0,00</strong><small id="monthlySalesPeriod">Mês atual</small></article><article class="metric"><span>Pedidos neste mês</span><strong id="monthlyOrdersCount">0</strong><small>Registros do mês atual</small></article></div>
-<form id="resellerOrderForm" class="order-form">
-<div class="order-form-grid">
-<label class="field"><span>Nome completo</span><input id="orderCustomerName" name="customer_name" type="text" maxlength="120" placeholder="Nome do interessado" required minlength="2" autocomplete="name"></label>
-<label class="field"><span>E-mail</span><input id="orderCustomerEmail" name="customer_email" type="email" maxlength="254" placeholder="nome@exemplo.com" required autocomplete="email"></label>
-<label class="field"><span>Quantidade de compra para ser revendedor</span><input id="orderPurchaseQuantity" name="purchase_quantity" type="number" min="1" step="1" placeholder="Ex.: 1600" required inputmode="numeric"></label>
-<label class="field"><span>Total mensal de vendas (R$)</span><input id="orderMonthlySales" name="monthly_sales_total" type="number" min="0" step="0.01" value="0" required inputmode="decimal"></label>
-</div>
-<label class="field"><span>Observações (opcional)</span><input id="orderNotes" name="notes" type="text" maxlength="500" placeholder="Informações sobre o pedido ou contato"></label>
-<button class="btn btn-primary" id="saveResellerOrder" type="submit">Salvar pedido</button>
-</form>
-<div id="ordersMessage" class="login-message" role="status" aria-live="polite"></div>
-<div class="settings-divider"></div><h3 class="settings-section-title">Pedidos registrados</h3>
-<div id="resellerOrdersList" class="history-list"><div class="history-empty">Carregue para consultar os pedidos.</div></div>
-</section>
+
 </div></section>
 <footer class="foot">Conversor Sanba · Ferramentas administrativas<br>O acesso é validado pela sessão do Supabase e pelo perfil de desenvolvedor.</footer>
 </main>
 <script src="./supabase-config.js"></script>
-<script type="module" src="./convites-revendedores.js?v=20261024-2"></script>
+<script type="module" src="./convites-revendedores.js?v=20261024-3"></script>
 </body></html>
