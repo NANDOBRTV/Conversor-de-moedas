@@ -315,7 +315,7 @@ button:active,.wpp:active,.nav-link:active{transform:translateY(0)}
   
   <label for="userId">🆔 Seu ID <span style="color:#e74c3c">*</span></label>
   <input type="text" id="userId" placeholder="Digite seu ID Sanba" inputmode="numeric" maxlength="8" autocomplete="off" aria-describedby="idHint">
-  <div class="hint" id="idHint">Digite 8 dígitos (ex: 76328158)</div><label class="remember-row" for="rememberId"><input type="checkbox" id="rememberId"> Lembrar meu ID somente neste navegador (opcional)</label><div class="hint" id="rememberStatus" role="status" aria-live="polite">Seu ID não será salvo se esta opção ficar desmarcada.</div>
+  <div class="hint" id="idHint" role="status" aria-live="polite">Digite 8 dígitos (ex: 76328158)</div><label class="remember-row" for="rememberId"><input type="checkbox" id="rememberId"> Lembrar meu ID somente neste navegador (opcional)</label><div class="hint" id="rememberStatus" role="status" aria-live="polite">Seu ID não será salvo se esta opção ficar desmarcada.</div>
   <div class="id-error" id="idError" role="alert">⚠️ ID inválido! Confira os 8 dígitos antes de continuar.</div>
   
   <div class="tabs" role="tablist" aria-label="Tipo de cálculo">
@@ -716,7 +716,7 @@ async function createRechargeThenOpenWhatsApp(anchor,e){
       alert('Entre na sua conta na Área do Cliente para registrar a recarga. Depois volte à calculadora e toque em Comprar pelo WhatsApp novamente. O WhatsApp só será aberto depois que o pedido for salvo.');
       return;
     }
-    const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending',whatsapp_message_sent_at:new Date().toISOString()}).select('id').single();
+    const {data,error}=await sb.from('recharge_orders').insert({...order,user_id:session.user.id,status:'pending'}).select('id').single();
     if(error)throw error;
     const finalWhatsAppUrl=new URL(targetUrl);
     const existingMessage=finalWhatsAppUrl.searchParams.get('text')||'';
