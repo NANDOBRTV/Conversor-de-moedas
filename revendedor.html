@@ -300,7 +300,7 @@ function renderAccount(profile) {
   $('heroStatus').textContent = active ? '✓ Acesso ' + tierLabel(profile) + ' liberado' : tier === 'common' ? 'Conta Comum · escolha um plano para virar Premium' : '⚠ Conta autenticada · acesso pendente';
   $('accountUsername').textContent = profile.username || '—';
   $('accountEmail').textContent = profile.email || 'E-mail não informado';
-  $('accountPlan').textContent = tierLabel(profile) + (profile.plan_name && !/^(comum|common|ouro|gold|diamante|diamond)$/i.test(profile.plan_name) ? ' · ' + profile.plan_name : '');
+  $('accountPlan').textContent = tierLabel(profile) + (profile.plan_name && !/^(comum|common|ouro|gold|diamante|diamond|premium|pendente|pending)$/i.test(profile.plan_name) ? ' · ' + profile.plan_name : '');
   $('accountUntil').textContent = dateLabel(profile.access_until);
   $('accountStatus').replaceChildren();
   const badge = document.createElement('span');
