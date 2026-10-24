@@ -1,31 +1,33 @@
-# Configuração do Mercado Pago — Conversor Sanba
+# Mercado Pago — integração futura do Conversor Sanba
 
-## O que já foi preparado
-- Tabela `public.payment_orders` no Supabase.
-- Edge Function `create-checkout` para criar checkout no servidor.
-- Edge Function `mercadopago-webhook` para validar assinatura, consultar o pagamento na API oficial e ativar o plano após confirmação.
-- Painel `revendedor.html` com botões de checkout. O `index.html` não é alterado.
+## Estado atual
 
-## Secrets obrigatórios no Supabase
-No Dashboard do projeto, abra **Edge Functions → Secrets** (ou Project Settings → Edge Functions, conforme a interface) e cadastre:
-- `MERCADOPAGO_ACCESS_TOKEN`: Access Token de teste para validar a integração primeiro; depois substituir pelo token de produção.
-- `MERCADOPAGO_WEBHOOK_SECRET`: segredo de assinatura de Webhooks exibido/configurado na aplicação do Mercado Pago.
+**O fluxo de compra atual continua manual pelo WhatsApp.** Ouro custa R$ 9,90 por 30 dias e Diamante custa R$ 49,90 em pagamento único. O acesso só deve ser liberado depois da conferência manual do pagamento.
 
-Não coloque esses valores no GitHub, no HTML ou no chat. `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` são variáveis padrão da Edge Functions; `SUPABASE_ANON_KEY` também é usado para validar a configuração.
+O repositório e o projeto Supabase contêm funções preparatórias para checkout/webhook, mas isso **não significa que o pagamento automático esteja validado ou liberado para uso real**. Não altere o fluxo visível para checkout automático sem pedido explícito e testes completos.
 
-## URL de notificação
-Configure o evento de pagamentos da aplicação Mercado Pago para:
-`https://kllewmcyvjltfzqxnmyz.supabase.co/functions/v1/mercadopago-webhook`
+## Componentes preparados
 
-O webhook valida o header `x-signature` com o segredo cadastrado, consulta o pagamento no Mercado Pago e só então considera aprovado. Não use o retorno do navegador como prova de pagamento.
+- Tabela `public.payment_orders`.
+- Edge Function `create-checkout`, protegida por autenticação.
+- Edge Function `mercadopago-webhook`, destinada a validar notificações e consultar o pagamento no provedor.
+- Segredos de servidor necessários para a integração, que devem permanecer fora do código público.
 
-## Planos nesta versão
-- Ouro: R$ 9,90 por 30 dias. Pix/cartão no checkout; renovação não é cobrança recorrente automática nesta primeira versão.
-- Diamante: R$ 49,90 em pagamento único.
-- Conta Desenvolvedor: não pode ser comprada nem sobrescrita pelo webhook.
+A página principal `index.html` não deve ser alterada durante esta etapa.
 
-## Antes de produção
-1. Cadastrar credenciais de teste no Supabase.
-2. Configurar URL de notificação e segredo no Mercado Pago.
-3. Testar compra, webhook válido/inválido, valor errado, notificação duplicada e perfis separados.
-4. Só então trocar para credenciais reais e fazer uma transação real de baixo valor, se apropriado.
+## Quando a integração for autorizada
+
+1. Configurar credenciais de teste no painel Supabase, nunca no GitHub.
+2. Configurar `MERCADOPAGO_ACCESS_TOKEN` e `MERCADOPAGO_WEBHOOK_SECRET` como secrets de servidor.
+3. Confirmar a URL de notificação: `https://kllewmcyvjltfzqxnmyz.supabase.co/functions/v1/mercadopago-webhook`.
+4. Testar pagamento aprovado, pendente, recusado, valor incorreto, plano divergente, assinatura inválida e notificação duplicada.
+5. Confirmar idempotência e que a conta Desenvolvedor nunca é modificada pelo webhook.
+6. Só depois de aprovação explícita, conectar a interface ao checkout e testar o retorno no site.
+
+## Planos
+
+- **Ouro:** R$ 9,90 por 30 dias; renovação não automática.
+- **Diamante:** R$ 49,90, pagamento único, sem vencimento automático.
+- **Desenvolvedor:** acesso administrativo, não pode ser comprado nem sobrescrito por uma notificação de pagamento.
+
+Não use a URL de retorno do navegador como prova de pagamento. A liberação futura deverá depender da confirmação do servidor e de uma notificação verificada.
