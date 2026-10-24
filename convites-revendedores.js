@@ -25,37 +25,11 @@ function adminDate(value) {
   return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString('pt-BR');
 }
 async function loadResellerAdminData() {
-  const appsList = $('resellerApplicationsList');
   const invitesList = $('resellerInvitesList');
-  if (!appsList || !invitesList || !currentProfile || currentProfile.membership_tier !== 'developer') return;
-  appsList.replaceChildren(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Carregando solicitações…'}));
+  if (!invitesList || !currentProfile || currentProfile.membership_tier !== 'developer') return;
   invitesList.replaceChildren(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Carregando convites…'}));
   try {
-    const [appsResult, invitesResult] = await Promise.all([
-      resellerInviteAdminCall({action:'list_applications'}),
-      resellerInviteAdminCall({action:'list_invites'})
-    ]);
-    appsList.replaceChildren();
-    const applications = appsResult.applications || [];
-    if (!applications.length) appsList.append(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Nenhuma solicitação de revendedor ainda.'}));
-    applications.forEach(app => {
-      const card=document.createElement('article'); card.className='history-item';
-      const info=document.createElement('div');
-      const name=document.createElement('strong'); name.textContent=app.username || 'Usuário';
-      const email=document.createElement('small'); email.textContent=app.email || 'E-mail não informado';
-      const date=document.createElement('small'); date.textContent='Solicitado: '+adminDate(app.reseller_requested_at);
-      const status=document.createElement('small'); status.textContent='Status: '+({pending:'Aguardando aprovação',approved:'Aprovado',rejected:'Recusado'}[app.reseller_application_status] || app.reseller_application_status);
-      info.append(name,email,date,status); card.append(info);
-      if (app.reseller_application_status === 'pending') {
-        const actions=document.createElement('div'); actions.className='history-actions';
-        const approve=document.createElement('button'); approve.type='button'; approve.className='btn btn-primary btn-small'; approve.textContent='Aprovar';
-        approve.addEventListener('click',async()=>{if(!confirm('Aprovar '+(app.username||'este cadastro')+' como revendedor? Isso libera somente o acesso básico; Ouro e Diamante continuam protegidos.'))return;approve.disabled=true;try{await resellerInviteAdminCall({action:'approve_application',user_id:app.user_id});inviteAdminNotice('Cadastro aprovado. O acesso básico de revendedor foi liberado.','success');await loadResellerAdminData()}catch(e){inviteAdminNotice(e.message,'error');approve.disabled=false}});
-        const reject=document.createElement('button'); reject.type='button'; reject.className='btn btn-light btn-small'; reject.textContent='Recusar';
-        reject.addEventListener('click',async()=>{const note=prompt('Motivo da recusa (opcional):')||'';if(!confirm('Confirma recusar esta solicitação?'))return;reject.disabled=true;try{await resellerInviteAdminCall({action:'reject_application',user_id:app.user_id,note});inviteAdminNotice('Solicitação recusada; o acesso de revendedor não foi liberado.','success');await loadResellerAdminData()}catch(e){inviteAdminNotice(e.message,'error');reject.disabled=false}});
-        actions.append(approve,reject); card.append(actions);
-      }
-      appsList.append(card);
-    });
+    const invitesResult = await resellerInviteAdminCall({action:'list_invites'});
     invitesList.replaceChildren();
     const invites = invitesResult.invites || [];
     if (!invites.length) invitesList.append(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Nenhum convite emitido.'}));
@@ -76,7 +50,6 @@ async function loadResellerAdminData() {
       invitesList.append(card);
     });
   } catch (error) {
-    appsList.replaceChildren(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Não foi possível carregar solicitações.'}));
     invitesList.replaceChildren(Object.assign(document.createElement('div'), {className:'history-empty', textContent:'Não foi possível carregar convites.'}));
     inviteAdminNotice(error.message || 'Falha ao carregar a área administrativa.','error');
   }
