@@ -10,7 +10,7 @@ create table if not exists public.reseller_profiles (
   access_status text not null default 'pending'
     check (access_status in ('pending', 'active', 'suspended')),
   plan_name text not null default 'premium',
-  membership_tier text not null default 'common' check (membership_tier in ('common', 'gold', 'diamond')),
+  membership_tier text not null default 'common' check (membership_tier in ('common', 'gold', 'diamond', 'developer')),
   access_until timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -60,7 +60,7 @@ alter table public.reseller_profiles
   add column if not exists membership_tier text not null default 'common';
 alter table public.reseller_profiles drop constraint if exists reseller_profiles_membership_tier_check;
 alter table public.reseller_profiles add constraint reseller_profiles_membership_tier_check
-  check (membership_tier in ('common', 'gold', 'diamond'));
+  check (membership_tier in ('common', 'gold', 'diamond', 'developer'));
 
 -- Preenche o e-mail dos perfis criados antes deste cadastro automático.
 update public.reseller_profiles as rp
