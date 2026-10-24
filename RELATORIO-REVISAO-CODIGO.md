@@ -28,6 +28,7 @@
 - A página publicada do painel do revendedor foi aberta em navegador sem autenticação: o formulário de login estava visível e não havia aba/formulário de cadastro na tela inicial.
 - Os logs recentes da Edge Function de login contêm respostas HTTP de sucesso; também existem respostas históricas `401` e `503`. Isso indica que a página alcança a função, mas não prova o resultado de cada conta ou senha.
 - A análise estática não encontrou IDs HTML duplicados nas páginas cliente, revendedor e administração.
+- A calculadora principal `index.html` também foi auditada em modo somente leitura: não há IDs duplicados, `eval`, `debugger`, redirecionamento anti-inspeção para `about:blank` nem o antigo painel público de ajuste de preços. O arquivo permaneceu inalterado.
 - As tabelas expostas principais têm RLS habilitado.
 - O aviso de tabelas internas sem políticas (`bot_rate_limits`, `reseller_invites`) é compatível com o modelo em que somente funções de servidor as acessam.
 
