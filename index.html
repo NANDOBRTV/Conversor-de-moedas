@@ -263,6 +263,7 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
   <button type="button" class="project-menu-button" id="openSiteMenu" aria-haspopup="true" aria-expanded="false" aria-controls="siteMiniMenu">☰ Menu</button>
   <nav class="site-mini-menu" id="siteMiniMenu" aria-label="Menu principal" hidden>
     <a href="./index.html">🪙 Calculadora Sanba</a>
+    <a href="./cliente.html">🧑 Área do Cliente</a>
     <a href="./revendedor.html">👤 Painel do Revendedor</a>
     <button type="button" id="openProjectReports">📋 Relatórios do projeto</button>
   </nav>
@@ -467,6 +468,7 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
           <li><strong>Confirmado por inspeção:</strong> as três Edge Functions estão publicadas/ativas, com verificação JWT habilitada em <code>create-checkout</code>; o webhook é configurado para receber chamadas externas.</li>
           <li><strong>Banco de dados:</strong> foram encontrados 3 perfis de revendedor (2 Comum e 1 Desenvolvedor) e nenhum pedido de pagamento registrado na consulta realizada.</li>
           <li><strong>Ainda não comprovado:</strong> compra ponta a ponta, confirmação do webhook, liberação automática de plano, cálculos em todos os cenários e testes visuais em vários aparelhos.</li>
+          <li><strong>Área do cliente adicionada:</strong> favoritos de pacotes, perfil local, histórico de solicitações e status editável neste navegador em <code>cliente.html</code>. Os dados são locais e não sincronizam entre dispositivos; o status não confirma pagamentos reais.</li>
           <li><strong>Limitação da auditoria:</strong> não foi possível abrir o site em um navegador visual automatizado nesta verificação; portanto, não se declara aprovação visual.</li>
         </ul>
         <div class="project-callout">O relatório diferencia verificações por código/logs de testes completos com usuário. Não faça pagamentos reais para testar sem autorização explícita; prefira o ambiente de teste do Mercado Pago.</div>
@@ -475,6 +477,7 @@ select:focus,input:focus{border-color:#22d3ee;background:#09182e;box-shadow:0 0 
         <h3>Próximas melhorias recomendadas</h3>
         <ul>
           <li>Testes reais em Android e desktop, incluindo cálculo, moeda, validação e links do WhatsApp.</li>
+          <li>Se precisar de histórico e acompanhamento de pedidos entre aparelhos, implementar autenticação de clientes e tabela de pedidos no Supabase, com políticas RLS e atualização real de status.</li>
           <li>Revisão independente das fórmulas e dos arredondamentos dos preços.</li>
           <li>Habilitar a proteção do Supabase contra senhas vazadas e revisar as opções de segurança da autenticação.</li>
           <li>Configurar e verificar com segurança os secrets <code>MERCADOPAGO_ACCESS_TOKEN</code> e <code>MERCADOPAGO_WEBHOOK_SECRET</code> nas Edge Functions, sem expô-los no código.</li>
