@@ -261,7 +261,7 @@ body.invite-mode #loginCard #loginView { display:none; }
       <h2>Crie sua conta</h2>
       <p class="subtext">Informe seus dados para se cadastrar no Painel do Revendedor Sanba.</p>
       <p class="footnote" id="inviteRequiredNotice">Você pode criar sua conta sem convite. O acesso às ferramentas de revendedor depende de aprovação manual do desenvolvedor.</p>
-      <form id="registerForm" autocomplete="on" style="display:none">
+      <form id="registerForm" autocomplete="on" method="post" style="display:none">
         <label class="field"><span>Seu e-mail</span><input id="registerEmail" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required maxlength="254"></label>
         <label class="field"><span>Nome de usuário</span><input id="registerUsername" name="username" type="text" placeholder="Escolha seu usuário" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" autocapitalize="none" spellcheck="false"></label>
         <label class="field"><span>Crie uma senha</span><input id="registerPassword" name="new-password" type="password" placeholder="Pelo menos 8 caracteres" autocomplete="new-password" required minlength="8" maxlength="128"></label>
@@ -371,7 +371,21 @@ body.invite-mode #loginCard #loginView { display:none; }
   <footer class="footer">Conversor Sanba · Painel do Revendedor<br>Este painel é uma ferramenta independente e não representa um serviço oficial do aplicativo Sanba.</footer>
 </main>
 
+<script>
+/* Remove parâmetros de credenciais de URLs antigas antes de carregar o app. */
+(function () {
+  try {
+    var url = new URL(window.location.href);
+    var sensitive = ['username','password','pass','user','email','new-password'];
+    var changed = false;
+    sensitive.forEach(function (key) {
+      if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
+    });
+    if (changed) window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : '') + url.hash);
+  } catch (_) {}
+})();
+</script>
 <script src="./supabase-config.js"></script>
-<script src="./revendedor-loader.js?v=20261024-3" defer></script>
+<script src="./revendedor-loader.js?v=20261024-5" defer></script>
 </body>
 </html>
