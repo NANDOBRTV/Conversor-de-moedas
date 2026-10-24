@@ -28,7 +28,7 @@
 .auth-tab:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .signup-divider{height:1px;background:var(--line);margin:22px 0}
 .signup-heading{font-size:16px;margin:0 0 7px}
-.gold-benefits{margin-top:14px;padding:14px;border:1px solid #f4c56a;border-radius:14px;background:linear-gradient(145deg,rgba(245,158,11,.12),rgba(251,191,36,.04))}.gold-benefits h3{margin:0 0 8px;font-size:14px;color:#fbbf24}.gold-benefits p,.gold-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.gold-benefits ul{margin:8px 0 0;padding-left:18px}.gold-benefits[hidden]{display:none!important}.account-purchase{display:grid;gap:9px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
+.gold-benefits{margin-top:14px;padding:14px;border:1px solid #f4c56a;border-radius:14px;background:linear-gradient(145deg,rgba(245,158,11,.12),rgba(251,191,36,.04))}.gold-benefits h3{margin:0 0 8px;font-size:14px;color:#fbbf24}.gold-benefits p,.gold-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.gold-benefits ul{margin:8px 0 0;padding-left:18px}.gold-benefits[hidden],.diamond-benefits[hidden]{display:none!important}.diamond-benefits{margin-top:14px;padding:14px;border:1px solid rgba(103,232,249,.45);border-radius:14px;background:linear-gradient(145deg,rgba(34,211,238,.12),rgba(99,102,241,.08))}.diamond-benefits h3{margin:0 0 8px;font-size:14px;color:#a5f3fc}.diamond-benefits p,.diamond-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.diamond-benefits ul{margin:8px 0 0;padding-left:18px}.diamond-tools{margin-top:15px}.diamond-tools[hidden]{display:none!important}.diamond-tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.diamond-tools label{display:block;font-size:11px;font-weight:800;color:var(--muted)}.diamond-tools input,.diamond-tools select{width:100%;min-width:0;margin-top:6px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#071327;color:var(--ink)}.diamond-report{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}.diamond-report-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(34,211,238,.05);min-width:0}.diamond-report-item span{display:block;font-size:10px;color:var(--muted);margin-bottom:6px}.diamond-report-item strong{font-size:15px;overflow-wrap:anywhere}.diamond-tools .footnote{margin-top:10px}.account-purchase{display:grid;gap:9px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
 .account-purchase h3{font-size:14px;margin:0}
 .account-purchase p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 3px}
 .account-purchase .btn{width:100%}
@@ -333,6 +333,18 @@ body.invite-mode #loginCard #loginView { display:none; }
               <li>Copiar resultados e exportar CSV continuam exclusivos do Diamante</li>
             </ul>
           </div>
+          <div class="diamond-benefits" id="diamondBenefits" hidden>
+            <h3>💎 Privilégios do plano Diamante</h3>
+            <p>Seu plano Diamante reúne os benefícios do Ouro e ferramentas extras para acompanhar seus resultados de revenda.</p>
+            <ul>
+              <li>Calculadora de custos, taxas, lucro e margem</li>
+              <li>Histórico de até 50 cálculos recentes neste aparelho</li>
+              <li>Copiar o resultado atual para compartilhar ou guardar</li>
+              <li>Baixar CSV do cálculo atual ou exportar o histórico completo</li>
+              <li>Relatório de lucro estimado por período e acompanhamento de meta</li>
+              <li>Pagamento único de R$ 49,90; acesso conforme a validade registrada na conta</li>
+            </ul>
+          </div>
           <div class="account-purchase" id="accountPurchase">
             <h3>Escolha seu plano Premium</h3>
             <p>Escolha seu plano e finalize pelo WhatsApp. Faça o Pix usando a chave abaixo e envie o comprovante. O acesso será liberado depois da conferência manual do pagamento.</p>
@@ -345,7 +357,7 @@ body.invite-mode #loginCard #loginView { display:none; }
             <div class="plan-option featured">
               <h3>💎 Plano Diamante</h3>
               <div class="plan-price">R$ 49,90 <small>pagamento único</small></div>
-              <p>Inclui os benefícios do Ouro, além de copiar resultados e exportar cálculos em CSV.</p>
+              <p>Inclui tudo do Ouro, cópia de resultados, CSV do cálculo e do histórico completo, relatório de lucro estimado por período e acompanhamento de meta.</p>
               <button class="btn btn-primary" type="button" id="requestOneTime">Pagar Diamante</button>
             </div>
             <div class="login-message error" id="purchaseMessage" role="status" aria-live="polite"></div>
@@ -359,6 +371,22 @@ body.invite-mode #loginCard #loginView { display:none; }
       <div class="section-head" style="margin:0 0 13px"><div><h2 id="historyTitle">🧾 Histórico de cálculos</h2><p>Guardado somente neste navegador, neste aparelho.</p></div><button class="btn btn-light btn-small" type="button" id="clearHistory">Apagar histórico</button></div>
       <div id="historyEmpty" class="history-empty">Você ainda não salvou nenhum cálculo. Faça uma simulação e toque em “Salvar cálculo”.</div>
       <ul id="historyList" class="history-list"></ul>
+      <div class="history-actions" id="diamondHistoryExport" hidden><button class="btn btn-primary btn-small" type="button" id="downloadHistoryCsv">💎 Exportar histórico completo (CSV)</button></div>
+      <section class="panel-card diamond-tools" id="diamondTools" hidden aria-labelledby="diamondToolsTitle">
+        <div class="section-head" style="margin:0 0 13px"><div><h2 id="diamondToolsTitle">💎 Relatório Diamante</h2><p>Resumo do lucro estimado nos cálculos salvos neste aparelho.</p></div></div>
+        <div class="diamond-tools-grid">
+          <label for="diamondPeriod">Período do relatório<select id="diamondPeriod"><option value="7">Últimos 7 dias</option><option value="30" selected>Últimos 30 dias</option><option value="all">Todo o histórico salvo</option></select></label>
+          <label for="diamondCurrency">Moeda do relatório<select id="diamondCurrency"><option value="BRL">Real (BRL)</option><option value="USD">Dólar (USD)</option><option value="VES">Bolívar (VES)</option></select></label>
+          <label for="diamondGoal">Meta de lucro estimado<input id="diamondGoal" type="number" min="0" step="0.01" placeholder="Ex.: 500"></label>
+        </div>
+        <div class="history-actions"><button class="btn btn-light btn-small" type="button" id="saveDiamondGoal">Salvar meta</button></div>
+        <div class="diamond-report">
+          <div class="diamond-report-item"><span>Lucro estimado no período</span><strong id="diamondProfitTotal">—</strong></div>
+          <div class="diamond-report-item"><span>Cálculos no período</span><strong id="diamondCalcCount">0</strong></div>
+          <div class="diamond-report-item"><span>Progresso da meta</span><strong id="diamondGoalProgress">—</strong></div>
+        </div>
+        <p class="footnote">Relatório calculado a partir dos cálculos salvos localmente; não representa vendas confirmadas. A meta fica salva apenas neste navegador e não sincroniza entre aparelhos.</p>
+      </section>
     </section>
     <div class="notice"><strong>Importante:</strong> os cálculos são estimativas e não confirmam o preço oficial do Sanba nem a conclusão de uma recarga. Os planos Ouro e Diamante são pagos por Pix e liberados após a confirmação manual do recebimento. O histórico é local e não sincroniza entre aparelhos.</div>
   </section>
