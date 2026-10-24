@@ -238,7 +238,7 @@ function renderHistory() {
 function applyAccessUI(profile) {
   const active = accessIsActive(profile);
   // Recursos pagos ficam ocultos para contas pendentes, suspensas ou vencidas.
-  document.querySelectorAll('.stats, .content-grid, .history-card').forEach(el => {
+  document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => {
     el.style.display = active ? '' : 'none';
   });
   if (active) {
@@ -246,9 +246,9 @@ function applyAccessUI(profile) {
     form.style.display = '';
     $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
   } else {
-    loginCard.style.display = 'block';
+    loginCard.style.display = 'none';
     form.style.display = 'none';
-    $('loginIntro').textContent = 'Sua conta existe, mas ainda não tem acesso ativo. Escolha um plano e fale com o suporte para confirmar o pagamento e liberar o acesso.';
+    $('loginIntro').textContent = 'Sua conta existe, mas ainda não tem acesso ativo. Escolha um plano na área Minha conta e fale com o suporte para confirmar o pagamento e liberar o acesso.';
   }
   dashboard.style.display = 'block';
 }
@@ -378,7 +378,7 @@ $('logoutButton').addEventListener('click', async () => {
   currentProfile = null; latestCalculation = null;
   dashboard.style.display = 'none'; loginCard.style.display = 'block'; form.style.display = '';
   $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
-  document.querySelectorAll('.stats, .content-grid, .history-card').forEach(el => { el.style.display = ''; });
+  document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => { el.style.display = ''; });
   form.reset(); hideMessage(loginMessage); hideMessage(accountMessage); hideMessage(calcMessage);
   $('calcResults').style.display = 'none'; $('heroStatus').textContent = '🔐 Entre para acessar suas ferramentas';
 });
@@ -577,7 +577,7 @@ if (supabase) {
     if (event === 'SIGNED_OUT') {
       currentProfile = null; dashboard.style.display='none'; loginCard.style.display='block'; form.style.display='';
       $('loginIntro').textContent = 'Use seu nome de usuário e senha para abrir seu painel de revendedor.';
-      document.querySelectorAll('.stats, .content-grid, .history-card').forEach(el => { el.style.display=''; });
+      document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => { el.style.display=''; });
     }
   });
   supabase.auth.getSession().then(({data,error}) => {
