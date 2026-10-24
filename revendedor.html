@@ -462,7 +462,7 @@ function applyAccessUI(profile) {
   const tier = membershipTier(profile);
   const activeReseller = profile?.reseller_application_status === 'approved';
   const active = accessIsActive(profile) && (tier !== 'common' || activeReseller);
-  $('accountPurchase').style.display = tier === 'common' ? 'grid' : 'none';
+  $('accountPurchase').style.display = tier === 'common' && profile.reseller_application_status === 'approved' ? 'grid' : 'none';
   // Recursos pagos ficam ocultos para contas pendentes, suspensas ou vencidas.
   document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => {
     el.style.display = active ? '' : 'none';
@@ -510,16 +510,16 @@ function renderAccount(profile) {
   badge.className = 'badge' + (accountActive ? '' : ' inactive');
   badge.textContent = accountActive ? 'ATIVO' : 'INATIVO';
   $('accountStatus').appendChild(badge);
-  $('statAccess').textContent = premiumActive ? tierLabel(profile) : tier === 'common' && accountActive ? 'Comum ativo' : tier === 'common' ? 'Comum inativo' : 'Pendente';
+  $('statAccess').textContent = resellerApproved && accountActive ? 'Revendedor ativo' : premiumActive ? tierLabel(profile) : tier === 'common' && accountActive ? 'Conta comum' : tier === 'common' ? 'Acesso inativo' : 'Pendente';
   $('statAccess').style.color = accountActive ? '#047857' : '#9f1239';
   if (resellerApproved && accountActive) {
     message(accountMessage, 'Sua solicitação de revendedor foi aprovada. Você já pode usar as ferramentas básicas de revenda. Ouro e Diamante continuam sujeitos às regras próprias de pagamento e aprovação.', 'success');
   } else if (resellerPending) {
     message(accountMessage, 'Seu cadastro foi recebido. O acesso de revendedor será liberado somente após a aprovação manual do desenvolvedor.', 'error');
   } else if (tier === 'common' && accountActive) {
-    message(accountMessage, 'Sua conta Comum está ativa. A calculadora e o histórico são recursos dos planos Ouro e Diamante. Você pode solicitar um plano premium na área Minha conta.', 'success');
+    message(accountMessage, 'Sua conta comum está ativa, mas o acesso de revendedor exige convite individual e aprovação manual. Depois da aprovação, você poderá solicitar Ouro ou Diamante, sujeitos à conferência de pagamento.', 'success');
   } else if (tier === 'common') {
-    message(accountMessage, 'Sua conta ainda não tem acesso ativo. Você pode solicitar um plano Ouro ou Diamante na área Minha conta, conforme as regras de pagamento e aprovação.', 'error');
+    message(accountMessage, 'Sua conta ainda não tem acesso de revendedor. Solicite um convite individual ao desenvolvedor e aguarde a aprovação manual.', 'error');
   } else if (!premiumActive) {
     message(accountMessage, 'Sua conta foi autenticada, mas o acesso do plano não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
