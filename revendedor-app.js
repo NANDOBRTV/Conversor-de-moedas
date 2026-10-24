@@ -23,8 +23,8 @@ if (resellerInviteToken) {
 } else {
   try { resellerInviteToken = sessionStorage.getItem('sanba_reseller_invite_token') || ''; } catch (_) {}
 }
-$('registerForm').style.display = resellerInviteToken ? '' : 'none';
-$('inviteRequiredNotice').style.display = resellerInviteToken ? 'none' : 'block';
+$('registerForm').style.display = '';
+$('inviteRequiredNotice').style.display = 'block';
 function setAuthView(view) {
   const isLogin = view === 'login';
   loginView.style.display = isLogin ? 'block' : 'none';
@@ -406,10 +406,6 @@ $('registerForm').addEventListener('submit', async event => {
   const registerMessage = $('registerMessage');
   hideMessage(registerMessage);
   if (!supabase) { message(registerMessage, 'O Supabase ainda não está configurado para cadastro.'); return; }
-  if (!resellerInviteToken) {
-    message(registerMessage, 'O cadastro de revendedor exige um convite individual válido. Solicite o link ao desenvolvedor.');
-    return;
-  }
   const email = $('registerEmail').value.trim().toLowerCase();
   const username = $('registerUsername').value.trim().toLowerCase();
   const password = $('registerPassword').value;
@@ -424,12 +420,10 @@ $('registerForm').addEventListener('submit', async event => {
   const submit = $('registerSubmit');
   submit.disabled = true; submit.textContent = 'Criando sua conta…';
   try {
-    const inviteDigest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(resellerInviteToken));
-    const inviteHash = Array.from(new Uint8Array(inviteDigest)).map(b => b.toString(16).padStart(2, '0')).join('');
     const {data,error} = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { username, requested_plan: 'monthly', account_type: 'reseller', reseller_invite_hash: inviteHash } }
+      options: { data: { username, requested_plan: 'monthly', account_type: 'reseller' } }
     });
     if (error) throw error;
     $('registerPassword').value = '';
