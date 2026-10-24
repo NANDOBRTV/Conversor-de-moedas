@@ -756,7 +756,7 @@ $('registerForm').addEventListener('submit', async event => {
     const {data,error} = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { username, requested_plan: 'monthly', reseller_invite_hash: inviteHash } }
+      options: { data: { username, requested_plan: 'monthly', account_type: 'reseller', reseller_invite_hash: inviteHash } }
     });
     if (error) throw error;
     $('registerPassword').value = '';
