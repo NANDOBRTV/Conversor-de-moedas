@@ -253,8 +253,18 @@ function renderHistory() {
   $('statCount').textContent=String(historyItems.length);
   $('statLast').textContent=historyItems.length?money(historyItems[0].totalCost,historyItems[0].currency||'BRL'):'—';
 }
+function membershipTier(profile) {
+  const tier = String(profile?.membership_tier || 'common').toLowerCase();
+  return ['common','gold','diamond'].includes(tier) ? tier : 'common';
+}
+function tierLabel(profile) {
+  const tier = membershipTier(profile);
+  return tier === 'diamond' ? 'Diamante' : tier === 'gold' ? 'Ouro' : 'Comum';
+}
 function applyAccessUI(profile) {
-  const active = accessIsActive(profile);
+  const tier = membershipTier(profile);
+  const active = accessIsActive(profile) && tier !== 'common';
+  $('accountPurchase').style.display = tier === 'common' ? 'grid' : 'none';
   // Recursos pagos ficam ocultos para contas pendentes, suspensas ou vencidas.
   document.querySelectorAll('.stats, .calculator, .history-card').forEach(el => {
     el.style.display = active ? '' : 'none';
@@ -274,26 +284,28 @@ function applyAccessUI(profile) {
 function renderAccount(profile) {
   const active = accessIsActive(profile);
   $('welcomeTitle').textContent = 'Olá, ' + profile.username + '!';
-  $('heroStatus').textContent = active ? '✓ Acesso ' + (profile.plan_name || 'ativo') + ' liberado' : '⚠ Conta autenticada · acesso pendente';
+  const tier = membershipTier(profile);
+  $('heroStatus').textContent = active ? '✓ Acesso ' + tierLabel(profile) + ' liberado' : tier === 'common' ? 'Conta Comum · escolha um plano para virar Premium' : '⚠ Conta autenticada · acesso pendente';
   $('accountUsername').textContent = profile.username || '—';
   $('accountEmail').textContent = profile.email || 'E-mail não informado';
-  $('accountPlan').textContent = profile.plan_name || 'Não informado';
+  $('accountPlan').textContent = tierLabel(profile) + (profile.plan_name && !/^(comum|common|ouro|gold|diamante|diamond)$/i.test(profile.plan_name) ? ' · ' + profile.plan_name : '');
   $('accountUntil').textContent = dateLabel(profile.access_until);
   $('accountStatus').replaceChildren();
   const badge = document.createElement('span');
   badge.className = 'badge' + (active ? '' : ' inactive');
   badge.textContent = active ? 'ATIVO' : 'INATIVO';
   $('accountStatus').appendChild(badge);
-  $('statAccess').textContent = active ? 'Ativo' : 'Pendente';
+  $('statAccess').textContent = active ? tierLabel(profile) : tier === 'common' ? 'Comum' : 'Pendente';
   $('statAccess').style.color = active ? '#047857' : '#9f1239';
   if (!active) {
-    message(accountMessage, 'Sua conta foi autenticada, mas o acesso ao painel não está ativo ou venceu. Escolha um plano acima ou fale com o suporte para conferir a liberação.', 'error');
+    if (tier === 'common') message(accountMessage, 'Você está no plano Comum. Escolha uma opção de compra para solicitar o upgrade para Premium.', 'error');
+    else message(accountMessage, 'Sua conta foi autenticada, mas o acesso Ouro/Diamante não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
 }
 async function showSignedIn(session) {
   if (!session || !supabase) return;
   const {data:profile,error} = await supabase.from('reseller_profiles')
-    .select('username, email, requested_plan, access_status, plan_name, access_until')
+    .select('username, email, requested_plan, access_status, plan_name, access_until, membership_tier')
     .eq('user_id',session.user.id).maybeSingle();
   if (error || !profile) {
     message(accountMessage, 'A sessão foi iniciada, mas não conseguimos carregar o perfil. Tente sair e entrar novamente. Se continuar, fale com o suporte.');
