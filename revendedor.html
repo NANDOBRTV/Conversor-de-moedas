@@ -63,11 +63,11 @@
         <form id="profitCalculator">
           <div class="calc-fields">
             <label>Moeda<select id="calcCurrency"><option value="BRL">Real (BRL)</option><option value="USD">Dólar (USD)</option><option value="VES">Bolívar (VES)</option></select></label>
-            <label>Moedas em cada pacote<input id="calcQuantity" type="number" min="1" step="1" value="1600" inputmode="numeric" required></label>
+            <label>Moedas em cada pacote<input id="calcQuantity" type="number" min="1" step="1" value="1500" inputmode="numeric" required></label>
             <label>Total de moedas que você compra<input id="calcLotCoins" type="number" min="1" step="1" value="160000" inputmode="numeric" required></label>
-            <label>Valor total do lote em dólares (US$)<input id="calcCost" type="number" min="0.01" step="0.01" placeholder="Ex.: 50,00" inputmode="decimal" required></label>
+            <label>Valor total do lote em dólares (US$)<input id="calcCost" type="number" min="0.01" step="0.01" value="100" placeholder="Ex.: 100,00" inputmode="decimal" required></label>
             <label id="usdRateField">Cotação do dólar na moeda de venda<input id="calcUsdRate" type="number" min="0.000001" step="any" value="" inputmode="decimal" readonly required><small id="rateStatus" style="display:block;font-weight:500;color:#63748a;line-height:1.5;margin-top:6px">Consulta automática a cada 5 segundos. A taxa pode mudar apenas quando a fonte publicar uma atualização.</small></label>
-            <label>Por quanto vende cada pacote<input id="calcSalePrice" type="number" min="0.01" step="0.01" placeholder="Ex.: 8,00" inputmode="decimal" required></label>
+            <label>Por quanto vende cada pacote<input id="calcSalePrice" type="number" min="0.01" step="0.01" value="6.00" placeholder="Ex.: 6,00" inputmode="decimal" required><small style="display:block;font-weight:500;color:#63748a;line-height:1.5;margin-top:6px">Preço de referência do conversor principal para 1.500 moedas: R$ 6,00 · US$ 0,99 · Bs 1.450. Você pode ajustar o valor.</small></label>
             <label>Outros custos do lote (se houver)<input id="calcExtras" type="number" min="0" step="0.01" value="0" inputmode="decimal" required></label>
             <label>Taxa descontada das vendas (%)<input id="calcFee" type="number" min="0" max="99.99" step="0.01" value="20" inputmode="decimal" required></label>
           </div>
@@ -319,7 +319,19 @@ async function fetchExchangeRate(currency) {
     message(calcMessage, error.message || 'Falha ao consultar a cotação. O cálculo ficará indisponível até a cotação ser obtida.');
   }
 }
-$('calcCurrency').addEventListener('change', updateUsdRateField);
+const MAIN_CONVERTER_SALE_PRICES = {BRL:6, USD:0.99, VES:1450};
+function updateSuggestedSalePrice() {
+  const currency = $('calcCurrency').value;
+  const packageCoins = Number($('calcQuantity').value) || 1500;
+  const basePrice = MAIN_CONVERTER_SALE_PRICES[currency];
+  $('calcSalePrice').value = (basePrice * packageCoins / 1500).toFixed(2);
+}
+$('calcCurrency').addEventListener('change', () => {
+  updateSuggestedSalePrice();
+  updateUsdRateField();
+});
+$('calcQuantity').addEventListener('change', updateSuggestedSalePrice);
+updateSuggestedSalePrice();
 updateUsdRateField();
 // Reconsulta a cotação automaticamente a cada 5 segundos enquanto o painel estiver aberto.
 // As fontes podem publicar novas taxas com menos frequência, então o valor pode permanecer igual.
@@ -389,7 +401,7 @@ $('profitCalculator').addEventListener('submit', event => {
   }
 });
 $('clearCalculator').addEventListener('click', () => {
-  $('calcQuantity').value = '1600'; $('calcLotCoins').value = '160000'; $('calcCost').value = ''; $('calcUsdRate').value = $('calcCurrency').value === 'USD' ? '1' : ''; $('calcSalePrice').value = ''; $('calcExtras').value = '0'; $('calcFee').value = '20';
+  $('calcQuantity').value = '1500'; $('calcLotCoins').value = '160000'; $('calcCost').value = '100'; $('calcUsdRate').value = $('calcCurrency').value === 'USD' ? '1' : ''; updateSuggestedSalePrice(); $('calcExtras').value = '0'; $('calcFee').value = '20';
   latestCalculation = null; $('calcResults').style.display = 'none'; hideMessage(calcMessage); $('calcCost').focus();
 });
 $('saveCalculation').addEventListener('click', () => {
