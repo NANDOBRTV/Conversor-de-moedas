@@ -188,6 +188,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
           <div class="detail-row"><span>Status</span><strong id="accountStatus">—</strong></div>
           <div class="detail-row"><span>Validade</span><strong id="accountUntil">—</strong></div>
           <p class="footnote">E-mail: <strong id="accountEmail">—</strong></p>
+          <details class="account-purchase" id="profileSettings">
+            <summary style="cursor:pointer;font-weight:850;font-size:13px;padding:4px 0">⚙️ Editar minhas informações</summary>
+            <p>Atualize seu nome de usuário ou solicite a alteração do e-mail da conta.</p>
+            <form id="profileSettingsForm">
+              <label class="field"><span>Nome de usuário</span><input id="editUsername" type="text" minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" autocomplete="username" required></label>
+              <label class="field"><span>E-mail</span><input id="editEmail" type="email" maxlength="254" autocomplete="email" required></label>
+              <button class="btn btn-primary" id="saveProfileButton" type="submit">Salvar alterações</button>
+              <div class="login-message" id="profileSettingsMessage" role="status" aria-live="polite"></div>
+            </form>
+          </details>
           <p class="footnote">Para alterar seu plano ou corrigir o acesso, fale com o suporte. A validade é exibida conforme os dados cadastrados na conta.</p>
           <div class="account-purchase" id="accountPurchase">
             <h3>Escolha seu plano Premium</h3>
@@ -355,6 +365,8 @@ function renderAccount(profile) {
   $('heroStatus').textContent = active ? '✓ Acesso ' + tierLabel(profile) + ' liberado' : tier === 'common' ? 'Conta Comum · escolha um plano para virar Premium' : '⚠ Conta autenticada · acesso pendente';
   $('accountUsername').textContent = profile.username || '—';
   $('accountEmail').textContent = profile.email || 'E-mail não informado';
+  if (document.activeElement !== $('editUsername')) $('editUsername').value = profile.username || '';
+  if (document.activeElement !== $('editEmail')) $('editEmail').value = profile.email || '';
   $('accountPlan').textContent = tierLabel(profile) + (profile.plan_name && !/^(comum|common|ouro|gold|diamante|diamond|premium|pendente|pending)$/i.test(profile.plan_name) ? ' · ' + profile.plan_name : '');
   $('accountUntil').textContent = dateLabel(profile.access_until);
   $('accountStatus').replaceChildren();
@@ -384,6 +396,52 @@ async function showSignedIn(session) {
   readHistory();
   renderHistory();
 }
+$('profileSettingsForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const feedback = $('profileSettingsMessage');
+  hideMessage(feedback);
+  if (!supabase || !currentProfile) { message(feedback, 'Entre novamente para editar seus dados.'); return; }
+  const username = $('editUsername').value.trim().toLowerCase();
+  const email = $('editEmail').value.trim().toLowerCase();
+  if (!/^[a-z0-9_.-]{3,30}$/.test(username)) {
+    message(feedback, 'O usuário deve ter de 3 a 30 caracteres: letras sem acento, números, ponto, hífen ou sublinhado.'); return;
+  }
+  const button = $('saveProfileButton');
+  button.disabled = true; button.textContent = 'Salvando…';
+  try {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) throw new Error('Sua sessão expirou. Entre novamente.');
+    const userId = authData.user.id;
+    const usernameChanged = username !== String(currentProfile.username || '').toLowerCase();
+    const emailChanged = email !== String(currentProfile.email || '').toLowerCase();
+    if (usernameChanged) {
+      const { error } = await supabase.from('reseller_profiles').update({ username }).eq('user_id', userId);
+      if (error) throw error;
+      const { error: metadataError } = await supabase.auth.updateUser({ data: { username } });
+      if (metadataError) throw metadataError;
+      currentProfile = { ...currentProfile, username };
+    }
+    if (emailChanged) {
+      const { error } = await supabase.auth.updateUser({ email });
+      if (error) throw error;
+      message(feedback, usernameChanged
+        ? 'Nome de usuário atualizado. Enviamos uma confirmação para o novo e-mail; ele só muda após você confirmar a mensagem.'
+        : 'Enviamos uma confirmação para o novo e-mail. O endereço só muda após você confirmar a mensagem.', 'success');
+    } else {
+      message(feedback, usernameChanged ? 'Nome de usuário atualizado com sucesso.' : 'Nenhuma alteração foi feita.', 'success');
+    }
+    renderAccount(currentProfile);
+    if (usernameChanged) $('editUsername').value = username;
+  } catch (error) {
+    const detail = String(error && error.message || '');
+    message(feedback, /duplicate|unique|already exists/i.test(detail)
+      ? 'Esse nome de usuário já está em uso. Escolha outro.'
+      : detail || 'Não foi possível salvar as alterações. Confira os dados e tente novamente.');
+  } finally {
+    button.disabled = false; button.textContent = 'Salvar alterações';
+  }
+});
+
 async function requestPurchase(tier) {
   const purchaseMessage = $('purchaseMessage');
   if (!supabase || !currentProfile || !currentProfile.username || !currentProfile.email) {
