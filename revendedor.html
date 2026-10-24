@@ -28,7 +28,7 @@
 .auth-tab:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .signup-divider{height:1px;background:var(--line);margin:22px 0}
 .signup-heading{font-size:16px;margin:0 0 7px}
-.gold-benefits{margin-top:14px;padding:14px;border:1px solid #f4c56a;border-radius:14px;background:linear-gradient(145deg,rgba(245,158,11,.12),rgba(251,191,36,.04))}.gold-benefits h3{margin:0 0 8px;font-size:14px;color:#fbbf24}.gold-benefits p,.gold-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.gold-benefits ul{margin:8px 0 0;padding-left:18px}.gold-benefits[hidden],.diamond-benefits[hidden]{display:none!important}.diamond-benefits{margin-top:14px;padding:14px;border:1px solid rgba(103,232,249,.45);border-radius:14px;background:linear-gradient(145deg,rgba(34,211,238,.12),rgba(99,102,241,.08))}.diamond-benefits h3{margin:0 0 8px;font-size:14px;color:#a5f3fc}.diamond-benefits p,.diamond-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.diamond-benefits ul{margin:8px 0 0;padding-left:18px}.diamond-tools{margin-top:15px}.diamond-tools[hidden]{display:none!important}.diamond-tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.diamond-tools label{display:block;font-size:11px;font-weight:800;color:var(--muted)}.diamond-tools input,.diamond-tools select{width:100%;min-width:0;margin-top:6px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#071327;color:var(--ink)}.diamond-report{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}.diamond-report-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(34,211,238,.05);min-width:0}.diamond-report-item span{display:block;font-size:10px;color:var(--muted);margin-bottom:6px}.diamond-report-item strong{font-size:15px;overflow-wrap:anywhere}.diamond-tools .footnote{margin-top:10px}.account-purchase{display:grid;gap:9px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
+.gold-benefits{margin-top:14px;padding:14px;border:1px solid #f4c56a;border-radius:14px;background:linear-gradient(145deg,rgba(245,158,11,.12),rgba(251,191,36,.04))}.gold-benefits h3{margin:0 0 8px;font-size:14px;color:#fbbf24}.gold-benefits p,.gold-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.gold-benefits ul{margin:8px 0 0;padding-left:18px}.gold-benefits[hidden],.diamond-benefits[hidden]{display:none!important}.diamond-benefits{margin-top:14px;padding:14px;border:1px solid rgba(103,232,249,.45);border-radius:14px;background:linear-gradient(145deg,rgba(34,211,238,.12),rgba(99,102,241,.08))}.diamond-benefits h3{margin:0 0 8px;font-size:14px;color:#a5f3fc}.diamond-benefits p,.diamond-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.diamond-benefits ul{margin:8px 0 0;padding-left:18px}.diamond-tools{margin-top:15px}.diamond-tools[hidden]{display:none!important}.diamond-tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.diamond-tools label{display:block;font-size:11px;font-weight:800;color:var(--muted)}.diamond-tools input,.diamond-tools select{width:100%;min-width:0;margin-top:6px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#071327;color:var(--ink)}.diamond-report{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}.diamond-report-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(34,211,238,.05);min-width:0}.diamond-report-item span{display:block;font-size:10px;color:var(--muted);margin-bottom:6px}.diamond-report-item strong{font-size:15px;overflow-wrap:anywhere}.diamond-tools .footnote{margin-top:10px}.developer-benefits{margin-top:14px;padding:15px;border:1px solid rgba(103,232,249,.48);border-radius:14px;background:linear-gradient(145deg,rgba(8,145,178,.16),rgba(99,102,241,.1))}.developer-benefits[hidden]{display:none!important}.developer-benefits h3{margin:0 0 8px;font-size:15px;color:#a5f3fc}.developer-benefits p,.developer-benefits li{font-size:11px;line-height:1.7;color:var(--muted)}.developer-benefits ul{margin:8px 0 12px;padding-left:18px}.developer-warning{padding:10px;border-radius:9px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.22)}.account-purchase{display:grid;gap:9px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
 .account-purchase h3{font-size:14px;margin:0}
 .account-purchase p{font-size:11px;line-height:1.6;color:var(--muted);margin:0 0 3px}
 .account-purchase .btn{width:100%}
@@ -198,9 +198,12 @@ body.invite-mode #loginCard #loginView { display:none; }
     <button class="settings-menu-toggle" id="settingsMenuToggle" type="button" aria-label="Abrir menu rápido" aria-expanded="false" aria-controls="quickMenu" title="Menu">☰</button>
     <section class="quick-menu" id="quickMenu" aria-hidden="true" aria-label="Menu rápido">
       <button class="quick-menu-item" id="quickSettingsLink" type="button">⚙️ Configurações</button>
+      <a class="quick-menu-item" id="quickDeveloperConsoleLink" href="./desenvolvedor.html" hidden>🛡️ Central do Desenvolvedor ↗</a>
       <a class="quick-menu-item" id="quickInviteLink" href="./convites-revendedores.html" hidden>🔐 Gerador de convites de revendedores ↗</a>
-      <a class="quick-menu-item" id="quickPendingOrdersLink" href="./aprovacoes-revendedores.html?status=pending" hidden>🕒 Pedidos para aprovação ↗</a>
-      <a class="quick-menu-item" id="quickApprovedOrdersLink" href="./aprovacoes-revendedores.html?status=approved" hidden>✅ Pedidos aprovados ↗</a>
+      <a class="quick-menu-item" id="quickPendingOrdersLink" href="./aprovacoes-revendedores.html?status=pending" hidden>🕒 Cadastros para aprovação ↗</a>
+      <a class="quick-menu-item" id="quickApprovedOrdersLink" href="./aprovacoes-revendedores.html?status=approved" hidden>✅ Revendedores aprovados ↗</a>
+      <a class="quick-menu-item" id="quickCustomerOrdersLink" href="./admin-pedidos.html" hidden>🧾 Aprovar compras de clientes ↗</a>
+      <a class="quick-menu-item" id="quickSalesOrdersLink" href="./pedidos-revendedores.html" hidden>📦 Pedidos comerciais ↗</a>
     </section>
     <section class="settings-menu" id="settingsMenu" aria-hidden="true" aria-label="Menu de configurações">
       <div class="settings-menu-head"><h2>⚙️ Configurações</h2><button class="settings-menu-close" id="settingsMenuClose" type="button" aria-label="Fechar configurações">×</button></div>
@@ -344,6 +347,21 @@ body.invite-mode #loginCard #loginView { display:none; }
               <li>Relatório de lucro estimado por período e acompanhamento de meta</li>
               <li>Pagamento único de R$ 49,90; acesso conforme a validade registrada na conta</li>
             </ul>
+          </div>
+          <div class="developer-benefits" id="developerBenefits" hidden>
+            <h3>🛡️ Privilégios da conta Desenvolvedor</h3>
+            <p>Conta administrativa ativa, sem vencimento automático. Você tem acesso a todas as ferramentas dos planos e às áreas administrativas do Conversor Sanba.</p>
+            <ul>
+              <li>Todos os recursos do Diamante: calculadora, histórico, copiar resultados, CSV, relatório por período e meta de lucro</li>
+              <li>Central do Desenvolvedor para acompanhar indicadores e gerenciar contas</li>
+              <li>Gerar e revogar convites individuais de revendedores</li>
+              <li>Aprovar ou recusar cadastros de revendedores</li>
+              <li>Conferir compras de clientes e liberar planos após verificar o pagamento</li>
+              <li>Gerenciar pedidos comerciais e acompanhar pedidos de recarga</li>
+              <li>Alterar níveis Comum, Ouro e Diamante e suspender/reativar contas não administrativas</li>
+            </ul>
+            <p class="developer-warning">Por segurança, a Central não permite conceder o nível Desenvolvedor a outra conta nem alterar ou suspender a própria conta administrativa. Confirme pagamentos antes de liberar planos pagos.</p>
+            <a class="btn btn-primary" href="./desenvolvedor.html">🛡️ Abrir Central do Desenvolvedor</a>
           </div>
           <div class="account-purchase" id="accountPurchase">
             <h3>Escolha seu plano Premium</h3>
