@@ -102,3 +102,12 @@
 - A comparação entre o código ativo do webhook e o arquivo versionado revelou uma divergência na verificação HMAC: o código implantado usava o índice errado ao ler os caracteres da assinatura.
 - O webhook foi reimplantado a partir do código revisado no GitHub, versão 5 ACTIVE, usando comparação caractere a caractere correta.
 - A alteração fortalece a validação da assinatura Stripe. Ainda é necessário testar uma assinatura válida e uma inválida no modo de teste antes de considerar a integração pronta para produção.
+
+
+### Atualização de status — testes confirmados pelo proprietário (25/10/2026)
+- O proprietário informou que já executou os testes do checkout e que estão funcionando bem.
+- Status atualizado conforme confirmação do proprietário: **testes funcionais concluídos com resultado positivo**. Esta atualização registra o relato do teste; não significa que esta revisão tenha repetido independentemente cada cenário.
+- No momento desta verificação, as Edge Functions create-stripe-plan-checkout (versão 4) e stripe-revenue-webhook (versão 5) aparecem como ACTIVE no Supabase.
+- Os Advisors continuam mostrando um aviso de proteção contra senhas comprometidas desativada e três tabelas com RLS habilitado sem políticas: bot_rate_limits, reseller_invites e revenue_orders. Esses avisos precisam de avaliação cuidadosa; não criar políticas de acesso público sem confirmar o modelo de acesso.
+- O Performance Advisor apresenta índices ainda não utilizados. Isso, isoladamente, não demonstra falha: o uso depende das consultas e do volume real.
+- A restrição de checkout a chave Stripe de teste permanece. Não ativar pagamentos reais nem trocar para chaves live sem uma decisão explícita e uma revisão separada de produção.
