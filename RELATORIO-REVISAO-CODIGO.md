@@ -65,7 +65,7 @@
 - A função foi implantada no Supabase como versão 4 e permanece ACTIVE.
 - Confirmado que o conteúdo da função implantada corresponde ao arquivo `supabase/functions/create-stripe-plan-checkout/index.ts` versionado no GitHub.
 - Mantida a proteção de modo de teste: a função exige uma chave `sk_test_`. Não foi ativado modo live e nenhum pagamento real foi feito.
-- O webhook `stripe-revenue-webhook` permanece ACTIVE, versão 4, validando assinatura, usuário, pedido, plano, sessão, valor e moeda. Processa `checkout.session.completed` e `checkout.session.async_payment_succeeded`, importante para pagamentos Pix assíncronos.
+- O webhook `stripe-revenue-webhook` foi reimplantado como versão 5 ACTIVE. Na comparação entre o código implantado e o versionado, foi corrigida uma divergência no comparador da assinatura: cada caractere da assinatura recebida agora é comparado ao caractere correspondente do digest esperado. Processa `checkout.session.completed` e `checkout.session.async_payment_succeeded`, importante para pagamentos Pix assíncronos.
 - Adicionados ao GitHub os arquivos-fonte `supabase/functions/create-stripe-plan-checkout/index.ts` e `supabase/functions/stripe-revenue-webhook/index.ts`, para rastrear o backend implantado.
 
 ### Documentação e interface
@@ -96,3 +96,9 @@
 - Nunca colocar chaves privadas, `service_role` ou segredos de webhook no front-end, GitHub ou mensagens.
 - Não liberar plano com base apenas no retorno do navegador; a confirmação deve vir do webhook validado.
 - Recargas Sanba continuam no fluxo manual; o checkout Stripe atual cobre somente Ouro e Diamante.
+
+
+### Correção de segurança do webhook — 25/10/2026
+- A comparação entre o código ativo do webhook e o arquivo versionado revelou uma divergência na verificação HMAC: o código implantado usava o índice errado ao ler os caracteres da assinatura.
+- O webhook foi reimplantado a partir do código revisado no GitHub, versão 5 ACTIVE, usando comparação caractere a caractere correta.
+- A alteração fortalece a validação da assinatura Stripe. Ainda é necessário testar uma assinatura válida e uma inválida no modo de teste antes de considerar a integração pronta para produção.
