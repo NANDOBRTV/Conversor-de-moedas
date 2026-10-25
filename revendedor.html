@@ -365,7 +365,7 @@ body.invite-mode #loginCard #loginView { display:none; }
           </div>
           <div class="account-purchase" id="accountPurchase">
             <h3>Escolha seu plano Premium</h3>
-            <p>Escolha seu plano e pague com segurança pelo Stripe. O acesso será liberado automaticamente somente após a confirmação do pagamento pelo Stripe.</p>
+            <p>Checkout em modo de teste: ainda não use para compras reais. O Stripe está configurado para solicitar Pix e cartão, conforme a disponibilidade da conta. O acesso só será liberado após a confirmação do pagamento pelo servidor.</p>
             <div class="plan-option">
               <h3>🥇 Plano Ouro</h3>
               <div class="plan-price">R$ 9,90 <small>/ 30 dias</small></div>
@@ -428,6 +428,6 @@ body.invite-mode #loginCard #loginView { display:none; }
 })();
 </script>
 <script src="./supabase-config.js"></script>
-<script src="./revendedor-loader.js?v=20261024-9" defer></script>
+<script src="./revendedor-loader.js?v=20261025-stripe-pix-1" defer></script>
 </body>
 </html>
