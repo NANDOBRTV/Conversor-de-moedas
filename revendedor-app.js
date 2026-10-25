@@ -170,7 +170,7 @@ function applyAccessUI(profile) {
   } else {
     loginCard.style.display = 'none';
     form.style.display = 'none';
-    $('loginIntro').textContent = 'Sua conta existe, mas ainda não tem acesso ativo. Escolha um plano na área Minha conta, faça o Pix pelo WhatsApp e aguarde a aprovação.';
+    $('loginIntro').textContent = 'Sua conta existe, mas ainda não tem acesso ativo. Escolha um plano na área Minha conta e conclua o pagamento seguro pelo Stripe.';
   }
   dashboard.style.display = 'block';
 }
@@ -438,15 +438,15 @@ async function requestPurchase(tier) {
   const originalText = button.textContent;
   button.disabled = true;
   button.textContent = 'Preparando pedido…';
-  message(purchaseMessage, 'Estamos registrando seu pedido antes de abrir o WhatsApp.', 'success');
+  message(purchaseMessage, 'Preparando o checkout seguro do Stripe…', 'success');
   try {
-    const { data, error } = await supabase.functions.invoke('create-customer-order', { body: { tier, customer_name: currentProfile.full_name || currentProfile.name || '' } });
+    const { data, error } = await supabase.functions.invoke('create-stripe-plan-checkout', { body: { tier } });
     if (error) throw error;
-    if (!data || data.error || !data.whatsapp_url || !/^https:\/\/wa\.me\//i.test(data.whatsapp_url) || !data.order || !data.order.id) {
-      throw new Error(data && data.error ? data.error : 'O pedido não foi criado. Tente novamente ou fale com o suporte.');
+    if (!data || data.error || !data.checkout_url || !/^https:\/\/checkout\.stripe\.com\//i.test(data.checkout_url) || !data.order_id) {
+      throw new Error(data && data.error ? data.error : 'O checkout seguro não foi criado. Tente novamente.');
     }
-    message(purchaseMessage, 'Pedido ' + data.order.id + ' registrado. Abrindo o WhatsApp com os dados do Pix…', 'success');
-    window.location.assign(data.whatsapp_url);
+    message(purchaseMessage, 'Pedido ' + data.order_id + ' registrado. Abrindo o pagamento seguro do Stripe…', 'success');
+    window.location.assign(data.checkout_url);
   } catch (error) {
     console.error('Checkout error', error);
     const detail = String(error && error.message || '');
@@ -460,7 +460,7 @@ async function requestPurchase(tier) {
 }
 $('requestMonthly').addEventListener('click', () => requestPurchase('gold'));
 $('requestOneTime').addEventListener('click', () => requestPurchase('diamond'));
-// Pagamento manual por Pix: o pedido é confirmado no painel administrativo.
+// Planos Ouro e Diamante: checkout Stripe; a liberação depende do webhook confirmado.
 $('registerForm').addEventListener('submit', async event => {
   event.preventDefault();
   const registerMessage = $('registerMessage');
