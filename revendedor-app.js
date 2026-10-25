@@ -448,11 +448,19 @@ async function requestPurchase(tier) {
     message(purchaseMessage, 'Pedido ' + data.order_id + ' registrado. Abrindo o pagamento seguro do Stripe…', 'success');
     window.location.assign(data.checkout_url);
   } catch (error) {
-    console.error('Checkout error', error);
-    const detail = String(error && error.message || '');
-    message(purchaseMessage, detail && !/fetch|network|function|non-2xx|failed/i.test(detail)
-      ? detail
-      : 'Não foi possível registrar o pedido agora. Nenhuma liberação foi feita. Verifique sua conexão e tente novamente.');
+    console.error('Stripe checkout error', error);
+    let detail = '';
+    try {
+      if (error && error.context && typeof error.context.json === 'function') {
+        const responseBody = await error.context.json();
+        detail = String(responseBody && (responseBody.error || responseBody.message) || '');
+      }
+    } catch (_) {}
+    if (!detail) detail = String(error && error.message || '');
+    const generic = !detail || /fetch|network|function|non-2xx|failed|edge function returned/i.test(detail);
+    message(purchaseMessage, generic
+      ? 'O Stripe ainda não conseguiu abrir. Confirme se as chaves de teste STRIPE_SECRET_KEY e STRIPE_WEBHOOK_SECRET estão configuradas no Supabase e tente novamente. Nenhum plano foi liberado.'
+      : detail);
   } finally {
     button.disabled = false;
     button.textContent = originalText;
