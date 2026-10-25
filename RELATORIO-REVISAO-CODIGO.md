@@ -53,3 +53,46 @@
 - Diamante: R$ 49,90 em pagamento único.
 - Compra e confirmação manual pelo WhatsApp mantidas.
 - Nenhuma chave secreta foi adicionada ao código público.
+
+
+---
+
+## Atualização de desenvolvimento — 25/10/2026
+
+### Stripe — Pix e cartão
+- Confirmado que o painel do revendedor já chama a Edge Function `create-stripe-plan-checkout`.
+- A criação da Checkout Session agora solicita explicitamente os meios `card` e `pix` em BRL.
+- A função foi implantada no Supabase como versão 4 e permanece ACTIVE.
+- Confirmado que o conteúdo da função implantada corresponde ao arquivo `supabase/functions/create-stripe-plan-checkout/index.ts` versionado no GitHub.
+- Mantida a proteção de modo de teste: a função exige uma chave `sk_test_`. Não foi ativado modo live e nenhum pagamento real foi feito.
+- O webhook `stripe-revenue-webhook` permanece ACTIVE, versão 4, validando assinatura, usuário, pedido, plano, sessão, valor e moeda. Processa `checkout.session.completed` e `checkout.session.async_payment_succeeded`, importante para pagamentos Pix assíncronos.
+- Adicionados ao GitHub os arquivos-fonte `supabase/functions/create-stripe-plan-checkout/index.ts` e `supabase/functions/stripe-revenue-webhook/index.ts`, para rastrear o backend implantado.
+
+### Documentação e interface
+- Criado `supabase/STRIPE-PIX-CARTAO.md` com configuração de secrets, webhook e roteiro de testes.
+- Atualizado `LEIA-ME-SUPABASE.md` para refletir o checkout Stripe atual e separar as recargas manuais.
+- Atualizado `supabase/ADMINISTRAR-PLANOS.md` para descrever o checkout em modo de teste.
+- Marcado `supabase/CONFIGURAR-MERCADO-PAGO.md` como documentação legada, pois não representa o checkout atual dos planos.
+- Atualizado o texto de `revendedor.html` para avisar que o checkout está em modo de teste e que Pix depende da disponibilidade da conta Stripe. A calculadora principal `index.html` foi preservada.
+
+### Banco de dados e desempenho
+- Aplicada a migration `add_missing_order_foreign_key_indexes`, criando índices para `reseller_sales_orders.created_by` e `revenue_orders.user_id`.
+- Aplicada a migration `optimize_reseller_sales_orders_rls_policy`, mantendo o acesso restrito ao Desenvolvedor ativo e otimizando a avaliação de `auth.uid()`.
+- Arquivos SQL das duas migrations foram adicionados a `supabase/migrations/`.
+- Após as alterações, o Performance Advisor não mostra mais os avisos de chaves estrangeiras sem índice nem o aviso de reavaliação de `auth.uid()`. Os índices novos podem aparecer como não utilizados até que haja consultas reais suficientes.
+
+### Pendências antes de produção
+1. Confirmar no Dashboard Stripe que Pix está habilitado e disponível para a conta comercial, além de cartões.
+2. Confirmar que `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` no Supabase correspondem ao modo de teste e ao endpoint de webhook de teste.
+3. Executar testes ponta a ponta de cartão e Pix, incluindo confirmação assíncrona e liberação correta do plano.
+4. Testar cancelamento, pagamento não concluído, assinatura inválida, evento duplicado, valor divergente e plano divergente.
+5. Confirmar Ouro com validade de 30 dias e Diamante sem vencimento automático.
+6. Só depois avaliar a troca para chaves live e webhook de produção. A restrição `sk_test_` deve permanecer até essa revisão.
+7. Habilitar proteção contra senhas comprometidas no painel Auth do Supabase.
+8. Rever os avisos de RLS sem políticas nas tabelas internas `bot_rate_limits`, `reseller_invites` e `revenue_orders`. Não criar políticas públicas indiscriminadamente; confirmar que o acesso continua exclusivo às funções de servidor.
+
+### Regras de preservação
+- Não modificar `index.html` sem solicitação explícita.
+- Nunca colocar chaves privadas, `service_role` ou segredos de webhook no front-end, GitHub ou mensagens.
+- Não liberar plano com base apenas no retorno do navegador; a confirmação deve vir do webhook validado.
+- Recargas Sanba continuam no fluxo manual; o checkout Stripe atual cobre somente Ouro e Diamante.
