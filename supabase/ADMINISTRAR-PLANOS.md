@@ -1,60 +1,67 @@
 # Administração dos planos do Painel Sanba
 
-Este procedimento é para o proprietário do projeto, dentro do SQL Editor do Supabase. **Nunca coloque uma chave service_role no navegador ou no GitHub.**
+Este documento descreve os níveis e o fluxo atual. **Não coloque chaves secretas no navegador, no GitHub ou em mensagens.**
 
 ## Categorias e benefícios
 
-- **Comum:** cadastro gratuito, sem ferramentas Premium. Só esta categoria vê as opções de compra.
-- **Ouro — R$ 9,90/mês:** acesso à calculadora de revenda e ao histórico de cálculos salvos.
-- **Diamante — R$ 49,90, pagamento único:** inclui os recursos do Ouro, além de copiar resultados e exportar cálculos em CSV.
+- **Comum:** conta básica; não inclui as ferramentas Premium.
+- **Ouro — R$ 9,90 por 30 dias:** calculadora de revenda e histórico local de cálculos.
+- **Diamante — R$ 49,90 em pagamento único:** recursos do Ouro, além de copiar resultados, exportar CSV e relatórios adicionais.
+- **Desenvolvedor:** conta administrativa do proprietário; não precisa comprar plano.
 
-Os pedidos continuam sendo combinados manualmente pelo WhatsApp. Confirme o pagamento antes de executar uma ativação.
+## Como funciona a compra
 
-## Ativar Ouro por um mês
+O checkout de Ouro e Diamante está integrado ao Stripe em **modo de teste**. A função de servidor solicita Pix e cartão, mas o Pix só aparece se a conta Stripe estiver elegível e com esse meio habilitado. O acesso é liberado pelo webhook validado no servidor depois da confirmação do pagamento, nunca apenas pela página de retorno.
 
-Substitua `usuario_exato` pelo nome de usuário cadastrado e execute no SQL Editor:
+Consulte o documento STRIPE-PIX-CARTAO.md nesta pasta para configurar secrets, validar o webhook e executar testes. A função de checkout exige uma chave sk_test_; não altere essa proteção para usar vendas reais antes de concluir os testes.
 
-```sql
+As recargas Sanba e os pedidos de serviços adicionais continuam com atendimento manual pelo WhatsApp. Não marque pedidos como pagos sem verificar o recebimento real.
+
+## Ativação administrativa excepcional
+
+Use ativação manual somente para corrigir uma conta após verificar a situação. Substitua usuario_exato pelo nome de usuário real e confira o resultado.
+
+### Ativar Ouro por 30 dias
+
+~~~sql
 update public.reseller_profiles
 set membership_tier = 'gold',
     plan_name = 'Ouro',
     access_status = 'active',
-    access_until = now() + interval '1 month'
+    access_until = now() + interval '30 days'
 where username = lower('usuario_exato');
-```
+~~~
 
-## Ativar Diamante sem vencimento automático
+### Ativar Diamante sem vencimento automático
 
-Substitua `usuario_exato` pelo nome de usuário cadastrado:
-
-```sql
+~~~sql
 update public.reseller_profiles
 set membership_tier = 'diamond',
     plan_name = 'Diamante',
     access_status = 'active',
     access_until = null
 where username = lower('usuario_exato');
-```
+~~~
 
-## Voltar uma conta para Comum
+### Voltar uma conta para Comum
 
-Use somente se for necessário remover o acesso Premium:
+Execute somente quando for necessário remover o acesso Premium e depois de conferir os pedidos relacionados.
 
-```sql
+~~~sql
 update public.reseller_profiles
 set membership_tier = 'common',
     plan_name = 'Comum',
-    access_status = 'pending',
+    access_status = 'active',
     access_until = null
 where username = lower('usuario_exato');
-```
+~~~
 
-## Conferir o resultado
+## Conferir uma conta
 
-```sql
+~~~sql
 select username, email, membership_tier, plan_name, access_status, access_until
 from public.reseller_profiles
 where username = lower('usuario_exato');
-```
+~~~
 
-Se o comando não atualizar nenhuma linha, confira se o nome de usuário está correto. Essas instruções não criam pagamento automático nem confirmam uma compra por conta própria.
+Não use estas instruções para simular pagamento. Elas não criam nem confirmam uma transação Stripe.
