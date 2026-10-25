@@ -1,10 +1,10 @@
-# Mercado Pago — integração futura do Conversor Sanba
+# Mercado Pago — integração legada do Conversor Sanba
 
 ## Estado atual
 
-**O fluxo de compra atual continua manual pelo WhatsApp.** Ouro custa R$ 9,90 por 30 dias e Diamante custa R$ 49,90 em pagamento único. O acesso só deve ser liberado depois da conferência manual do pagamento.
+**Este documento descreve a integração antiga de Mercado Pago e não representa o checkout atual dos planos.** O checkout de Ouro (R$ 9,90 por 30 dias) e Diamante (R$ 49,90 em pagamento único) usa atualmente as funções Stripe documentadas em `STRIPE-PIX-CARTAO.md`, ainda restritas ao modo de teste.
 
-O repositório e o projeto Supabase contêm funções preparatórias para checkout/webhook, mas isso **não significa que o pagamento automático esteja validado ou liberado para uso real**. Não altere o fluxo visível para checkout automático sem pedido explícito e testes completos.
+As funções `create-checkout` e `mercadopago-webhook` permanecem no projeto como componentes legados/preparatórios, mas não devem ser confundidas com o fluxo Stripe atual. Não configure nem altere o checkout visível dos planos com base neste guia. Para a configuração atual, use `supabase/STRIPE-PIX-CARTAO.md`.
 
 ## Componentes preparados
 
