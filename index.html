@@ -386,6 +386,37 @@ html{background:#0b1630}
 .project-refresh{background:#10233b!important;color:#e8f7ff!important;border-color:#2b5976!important}
 .project-panel-foot{background:#071327!important;border-top-color:#24415d!important;color:#9bb1c9!important}
 
+
+/* SANBA FUTURE UI — camada visual; mantém IDs e lógica de cálculo existentes */
+:root{color-scheme:dark;--sf-bg:#050b18;--sf-panel:rgba(10,22,43,.88);--sf-line:rgba(103,232,249,.22);--sf-cyan:#67e8f9;--sf-violet:#a78bfa;--sf-muted:#9db2ce}
+body{background:radial-gradient(ellipse at 12% 4%,rgba(14,116,144,.28),transparent 34%),radial-gradient(ellipse at 90% 18%,rgba(109,40,217,.22),transparent 32%),linear-gradient(145deg,#050b18,#09152b 55%,#10102b)!important;color:#ecf8ff}
+.card{background:linear-gradient(155deg,rgba(12,27,50,.96),rgba(8,18,36,.96))!important;border:1px solid var(--sf-line);border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,.42),0 0 36px rgba(34,211,238,.06);backdrop-filter:blur(18px)}
+h1{color:#f0f9ff!important;letter-spacing:-.6px}
+.sub{color:#a9bdd6!important}
+label{color:#9fb5d2!important}
+select,input{background:#071428!important;border:1px solid #294461!important;color:#f0f9ff!important;border-radius:12px;transition:border-color .18s,box-shadow .18s,background .18s}
+select:focus,input:focus{border-color:var(--sf-cyan)!important;box-shadow:0 0 0 3px rgba(103,232,249,.12);background:#0a1a32!important}
+select option{background:#0b1830;color:#f0f9ff}
+.tabs{background:#071428!important;border:1px solid #203b59;border-radius:14px}
+.tab{color:#9db2ce!important;border-radius:10px;transition:all .18s}
+.tab.active{background:linear-gradient(120deg,#123d57,#272354)!important;color:#e6fbff!important;box-shadow:inset 0 0 0 1px rgba(103,232,249,.24),0 4px 18px rgba(0,0,0,.22)}
+.result{background:linear-gradient(125deg,#047e78,#0f766e 55%,#155e75)!important;border:1px solid rgba(153,246,228,.35);box-shadow:0 12px 35px rgba(13,148,136,.18)}
+.pgto{background:rgba(120,78,12,.18)!important;border-color:#a87928!important;color:#f8d99a!important}
+.pgto b{color:#fbbf24!important}
+.brl{background:rgba(30,64,110,.35)!important;border-color:#42638e!important;color:#c6e2ff!important}
+.needid{background:rgba(120,53,15,.22)!important;border-color:#b7791f!important;color:#fde68a!important}
+.erro{background:rgba(127,29,29,.25)!important;border-color:#fb7185!important;color:#fecdd3!important}
+.info{color:#9db2ce!important}.info b{color:#67e8f9!important}
+.brand-footer{border-color:rgba(103,232,249,.16)!important}
+.pix-text{background:rgba(20,184,166,.14)!important;color:#5eead4!important;border:1px solid rgba(94,234,212,.25)}
+.brand-slogan{color:#9bdcf1!important}
+.creator-credit{color:#8198b8!important}.creator-credit strong{color:#d5e8ff!important}
+.footer-info{color:#647b9c!important}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline-color:#67e8f9!important}
+.wpp{box-shadow:0 8px 28px rgba(37,211,102,.2);transition:transform .18s,filter .18s}.wpp:hover{filter:brightness(1.06);transform:translateY(-1px)}
+@media(max-width:520px){.card{border-radius:20px;padding:20px 16px}.brand-sanba{font-size:40px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
 </style>
 </head>
 <body>
