@@ -150,6 +150,8 @@ function applyAccessUI(profile) {
     // Mantém os planos fora do cartão de conta, para não serem ocultados
     // junto com a calculadora ou por regras de layout do cartão lateral.
     if (purchasePanel.parentElement !== dashboard) dashboard.appendChild(purchasePanel);
+    purchasePanel.classList.add('panel-card');
+    purchasePanel.style.marginTop = '16px';
     purchasePanel.style.display = tier === 'common' ? 'grid' : 'none';
     purchasePanel.setAttribute('aria-hidden', String(tier !== 'common'));
   }
