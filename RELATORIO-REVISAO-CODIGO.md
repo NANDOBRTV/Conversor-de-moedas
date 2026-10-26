@@ -205,3 +205,43 @@ O projeto só deve ser marcado como pronto para produção depois que os PRs rel
 - **Verificado estaticamente:** 13 páginas e 103 referências locais, sem caminhos locais ausentes na checagem.
 - **Pendente:** teste visual em dispositivos, validação dos fluxos interativos e confirmação ponta a ponta das funções autenticadas.
 - **Regra de trabalho:** distinguir sempre alterações no código, commits enviados, publicação do site, implantação de funções e testes práticos; não marcar uma etapa como concluída sem evidência correspondente.
+
+
+---
+
+## Bateria de testes do conversor — 26/10/2026
+
+### Verificações realizadas nesta etapa
+Foi feita uma revisão direta do código atual de `index.html`, incluindo as rotinas `num`, `arredondarParaCima`, `calcC`, `calcR`, `isIdValid` e `wpp`. Também foram calculados casos de referência usando as tarifas atualmente declaradas no código. **Isto é uma verificação de código e de cálculos; não equivale a executar o site em um Android físico ou em um navegador desktop.**
+
+### Casos de cálculo conferidos por referência
+Tarifas atualmente codificadas: 1.500 moedas = R$ 6,00; US$ 0,99; ou Bs 1.450,00. O mínimo é 1.000 moedas.
+
+| Caso | Resultado esperado pelo código | Avaliação |
+|---|---:|---|
+| 1.500 moedas em BRL | R$ 6,00 | Coerente com a tarifa configurada |
+| 1.500 moedas em USD | US$ 0,99 | Coerente com a tarifa configurada |
+| 1.500 moedas em VES | Bs 1.450,00 | Coerente com a tarifa configurada |
+| Mínimo de 1.000 moedas em BRL | R$ 4,00 | Coerente com arredondamento monetário |
+| Mínimo de 1.000 moedas em USD | US$ 0,66 | Coerente com arredondamento monetário |
+| Mínimo de 1.000 moedas em VES | Bs 966,67 | Arredondado para cima a duas casas |
+| ID com 7 dígitos | Não libera o link de compra | Validação prevista no código |
+| ID com 8 dígitos não zerados | Aceito quanto ao formato | Não comprova que o ID exista no Sanba |
+| ID `00000000` | Rejeitado | Validação prevista no código |
+| Quantidade inferior a 1.000 | Mostra aviso de mínimo | Validação prevista no código |
+| Quantidade fracionária | Mostra aviso de quantidade inteira | A entrada também é sanitizada para dígitos |
+| Link de WhatsApp | Montado com `https://wa.me/` e texto codificado | Construção conferida no código; não foi aberta uma conversa real |
+
+### Itens que ainda exigem teste real no navegador
+- [ ] Android físico, preferencialmente Chrome: layout, teclado numérico, troca de moeda, cálculo, copiar resumo e abertura do WhatsApp.
+- [ ] Desktop: Chrome/Edge/Firefox, larguras diferentes, abas de cálculo, formatação e links.
+- [ ] Abrir cada link `wa.me` com um ID de teste válido e conferir destinatário, texto, moeda, quantidade e valor, sem enviar mensagem nem efetuar pagamento.
+- [ ] Testar mudança de moeda durante um cálculo e confirmar que os valores e o texto do WhatsApp são atualizados.
+- [ ] Testar orçamento abaixo do mínimo, campos vazios, pontuação decimal e separadores brasileiros (`1.234,56`).
+- [ ] Confirmar em ambiente real a disponibilidade dos recursos externos e a publicação atual do GitHub Pages.
+
+### Limitação operacional registrada
+Nesta sessão não havia um navegador conectado com capacidade de navegar/interagir nem acesso de rede para abrir a publicação. Por isso, não afirmo que os testes físicos Android/desktop, a abertura externa do WhatsApp ou a publicação ao vivo tenham sido concluídos. Nenhuma compra, mensagem ou pagamento real foi iniciado.
+
+### Próxima ação
+Executar a matriz pendente em dispositivos/navegadores reais e registrar evidências e resultados antes de declarar o conversor concluído. Os preços são referências configuradas no código, não uma cotação cambial ao vivo; devem ser confirmados pelo operador antes do pagamento.
