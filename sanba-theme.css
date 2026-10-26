@@ -1,0 +1,59 @@
+/* SANBA DESIGN SYSTEM — tema compartilhado inspirado na página principal */
+:root{
+  color-scheme:light;
+  --sanba-bg:#f4f7fb;--sanba-surface:#fff;--sanba-text:#172b3c;
+  --sanba-muted:#687d8d;--sanba-line:#dfe7ee;--sanba-blue:#1769aa;
+  --sanba-blue-hover:#125487;--sanba-soft:#eef6fb;--sanba-radius:18px;
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--sanba-bg)}
+body{
+  min-height:100vh;color:var(--sanba-text);
+  background:radial-gradient(ellipse at 12% 0%,rgba(49,130,206,.10),transparent 34%),
+    radial-gradient(ellipse at 95% 10%,rgba(20,184,166,.07),transparent 30%),var(--sanba-bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+header,nav,.topbar,.navbar,.page-header,.header,.brand,.brand-header{
+  color:var(--sanba-text);
+}
+header img[alt*="Logotipo"],nav img[alt*="Logotipo"],.brand img[alt*="Logotipo"],
+.brand-header img[alt*="Logotipo"],.header img[alt*="Logotipo"]{
+  width:44px;height:44px;max-width:44px;object-fit:contain;vertical-align:middle;flex-shrink:0;
+}
+a{color:var(--sanba-blue);text-underline-offset:3px}
+a:hover{color:var(--sanba-blue-hover)}
+button,.button,[type=button],[type=submit]{
+  transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+button:hover,[type=button]:hover,[type=submit]:hover{
+  filter:brightness(.98);
+}
+input:not([type=checkbox]):not([type=radio]),select,textarea{
+  max-width:100%;border-radius:10px;
+}
+input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{
+  outline:2px solid rgba(23,105,170,.48);outline-offset:2px;
+}
+.card,.panel,.box,.content-card,.admin-card,.tool-card,.section-card,.form-card,.dashboard-card{
+  border-radius:var(--sanba-radius);
+}
+table{max-width:100%;border-collapse:collapse}
+th{font-weight:750}
+img{max-width:100%}
+footer,.footer{color:var(--sanba-muted)}
+/* Mantém o conteúdo legível em telas estreitas, sem alterar scripts ou formulários. */
+@media(max-width:700px){
+  body{padding-left:12px;padding-right:12px}
+  main,.container,.wrap,.page,.content,.dashboard,.app-container{
+    width:100%;max-width:100%;min-width:0;
+  }
+  .card,.panel,.box,.content-card,.admin-card,.tool-card,.section-card,.form-card,.dashboard-card{
+    max-width:100%;min-width:0;
+  }
+  table{display:block;overflow-x:auto}
+  button,[type=button],[type=submit]{max-width:100%;overflow-wrap:anywhere}
+  header,.page-header,.topbar,.navbar{flex-wrap:wrap;gap:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
