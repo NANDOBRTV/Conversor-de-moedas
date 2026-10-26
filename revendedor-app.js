@@ -145,7 +145,14 @@ function applyAccessUI(profile) {
   const tier = membershipTier(profile);
   const activeReseller = profile?.reseller_application_status === 'approved';
   const active = accessIsActive(profile) && (tier !== 'common' || activeReseller);
-  $('accountPurchase').style.display = tier === 'common' ? 'grid' : 'none';
+  const purchasePanel = $('accountPurchase');
+  if (purchasePanel) {
+    // Mantém os planos fora do cartão de conta, para não serem ocultados
+    // junto com a calculadora ou por regras de layout do cartão lateral.
+    if (purchasePanel.parentElement !== dashboard) dashboard.appendChild(purchasePanel);
+    purchasePanel.style.display = tier === 'common' ? 'grid' : 'none';
+    purchasePanel.setAttribute('aria-hidden', String(tier !== 'common'));
+  }
   const goldBenefits = $('goldBenefits');
   if (goldBenefits) goldBenefits.hidden = !(tier === 'gold' && active);
   const diamondBenefits = $('diamondBenefits');
