@@ -75,20 +75,20 @@ Deno.serve(async (req: Request) => {
     if (amountCents !== expectedCents || currency !== String(order.currency).toUpperCase()) return reply({ error: "Valor ou moeda não corresponde ao pedido." }, 409);
     if (order.stripe_checkout_session_id !== sessionId) return reply({ error: "Sessão Stripe não corresponde ao pedido." }, 409);
     if (!["pending", "payment_confirmed", "delivered"].includes(order.status)) return reply({ error: "O pedido não está em um estado válido para confirmar pagamento." }, 409);
-    if (["planilha_lucro", "kit_divulgacao"].includes(order.product_code)) {
+    if (["planilha_lucro", "kit_divulgacao", "calculadora_precos"].includes(order.product_code)) {
       const { error: entitlementError } = await admin.from("product_entitlements").upsert({
         user_id: userId, product_code: order.product_code, source_order_id: order.id, active: true, granted_at: new Date().toISOString()
       }, { onConflict: "user_id,product_code" });
       if (entitlementError) throw entitlementError;
     }
-    if (order.status !== "pending") return reply({ received: true, duplicate: true, access_granted: ["planilha_lucro", "kit_divulgacao"].includes(order.product_code) });
+    if (order.status !== "pending") return reply({ received: true, duplicate: true, access_granted: ["planilha_lucro", "kit_divulgacao", "calculadora_precos"].includes(order.product_code) });
     const now = new Date().toISOString();
     const { data: updated, error: updateError } = await admin.from("revenue_orders").update({
       status: "payment_confirmed", payment_confirmed_at: now, updated_at: now
     }).eq("id", order.id).eq("status", "pending").eq("payment_provider", "stripe").select("id").maybeSingle();
     if (updateError) throw updateError;
     if (!updated) return reply({ received: true, duplicate: true });
-    return reply({ received: true, confirmed: true, order_type: "revenue", access_granted: order.product_code === "planilha_lucro" });
+    return reply({ received: true, confirmed: true, order_type: "revenue", access_granted: ["planilha_lucro", "kit_divulgacao", "calculadora_precos"].includes(order.product_code) });
   } catch (error) {
     console.error("stripe webhook error:", error instanceof Error ? error.message : "unknown");
     return reply({ error: "Falha ao processar evento Stripe." }, 500);
