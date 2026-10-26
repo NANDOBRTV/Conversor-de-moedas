@@ -42,6 +42,16 @@ test("a página principal não contém padrões comuns de segredos de produção
   assert.doesNotMatch(html, /SUPABASE_SERVICE_ROLE_KEY\s*[:=]\s*["'][^"']+/i);
 });
 
+test("o histórico local está conectado sem expor o ID Sanba", async () => {
+  const html = await readRoot("index.html");
+  const script = await readRoot("historico-calculos.js");
+  assert.match(html, /src=["']\.\/historico-calculos\.js["']/);
+  assert.match(script, /sanba_calculation_history_v1/);
+  assert.match(script, /ID Sanba não é salvo nem exportado/);
+  assert.match(script, /exportCalculationHistory/);
+  assert.match(script, /clearCalculationHistory/);
+});
+
 test("arquivos centrais e testes do navegador existem", async () => {
   for (const path of ["index.html", "supabase-config.js", "testes-conversor.html", "supabase/schema.sql"]) {
     await access(new URL(path, root), constants.R_OK);
