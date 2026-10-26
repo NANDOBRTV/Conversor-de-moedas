@@ -314,3 +314,11 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - O serviço pode falhar por bloqueadores, restrições de rede ou mudanças do Google; nesses casos a página original continua disponível, mas pode não ser traduzida.
 - Foi feita verificação estática de que as 14 páginas HTML carregam `idiomas.js` e que o seletor antigo exclusivo da página principal foi removido. Ainda falta testar a tradução real, a persistência e a navegação entre páginas em navegador Android e desktop; não registrar esses testes como concluídos até executá-los.
 - Arquivo compartilhado criado no commit `98c061361c9f43a12532346682ef99ba9dd7b316`.
+
+
+## Correção do seletor de idioma global — 26/10/2026
+- O seletor visual agora aparece somente na página principal (index.html), para evitar que o menu fique repetido em todas as páginas.
+- A escolha fica guardada na preferência sanba_language e no cookie googtrans; o script partilhado idiomas.js continua carregado nas páginas internas para aplicar o idioma escolhido ao navegar.
+- Foram ajustados os cookies para os caminhos raiz e /Conversor-de-moedas/, com limpeza dos dois caminhos ao selecionar português.
+- Idiomas disponíveis: automático, português, inglês e espanhol.
+- Limitação importante: a tradução é fornecida pelo Google Website Translator e depende de ligação externa; não foi possível confirmar o resultado visual em navegador real nesta execução. É necessário testar a página publicada em inglês/espanhol, navegar para uma página interna e confirmar que o idioma se mantém.
