@@ -85,7 +85,45 @@ $('buyProfitSheet').addEventListener('click',()=>buyDigitalProduct('planilha_luc
 $('buyKit').addEventListener('click',()=>buyDigitalProduct('kit_divulgacao','buyKit','kitMessage','Comprar com segurança'));
 $('buyPriceCalc').addEventListener('click',()=>buyDigitalProduct('calculadora_precos','buyPriceCalc','priceCalcMessage','Comprar com segurança'));
 $('downloadKit').addEventListener('click',async()=>{if(!session||!supabase){msg('kitMessage','Entre na sua conta para baixar o kit.','error');return}const btn=$('downloadKit');btn.disabled=true;btn.textContent='Preparando PDF…';clearMsg('kitMessage');try{const response=await fetch(config.url.replace(/\/$/,'')+'/functions/v1/download-kit-divulgacao',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:config.anonKey,'Content-Type':'application/json'},body:'{}',cache:'no-store'});if(!response.ok){const error=await response.json().catch(()=>({}));throw new Error(error.error||'Não foi possível liberar o PDF.')}const blob=await response.blob();const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Kit_de_Divulgacao_Sanba.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);msg('kitMessage','Download liberado. O arquivo foi preparado para salvar no seu dispositivo.','success')}catch(err){msg('kitMessage',err.message||'Falha ao baixar o kit.','error')}finally{btn.disabled=false;btn.textContent='Baixar meu kit PDF'}});
-async function loadProductAccess(){if(!session||!supabase)return;const [sheet,kit,priceCalc]=await Promise.all([supabase.from('product_entitlements').select('active').eq('user_id',session.user.id).eq('product_code','planilha_lucro').maybeSingle(),supabase.from('product_entitlements').select('active').eq('user_id',session.user.id).eq('product_code','kit_divulgacao').maybeSingle(),supabase.from('product_entitlements').select('active').eq('user_id',session.user.id).eq('product_code','calculadora_precos').maybeSingle()]);if(sheet.error){msg('productMessage','Não foi possível verificar o acesso agora. Atualize a página em instantes.','error')}else{const owned=Boolean(sheet.data?.active);$('openProfitSheet').classList.toggle('hidden',!owned);$('buyProfitSheet').classList.toggle('hidden',owned);if(owned)msg('productMessage','Pagamento confirmado. Sua planilha está liberada nesta conta.','success')}if(kit.error){msg('kitMessage','Não foi possível verificar o acesso ao kit agora. Atualize a página em instantes.','error')}else{const kitOwned=Boolean(kit.data?.active);$('downloadKit').classList.toggle('hidden',!kitOwned);$('buyKit').classList.toggle('hidden',kitOwned);if(kitOwned)msg('kitMessage','Pagamento confirmado. Seu kit está liberado. Toque em Baixar meu kit PDF.','success')}if(priceCalc.error){msg('priceCalcMessage','Não foi possível verificar o acesso à calculadora agora. Atualize a página em instantes.','error')}else{const calcOwned=Boolean(priceCalc.data?.active);$('openPriceCalc').classList.toggle('hidden',!calcOwned);$('buyPriceCalc').classList.toggle('hidden',calcOwned);if(calcOwned)msg('priceCalcMessage','Pagamento confirmado. Sua calculadora está liberada.','success')}if(new URLSearchParams(location.search).get('product_payment')==='success'&&!sheet.data?.active&&!kit.data?.active&&!priceCalc.data?.active){msg('productMessage','Retorno do Stripe recebido. A confirmação pode levar alguns instantes; o acesso será liberado após a confirmação do pagamento.','')}}
+let returnPaymentChecked=false;
+async function loadProductAccess(){
+ if(!session||!supabase)return;
+ const params=new URLSearchParams(location.search);
+ if(!returnPaymentChecked&&params.get('product_payment')==='success'&&params.get('session_id')){
+  returnPaymentChecked=true;
+  const {data:verified,error:verifyError}=await supabase.functions.invoke('verify-product-payment',{body:{session_id:params.get('session_id')}});
+  if(verifyError||!verified?.confirmed){
+   returnPaymentChecked=false;
+   msg('productMessage',verified?.error||'Estamos confirmando seu pagamento com o Stripe. A página tentará novamente automaticamente.','error');
+  }else{
+   msg('productMessage','Pagamento confirmado! Liberando seu produto nesta conta…','success');
+   history.replaceState({},document.title,location.pathname);
+  }
+ }else if(params.get('product_payment')==='cancelled'){
+  msg('productMessage','Pagamento cancelado. Nenhuma compra foi concluída. Você pode tentar novamente quando quiser.','');
+  history.replaceState({},document.title,location.pathname);
+ }
+ const [sheet,kit,priceCalc]=await Promise.all([
+  supabase.from('product_entitlements').select('active').eq('user_id',session.user.id).eq('product_code','planilha_lucro').maybeSingle(),
+  supabase.from('product_entitlements').select('active').eq('user_id',session.user.id).eq('product_code','kit_divulgacao').maybeSingle(),
+  supabase.from('product_entitlements').select('active').eq('user_id',session.user.id).eq('product_code','calculadora_precos').maybeSingle()
+ ]);
+ if(sheet.error){msg('productMessage','Não foi possível verificar o acesso à planilha. Atualize a página em instantes.','error')}else{
+  const owned=Boolean(sheet.data?.active);$('openProfitSheet').classList.toggle('hidden',!owned);$('buyProfitSheet').classList.toggle('hidden',owned);
+  if(owned)msg('productMessage','Pagamento confirmado. Sua planilha está liberada nesta conta.','success')
+ }
+ if(kit.error){msg('kitMessage','Não foi possível verificar o acesso ao kit agora. Atualize a página em instantes.','error')}else{
+  const kitOwned=Boolean(kit.data?.active);$('downloadKit').classList.toggle('hidden',!kitOwned);$('buyKit').classList.toggle('hidden',kitOwned);
+  if(kitOwned)msg('kitMessage','Pagamento confirmado. Seu kit está liberado. Toque em Baixar meu kit PDF.','success')
+ }
+ if(priceCalc.error){msg('priceCalcMessage','Não foi possível verificar o acesso à calculadora agora. Atualize a página em instantes.','error')}else{
+  const calcOwned=Boolean(priceCalc.data?.active);$('openPriceCalc').classList.toggle('hidden',!calcOwned);$('buyPriceCalc').classList.toggle('hidden',calcOwned);
+  if(calcOwned)msg('priceCalcMessage','Pagamento confirmado. Sua calculadora está liberada.','success')
+ }
+ if(params.get('product_payment')==='success'&&!sheet.data?.active&&!kit.data?.active&&!priceCalc.data?.active&&!params.get('session_id')){
+  msg('productMessage','Retorno do pagamento recebido. Atualize o acesso para consultar a liberação.','')
+ }
+}
 $('signOut').addEventListener('click',async()=>{if(supabase)await supabase.auth.signOut();session=null;profile=null;showAccount(false);setMode('login');msg('authMessage','Você saiu da sua conta.','success')});
 
 if(supabase){supabase.auth.getSession().then(({data})=>{if(data.session)showSignedIn(data.session)});supabase.auth.onAuthStateChange((_event,s)=>{if(s&&!session)showSignedIn(s)})}else{msg('authMessage','Supabase indisponível. Confira o arquivo de configuração.','error')}
