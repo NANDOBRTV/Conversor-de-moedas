@@ -108,13 +108,13 @@
         currencySelect.value = item.currency;
         currencySelect.dispatchEvent(new Event("change", { bubbles: true }));
         if (item.mode === "coins") {
+          document.getElementById("tabC")?.click();
           coinsInput.value = item.input.replace(/[^0-9]/g, "");
           coinsInput.dispatchEvent(new Event("input", { bubbles: true }));
-          document.getElementById("tabC")?.click();
         } else {
+          document.getElementById("tabR")?.click();
           valueInput.value = item.input;
           valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-          document.getElementById("tabR")?.click();
         }
         status.textContent = "Cálculo restaurado. Confira os dados antes de continuar.";
       });
@@ -124,8 +124,10 @@
   }
 
   function capture() {
-    const isCoins = document.getElementById("resC")?.classList.contains("show");
-    const isValue = document.getElementById("resR")?.classList.contains("show");
+    const isCoins = document.getElementById("tabC")?.getAttribute("aria-selected") === "true";
+    const isValue = document.getElementById("tabR")?.getAttribute("aria-selected") === "true";
+    if (isCoins && !document.getElementById("resC")?.classList.contains("show")) return;
+    if (isValue && !document.getElementById("resR")?.classList.contains("show")) return;
     if (!isCoins && !isValue) return;
     const mode = isCoins ? "coins" : "value";
     const input = String((isCoins ? coinsInput : valueInput).value || "").trim();
