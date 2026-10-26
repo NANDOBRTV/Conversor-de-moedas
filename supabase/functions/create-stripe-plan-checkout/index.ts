@@ -45,8 +45,8 @@ Deno.serve(async (req: Request) => {
     if (profile.membership_tier !== "common") return json({ error: "Sua conta já possui um plano. Fale com o suporte para renovação ou alteração." }, 409);
     if (!user.email && !profile.email) return json({ error: "Adicione um e-mail válido à sua conta antes de pagar." }, 400);
 
-    const amount = tier === "gold" ? 1.00 : 49.90;
-    const planName = tier === "gold" ? "Plano Ouro — TESTE R$ 1,00 (30 dias)" : "Plano Diamante";
+    const amount = tier === "gold" ? 9.90 : 49.90;
+    const planName = tier === "gold" ? "Plano Ouro (30 dias)" : "Plano Diamante";
     const { data: order, error: orderError } = await admin.from("payment_orders").insert({
       user_id: user.id, plan_tier: tier, amount, currency: "BRL", status: "pending", provider: "stripe"
     }).select("id").single();
@@ -69,7 +69,7 @@ Deno.serve(async (req: Request) => {
     params.set("line_items[0][price_data][unit_amount]", String(Math.round(amount * 100)));
     params.set("line_items[0][price_data][product_data][name]", planName);
     params.set("line_items[0][price_data][product_data][description]", tier === "gold"
-      ? "PLANO DE TESTE: acesso ao Painel Sanba por 30 dias. Preço temporário de R$ 1,00 para validar pagamento e liberação automática. Sem renovação automática."
+      ? "Acesso ao Painel Sanba por 30 dias. Sem renovação automática."
       : "Acesso aos recursos do Plano Diamante conforme os termos do serviço.");
     params.set("metadata[order_type]", "plan");
     params.set("metadata[order_id]", order.id);
