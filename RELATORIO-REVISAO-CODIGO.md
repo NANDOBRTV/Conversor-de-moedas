@@ -111,3 +111,59 @@
 - Os Advisors continuam mostrando um aviso de proteção contra senhas comprometidas desativada e três tabelas com RLS habilitado sem políticas: bot_rate_limits, reseller_invites e revenue_orders. Esses avisos precisam de avaliação cuidadosa; não criar políticas de acesso público sem confirmar o modelo de acesso.
 - O Performance Advisor apresenta índices ainda não utilizados. Isso, isoladamente, não demonstra falha: o uso depende das consultas e do volume real.
 - A restrição de checkout a chave Stripe de teste permanece. Não ativar pagamentos reais nem trocar para chaves live sem uma decisão explícita e uma revisão separada de produção.
+
+
+---
+
+## Atualização consolidada do projeto — 26/10/2026
+
+Esta seção registra o que já existe no repositório, o que está em revisão e o que ainda precisa ser implementado/testado. **Código em branch/PR não deve ser considerado publicado nem implantado automaticamente.**
+
+### Funcionalidades e estrutura existentes
+
+- Conversor público Sanba com seleção de moedas e cálculo de valores; a página principal continua protegida pela regra do projeto de não alterar `index.html` sem necessidade explícita.
+- Páginas separadas para cliente, revendedor e administração/desenvolvedor, além de fluxos de convites, aprovação de revendedores, pedidos e gestão.
+- Níveis de acesso do projeto preservados: **Comum, Ouro, Diamante e Desenvolvedor**. O nível Comum é o revendedor básico; os níveis superiores devem respeitar os privilégios definidos no projeto, sem expor ferramentas avançadas a quem não tem permissão.
+- Cadastro/login e dados de perfil apoiados pelo Supabase; tabelas e políticas RLS documentadas no repositório. O fluxo de aprovação manual continua sendo parte do processo para habilitar novos revendedores.
+- O painel do revendedor utiliza o carregador externo `revendedor-loader.js` e o módulo `revendedor-app.js`; os formulários e IDs existentes devem ser preservados durante alterações de interface.
+- O fluxo de recarga Sanba continua separado do checkout dos planos e permanece manual pelo WhatsApp, conforme decisão do proprietário.
+- Documentação existente inclui `LEIA-ME-SUPABASE.md`, `DESIGN-SYSTEM-SANBA.md`, `supabase/STRIPE-PIX-CARTAO.md`, `supabase/ADMINISTRAR-PLANOS.md` e arquivos de migrations.
+
+### Stripe — checkout de planos
+
+- O código versionado inclui a Edge Function `create-stripe-plan-checkout` e o webhook `stripe-revenue-webhook`; as versões registradas anteriormente no Supabase estavam ACTIVE.
+- O checkout foi configurado para solicitar Pix e cartão em BRL. O webhook considera eventos de checkout concluído e pagamento assíncrono confirmado, necessários para o fluxo Pix.
+- O proprietário informou em 25/10 que os testes do checkout estavam funcionando. Isso registra a confirmação do proprietário, não substitui a repetição independente de todos os cenários.
+- **PR #1 — aberto, ainda não mesclado:** [Segurar checkout Stripe em modo de teste com preço temporário de R$ 1](https://github.com/NANDOBRTV/Conversor-de-moedas/pull/1), branch `audit/stripe-checkout-safety`, commit `116646dfa7db3d3a9dd80cd3379321faad69f7ad`.
+- O PR #1 limita o checkout à chave `sk_test_`, identifica os produtos como TESTE e define temporariamente Ouro e Diamante em R$ 1,00. **Essas alterações não estão aplicadas ao site nem implantadas no Supabase por meio desse PR.** O preço de R$ 1 é somente para teste e não pode ser usado em produção. Antes de produção, restaurar os preços comerciais e fazer revisão separada com chaves live.
+- Antes de considerar o fluxo pronto para produção, testar cartão e Pix, confirmação assíncrona, assinatura válida/inválida, evento duplicado, cancelamento, pagamento incompleto, valor/plano divergente e liberação correta do acesso.
+
+### Interface futurista Sanba
+
+- **PR #2 — aberto, ainda não mesclado:** [Aplicar interface futurista Sanba ao conversor e painel](https://github.com/NANDOBRTV/Conversor-de-moedas/pull/2), branch `ui/futuristic-sanba-refresh`, head `4ba587e6f9aa8aa5999368acef1dcb2b04837c25`.
+- O PR adiciona CSS ao final dos estilos de `index.html` e `revendedor.html`: fundo escuro azul-marinho, acentos ciano/violeta, cartões com aparência glass, campos mais legíveis, foco visível, ajustes para telas pequenas e respeito a `prefers-reduced-motion`.
+- A mudança foi limitada à camada visual, preservando a lógica JavaScript, IDs, formulários, cálculos, autenticação, permissões, CSP e carregador externo do painel.
+- A validação feita até agora é estática. Ainda falta revisão visual em dispositivos/navegadores reais e teste funcional depois de mesclar/publicar. Não afirmar que o novo visual já está no site publicado enquanto o PR estiver aberto.
+
+### Proteção contra senhas comprometidas — alternativa gratuita em avaliação
+
+- No painel do Supabase, a opção **“Prevent use of leaked passwords”** informa que exige plano Pro ou superior; portanto, não foi possível habilitar a proteção nativa no plano atual.
+- Alternativa proposta para desenvolvimento: integrar a API gratuita **Pwned Passwords** do Have I Been Pwned ao fluxo de cadastro e de alteração de senha. A integração **ainda não foi implementada** e não ativa a opção nativa do Supabase.
+- A implementação deve verificar a senha de forma cuidadosa, usando o modelo de consulta por prefixo/hash (k-anonymity), sem enviar a senha em texto puro nem registrar senhas nos logs. A checagem deve ocorrer num fluxo controlado pelo servidor e falhar de forma segura se o serviço estiver indisponível, sem bloquear indefinidamente cadastro/alteração de senha.
+- É necessário verificar como impedir que o fluxo de autenticação seja contornado por chamadas diretas ao Supabase Auth. Se a verificação não puder ser garantida para todos os caminhos de cadastro e alteração, documentar claramente a limitação em vez de anunciar proteção equivalente à nativa.
+- Enquanto isso, manter CAPTCHA ativado, impor senha mínima adequada e orientar o uso de senhas únicas e fortes. Essas medidas são complementares e não substituem uma verificação de senhas vazadas.
+
+### Próximas etapas — ordem recomendada
+
+1. Revisar e mesclar o PR #2 da interface após verificar conflitos e revisar o diff; em seguida, conferir a publicação e testar visualmente celular e computador.
+2. Revisar o PR #1 separadamente; manter o preço de R$ 1 e a chave `sk_test_` estritamente no ambiente de teste. Não mesclar/implantar uma configuração de teste como produção.
+3. Implementar e revisar a alternativa gratuita de verificação de senhas comprometidas, incluindo cadastro, alteração de senha, tratamento de falhas e proteção contra bypass; só então executar testes com conta de teste.
+4. Realizar teste ponta a ponta do cadastro/login, aprovação manual de revendedor, permissões dos quatro níveis, área do cliente, criação de pedido e histórico/status.
+5. Executar novamente a bateria de testes Stripe de cartão e Pix e confirmar os webhooks, incluindo pagamento Pix assíncrono e eventos duplicados.
+6. Revisar avisos do Supabase/RLS sem criar políticas públicas indiscriminadamente; confirmar que tabelas internas continuam acessíveis somente pelos caminhos autorizados.
+7. Confirmar o comportamento real da publicação GitHub Pages e do Supabase após cada mudança. Separar sempre o que está no código, o que foi mesclado, o que foi implantado e o que foi testado.
+8. Antes de produção: restaurar preços comerciais, revisar chaves e webhook live, verificar segredos, permissões, logs e cenários de falha. Nenhuma chave privada, `service_role` ou segredo de webhook deve ir para o front-end ou para o repositório público.
+
+### Critério de conclusão
+
+O projeto só deve ser marcado como pronto para produção depois que os PRs relevantes forem revisados/mesclados, as mudanças necessárias forem implantadas no ambiente correto, os testes autenticados e de pagamento forem concluídos, e os avisos de segurança tiverem uma decisão documentada. Até lá, itens acima permanecem em desenvolvimento ou validação, conforme indicado.
