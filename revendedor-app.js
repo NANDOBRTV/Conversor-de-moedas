@@ -145,7 +145,7 @@ function applyAccessUI(profile) {
   const tier = membershipTier(profile);
   const activeReseller = profile?.reseller_application_status === 'approved';
   const active = accessIsActive(profile) && (tier !== 'common' || activeReseller);
-  $('accountPurchase').style.display = tier === 'common' && profile.reseller_application_status === 'approved' ? 'grid' : 'none';
+  $('accountPurchase').style.display = tier === 'common' ? 'grid' : 'none';
   const goldBenefits = $('goldBenefits');
   if (goldBenefits) goldBenefits.hidden = !(tier === 'gold' && active);
   const diamondBenefits = $('diamondBenefits');
@@ -216,9 +216,9 @@ function renderAccount(profile) {
   } else if (resellerPending) {
     message(accountMessage, 'Seu cadastro foi recebido. O acesso de revendedor será liberado somente após a aprovação manual do desenvolvedor.', 'error');
   } else if (tier === 'common' && accountActive) {
-    message(accountMessage, 'Sua conta comum está ativa, mas o acesso de revendedor exige convite individual e aprovação manual. Depois da aprovação, você poderá solicitar Ouro ou Diamante, sujeitos à conferência de pagamento.', 'success');
+    message(accountMessage, 'Sua conta está no nível Comum. Os planos Ouro e Diamante ficam disponíveis abaixo; após o pagamento ser confirmado pelo Stripe, o plano pago será liberado automaticamente.', 'success');
   } else if (tier === 'common') {
-    message(accountMessage, 'Sua conta ainda não tem acesso de revendedor. Solicite um convite individual ao desenvolvedor e aguarde a aprovação manual.', 'error');
+    message(accountMessage, 'Sua conta está no nível Comum e ainda não tem ferramentas de revendedor ativas. Você pode escolher Ouro ou Diamante abaixo; o acesso pago será liberado após a confirmação do pagamento.', 'error');
   } else if (!premiumActive) {
     message(accountMessage, 'Sua conta foi autenticada, mas o acesso do plano não está ativo ou venceu. Fale com o suporte para conferir a liberação.', 'error');
   } else hideMessage(accountMessage);
