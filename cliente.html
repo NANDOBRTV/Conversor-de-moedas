@@ -93,7 +93,8 @@ async function loadProductAccess(){
   returnPaymentChecked=true;
   const {data:verified,error:verifyError}=await supabase.functions.invoke('verify-product-payment',{body:{session_id:params.get('session_id')}});
   if(verifyError||!verified?.confirmed){
-   msg('productMessage',verified?.error||'Estamos confirmando seu pagamento com o Stripe. Aguarde alguns segundos e toque em Atualizar acesso.','error');
+   returnPaymentChecked=false;
+   msg('productMessage',verified?.error||'Estamos confirmando seu pagamento com o Stripe. A página tentará novamente automaticamente.','error');
   }else{
    msg('productMessage','Pagamento confirmado! Liberando seu produto nesta conta…','success');
    history.replaceState({},document.title,location.pathname);
