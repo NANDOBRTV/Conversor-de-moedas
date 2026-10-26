@@ -8,8 +8,9 @@
 <title>Conversor Sanba | Calculadora de Recargas</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="description" content="Calcule recargas Sanba, confira valores por moeda e finalize seu pedido pelo WhatsApp com praticidade.">
-<link rel="icon" type="image/svg+xml" href="./favicon.svg">
-<link rel="shortcut icon" href="./favicon.svg">
+<link rel="icon" type="image/png" href="./1793036671323.png">
+<link rel="shortcut icon" type="image/png" href="./1793036671323.png">
+<link rel="apple-touch-icon" href="./1793036671323.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px}
@@ -386,6 +387,35 @@ html{background:#0b1630}
 .project-refresh{background:#10233b!important;color:#e8f7ff!important;border-color:#2b5976!important}
 .project-panel-foot{background:#071327!important;border-top-color:#24415d!important;color:#9bb1c9!important}
 
+
+/* Identidade visual personalizada baseada no layout aprovado */
+:root{color-scheme:light;--sanba-navy:#10265c;--sanba-blue:#2678ee;--sanba-cyan:#13bfd1;--sanba-green:#4ddf8b;--sanba-yellow:#ffc928;--sanba-line:#e5edf7}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;background:radial-gradient(circle at 5% 18%,rgba(19,191,209,.12),transparent 23%),radial-gradient(circle at 96% 78%,rgba(255,201,40,.14),transparent 24%),#f7faff!important;color:var(--sanba-navy);padding:24px!important;align-items:center!important}
+.site-menu-wrap{width:min(1180px,100%);align-self:center!important;display:flex;justify-content:flex-end;margin:0 auto 18px!important}
+.project-menu-button{background:#fff!important;color:var(--sanba-navy)!important;border:1px solid #dbe7f6!important;box-shadow:0 5px 18px rgba(20,48,94,.08)!important;border-radius:999px!important;padding:11px 18px!important}
+.site-mini-menu{box-shadow:0 18px 45px rgba(16,38,92,.15)!important}
+.card{max-width:760px!important;padding:clamp(22px,4vw,42px)!important;border:1px solid rgba(209,224,244,.9)!important;border-radius:28px!important;box-shadow:0 22px 70px rgba(34,78,137,.11)!important;overflow:hidden}
+.card:before{content:"";display:block;height:7px;position:absolute;top:0;left:0;right:0;background:linear-gradient(90deg,var(--sanba-blue),var(--sanba-cyan),var(--sanba-green),var(--sanba-yellow))}
+.brand-logo-header{display:flex;align-items:center;justify-content:center;gap:22px;margin:3px auto 10px;width:100%;text-align:left}
+.site-logo{display:block;width:clamp(110px,18vw,175px);height:clamp(110px,18vw,175px);object-fit:contain;flex:0 0 auto;border-radius:20px}
+.brand-divider{height:72px;width:3px;border-radius:4px;background:linear-gradient(180deg,var(--sanba-blue),var(--sanba-cyan),var(--sanba-yellow))}
+.brand-heading h1{font-size:clamp(23px,4vw,36px)!important;line-height:1.12;text-align:left!important;color:var(--sanba-navy)!important;font-weight:850;letter-spacing:-1.2px;margin:0 0 8px!important}
+.brand-heading p{font-size:clamp(13px,2vw,17px);line-height:1.5;color:#536582}
+.sub{text-align:center!important;color:#536582!important;font-size:14px!important;margin:0 auto 22px!important}
+.signup-cta{border:1px solid #d8e7fb!important;background:linear-gradient(120deg,#f0f7ff,#f2fffc)!important;border-radius:16px!important;color:var(--sanba-navy)!important;box-shadow:none!important}
+label{color:#334768!important;font-size:12px!important;letter-spacing:.35px!important}
+select,input{border:1.5px solid #dbe5f2!important;background:#fbfdff!important;border-radius:12px!important;min-height:48px!important;color:#162b58}
+select:focus,input:focus{border-color:var(--sanba-blue)!important;box-shadow:0 0 0 4px rgba(38,120,238,.10)!important}
+.tabs{background:#edf3fb!important;border-radius:14px!important;padding:5px!important}
+.tab.active{background:linear-gradient(100deg,var(--sanba-blue),#2462d9)!important;color:#fff!important;box-shadow:0 6px 16px rgba(38,120,238,.2)!important}
+.result{background:linear-gradient(120deg,#0fbfc9,#2382f0)!important;border-radius:18px!important}
+.wpp{border-radius:13px!important;box-shadow:0 8px 20px rgba(37,211,102,.16)!important}
+.info{color:#64748b!important}
+.brand-footer{border-color:#e4ecf7!important}
+@media(min-width:900px){.card{padding:40px 52px!important}.brand-logo-header{margin-bottom:14px}.site-logo{width:165px;height:165px}}
+@media(max-width:520px){body{padding:12px!important}.card{border-radius:22px!important;padding:23px 17px!important}.brand-logo-header{gap:12px;align-items:center}.site-logo{width:92px;height:92px}.brand-divider{height:56px}.brand-heading h1{font-size:22px!important;letter-spacing:-.6px}.brand-heading p{font-size:12px}.sub{margin-bottom:18px!important}}
+@media(max-width:360px){.brand-logo-header{gap:8px}.site-logo{width:74px;height:74px}.brand-heading h1{font-size:19px!important}.brand-heading p{font-size:11px}.brand-divider{height:48px}}
+
 </style>
 </head>
 <body>
@@ -399,7 +429,7 @@ html{background:#0b1630}
   </nav>
 </div>
 <div class="card">
-  <h1><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sanbaCoin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2b2"/><stop offset="1" stop-color="#e9b949"/></linearGradient></defs><circle cx="32" cy="32" r="29" fill="#0f766e"/><circle cx="32" cy="32" r="22" fill="url(#sanbaCoin)"/><circle cx="32" cy="32" r="18" fill="none" stroke="#8a6215" stroke-width="1.5"/><path d="M40 23c-2-2-5-3-8-3-7 0-12 5-12 12s5 12 12 12c4 0 7-1 9-4l-4-4c-1 2-3 2-5 2-3 0-6-2-6-6s3-6 6-6c2 0 3 1 4 2z" fill="#0f3b3a"/></svg></span>Calculadora de Recarga Sanba</h1>
+  <div class="brand-logo-header"><img src="./1793036664915.png" alt="Logotipo Conversor Sanba" class="site-logo"><span class="brand-divider" aria-hidden="true"></span><div class="brand-heading"><h1>Conversor de Moedas</h1><p>Converta valores de forma rápida e simples</p></div></div>
   <p class="sub">Calcule sua recarga de moedas Sanba</p>
   <a class="signup-cta" href="./cliente.html#criar-conta" aria-label="Criar uma conta para comprar moedas diretamente com os revendedores"><strong>🛒 Quer comprar moedas com nossos revendedores?</strong><span>Crie sua conta grátis para acompanhar seus pedidos e recargas.</span><b>✨ Criar minha conta</b></a>
 
