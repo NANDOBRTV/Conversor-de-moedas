@@ -55,6 +55,28 @@ function message(el, text, type='error') {
   el.className = 'login-message visible ' + type;
 }
 function hideMessage(el) { el.textContent = ''; el.className = 'login-message' }
+
+// Check leaked passwords before signup; fail closed if the service is unavailable.
+async function checkPasswordLeak(password) {
+  let response;
+  try {
+    response = await fetch('https://conversor-sanba-protection.onrender.com/v1/password-check', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }), cache: 'no-store'
+    });
+  } catch (_) {
+    throw new Error('Não foi possível verificar a segurança da senha agora. Tente novamente em instantes.');
+  }
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.ok !== true) {
+    throw new Error(response.status === 429
+      ? 'Muitas tentativas de verificação. Aguarde um minuto e tente novamente.'
+      : 'A verificação de segurança está temporariamente indisponível. Tente novamente mais tarde.');
+  }
+  if (result.compromised === true) {
+    throw new Error('Essa senha aparece em vazamentos conhecidos. Escolha uma senha diferente que você não use em outros sites.');
+  }
+}
 function money(value, currency = 'BRL') { return Number(value).toLocaleString('pt-BR', {style:'currency',currency}); }
 function dateLabel(value) {
   if (!value) return 'Sem vencimento';
@@ -497,6 +519,9 @@ $('registerForm').addEventListener('submit', async event => {
   const submit = $('registerSubmit');
   submit.disabled = true; submit.textContent = 'Criando sua conta…';
   try {
+    submit.textContent = 'Verificando segurança da senha…';
+    await checkPasswordLeak(password);
+    submit.textContent = 'Criando sua conta…';
     const {data,error} = await supabase.auth.signUp({
       email,
       password,
