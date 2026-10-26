@@ -21,9 +21,9 @@ Deno.serve(async (req: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   if (!url || !serviceKey || !stripeKey) return json({ error: "Checkout Stripe ainda não está configurado no servidor." }, 503);
-  // Mantém o checkout em modo de teste até que a conta, os webhooks e os meios
-  // de pagamento sejam validados de ponta a ponta. Nunca aceite uma chave live aqui.
-  if (!stripeKey.startsWith("sk_test_")) return json({ error: "O checkout está limitado ao modo de testes do Stripe." }, 503);
+  // O checkout publicado usa somente a chave secreta padrão de produção.
+  // Chaves de teste e chaves restritas não são aceitas nesta função.
+  if (!stripeKey.startsWith("sk_live_")) return json({ error: "O checkout exige uma chave secreta padrão de produção (sk_live_). Confira STRIPE_SECRET_KEY no Supabase." }, 503);
   if (!token) return json({ error: "Entre na sua conta antes de comprar." }, 401);
 
   let body: { tier?: unknown };
@@ -91,7 +91,7 @@ Deno.serve(async (req: Request) => {
     if (!response.ok || !stripe.id || !stripe.url) {
       await admin.from("payment_orders").update({ status: "cancelled" }).eq("id", order.id);
       console.error("Stripe checkout error", response.status, JSON.stringify(stripe).slice(0, 600));
-      return json({ error: "O Stripe não conseguiu iniciar o pagamento. Confira a configuração de testes e se Pix e cartão estão habilitados." }, 502);
+      return json({ error: "O Stripe não conseguiu iniciar o pagamento. Confira a chave de produção, a habilitação de Pix e cartão e as permissões da conta." }, 502);
     }
 
     const { error: updateError } = await admin.from("payment_orders").update({
