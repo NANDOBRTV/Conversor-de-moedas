@@ -113,3 +113,78 @@ body :is(.project-panel-head,.modal-header){
 }
 body :is(.project-panel-head,.modal-header) *{color:#172b3c!important}
 body :is(.primary,.btn-primary,.wpp,.copy-btn,.project-close){color:#ffffff!important}
+
+
+/* CORREÇÃO FINAL DE CONTRASTE — aplicado depois dos estilos antigos.
+   Padroniza superfícies claras para que texto escuro nunca fique sobre fundo escuro. */
+html,body{
+  color:#172b3c!important;
+  background:#f4f7fb!important;
+  background-image:none!important;
+}
+body :is(
+  .card,.panel,.panel-card,.hero,.section,.section-card,.content-card,.admin-card,
+  .tool-card,.form-card,.dashboard-card,.box,.content-box,.modal,.modal-content,
+  .hero-card,.stat-card,.kpi,.notice-card,.table-wrap,.result-card,.metric,.order,
+  .tool,.product,.plan,.history-item,.history-empty,.account,.status,.tabs,.admin-tabs,
+  .item,.policy-panel,.privacy-note,.operator-notice,.admin-panel,.summary,.sample,
+  .signup-cta,.desktop-side-card,.project-panel,.project-panel-body,.project-kpi,
+  .project-history,.site-mini-menu,.settings-menu,.settings-account-summary,
+  .login-card,.panel-card,.field,.detect-status,.active-mode-label
+){
+  color:#172b3c!important;
+  background-color:#ffffff!important;
+  background-image:none!important;
+  border-color:#d4e0eb!important;
+}
+body :is(
+  .card,.panel,.panel-card,.hero,.section,.section-card,.content-card,.admin-card,
+  .tool-card,.form-card,.dashboard-card,.box,.content-box,.modal,.modal-content,
+  .hero-card,.stat-card,.kpi,.notice-card,.table-wrap,.result-card,.metric,.order,
+  .tool,.product,.plan,.history-item,.history-empty,.account,.status,.tabs,.admin-tabs,
+  .item,.policy-panel,.privacy-note,.operator-notice,.admin-panel,.summary,.sample,
+  .signup-cta,.desktop-side-card,.project-panel,.project-panel-body,.project-kpi,
+  .project-history,.site-mini-menu,.settings-menu,.settings-account-summary,
+  .login-card,.field,.detect-status,.active-mode-label
+) :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,label,li,summary,div,td,th,a){
+  color:#172b3c!important;
+}
+body :is(header,nav,.topbar,.navbar,.page-header,.header,.brand-header){
+  color:#172b3c!important;
+}
+body :is(input,select,textarea){
+  color:#172b3c!important;background:#ffffff!important;background-image:none!important;
+  border:1px solid #9aabba!important;
+}
+body :is(input,select,textarea)::placeholder{color:#526779!important;opacity:1!important}
+body :is(button,.button,.btn,[type=button],[type=submit],.primary,.btn-primary,.copy-btn,.wpp,.project-close){
+  color:#ffffff!important;background:#145ea8!important;background-image:none!important;
+  border-color:#145ea8!important;
+}
+body :is(.secondary,.btn-secondary,.btn-light,.navlinks a,.nav a,.nav-link,.navlink,.tab,.project-tab,.mini-btn,.print-btn,.site-mini-menu a,.site-mini-menu button){
+  color:#172b3c!important;background:#edf4fa!important;background-image:none!important;
+  border-color:#b8c9d8!important;
+}
+body :is(.tab.active,.project-tab.active,.active,.selected,[aria-selected=true]){
+  color:#ffffff!important;background:#145ea8!important;background-image:none!important;
+}
+body :is(.success,.ok,.hint.ok,.status-success,.message.success,.message.ok,.login-message.success,.msg.success,.status.ok){
+  color:#05603a!important;background:#e8f7ee!important;border-color:#8bc9a5!important;
+}
+body :is(.error,.erro,.invalid,.hint.warn,.status-error,.message.error,.message.err,.login-message.error,.msg.error,.status.error,.id-error){
+  color:#9f1239!important;background:#fff1f2!important;border-color:#e5a0ad!important;
+}
+body :is(.warning,.notice,.region-warning,.important-notice,.project-callout,.needid,.desktop-side-note){
+  color:#663c00!important;background:#fff4d6!important;background-image:none!important;border-color:#d99a00!important;
+}
+body :is(.muted,.subtext,.sub,.desc,.hint,.foot,.footer,.creator-credit,.footer-info,.notice,.desktop-trust,.desktop-step span){
+  color:#526779!important;
+}
+body a{color:#145ea8!important}
+body a:hover{color:#0b477e!important}
+body th{background:#eaf1f7!important;color:#172b3c!important}
+body tr:nth-child(even){background:#f7fafd!important}
+body :is(.project-panel-head,.modal-header){
+  background:#eaf2f9!important;background-image:none!important;color:#172b3c!important;
+}
+body :is(.project-panel-head,.modal-header) *{color:#172b3c!important}
