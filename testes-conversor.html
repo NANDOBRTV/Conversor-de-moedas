@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Testes do Conversor Sanba</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#121a2e;--line:#293652;--text:#eef3ff;--muted:#aab7d1;--ok:#45d49a;--bad:#ff7785;--accent:#8bb8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{width:min(920px,100%);margin:auto;padding:24px 16px 48px}h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.15;margin:.4rem 0 1rem}
+p{color:var(--muted)}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin:16px 0}
+.actions{display:flex;flex-wrap:wrap;gap:10px}button,.link{border:0;border-radius:10px;background:var(--accent);color:#091326;font-weight:700;padding:12px 16px;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+#summary{font-weight:700}.result{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}.result:last-child{border-bottom:0}.pass{color:var(--ok);font-weight:800}.fail{color:var(--bad);font-weight:800}.detail{grid-column:1/-1;color:var(--muted);font-size:.9rem;overflow-wrap:anywhere}
+small{color:var(--muted)}iframe{position:absolute;width:1px;height:1px;left:-10000px;border:0}
+</style>
+</head>
+<body>
+<main>
+<p>CONTROLE DE QUALIDADE · SANBA</p>
+<h1>Testes do Conversor</h1>
+<p>Esta página executa verificações automatizadas contra as funções reais carregadas de <code>index.html</code>. Não envia mensagens, não abre conversas e não realiza pagamentos.</p>
+<div class="panel">
+<div id="summary">Carregando o conversor e preparando os testes…</div>
+<p id="environment"></p>
+<div class="actions">
+<button id="run" type="button">Executar testes novamente</button>
+<a class="link" href="./index.html">Voltar ao conversor</a>
+</div>
+</div>
+<div class="panel" id="results" aria-live="polite"><p>Aguardando execução…</p></div>
+<div class="panel">
+<strong>Limites deste teste</strong>
+<p>O teste verifica lógica JavaScript e montagem dos links. Ele não substitui teste visual em Android físico, navegadores desktop, nem a confirmação de que o WhatsApp abriu no aplicativo correto. Os links são inspecionados, nunca clicados.</p>
+</div>
+<iframe id="app" title="Instância de teste do conversor" src="./index.html?modo-teste=1"></iframe>
+</main>
+<script>
+(function(){
+  var frame=document.getElementById('app'),results=document.getElementById('results'),summary=document.getElementById('summary'),env=document.getElementById('environment'),runButton=document.getElementById('run'),ready=false;
+  var cases=[];
+  function add(name,ok,detail){cases.push({name:name,ok:!!ok,detail:detail||''});}
+  function near(a,b){return Number.isFinite(a)&&Math.abs(a-b)<0.000001;}
+  function show(){
+    var passed=cases.filter(function(x){return x.ok;}).length;
+    summary.textContent=passed+' de '+cases.length+' testes passaram';
+    summary.style.color=passed===cases.length?'var(--ok)':'var(--bad)';
+    results.innerHTML=cases.map(function(x){return '<div class="result"><span>'+escapeHtml(x.name)+'</span><span class="'+(x.ok?'pass':'fail')+'">'+(x.ok?'PASSOU':'FALHOU')+'</span>'+(x.detail?'<div class="detail">'+escapeHtml(x.detail)+'</div>':'')+'</div>';}).join('');
+    env.textContent='Executado em: '+new Date().toLocaleString('pt-BR')+' · Navegador: '+navigator.userAgent;
+  }
+  function escapeHtml(s){return String(s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});}
+  function run(){
+    cases=[];
+    var w;
+    try{w=frame.contentWindow;if(!w||typeof w.num!=='function')throw new Error('Funções da página principal não ficaram disponíveis.');}
+    catch(e){add('Carregamento da página principal',false,e.message);show();return;}
+    add('Página principal carregada',!!w.document.getElementById('currencySelect'),'A página principal foi carregada no mesmo domínio.');
+    var numeric=[
+      ['Número inteiro', '1500',1500],
+      ['Formato brasileiro com milhar e decimal','1.234,56',1234.56],
+      ['Formato brasileiro sem milhar','1234,56',1234.56],
+      ['Decimal com ponto','1234.56',1234.56],
+      ['Ponto como separador de milhar','1.234',1234],
+      ['Entrada com símbolo monetário','R$ 10,50',10.5]
+    ];
+    numeric.forEach(function(t){var got=w.num(t[1]);add('Número: '+t[1],near(got,t[2]),'Esperado '+t[2]+'; recebido '+got);});
+    ['','1,2,3','12.34,56','1.234.56','abc'].forEach(function(v){var got=w.num(v);add('Rejeitar entrada inválida: '+(v||'(vazia)'),!Number.isFinite(got),'Resultado: '+got);});
+    add('Preço de referência BRL',near(w.custoPorMoeda('BRL')*1500,6),'1500 moedas devem equivaler a R$ 6,00 na configuração atual.');
+    add('Preço de referência USD',near(w.custoPorMoeda('USD')*1500,.99),'1500 moedas devem equivaler a US$ 0,99 na configuração atual.');
+    add('Preço de referência VES',near(w.custoPorMoeda('VES')*1500,1450),'1500 moedas devem equivaler a Bs 1.450,00 na configuração atual.');
+    add('Arredondamento BRL para cima',near(w.arredondarParaCima(4.0001,'BRL'),4.01),'Verifica duas casas decimais e arredondamento para cima.');
+    var d=w.document,cur=d.getElementById('currencySelect'),id=d.getElementById('userId'),coins=d.getElementById('moedas'),value=d.getElementById('reais');
+    cur.value='BRL';cur.dispatchEvent(new w.Event('change',{bubbles:true}));
+    id.value='12345678';w.updateIdHint();coins.value='1500';w.calcC();
+    add('Cálculo moedas → valor',d.getElementById('resC').classList.contains('show')&&d.getElementById('valC').textContent.indexOf('6,00')!==-1,'1500 moedas em BRL; resultado visível: '+d.getElementById('valC').textContent);
+    var cLink=d.getElementById('wppC');
+    add('Link WhatsApp do cálculo por moedas',cLink.classList.contains('show')&&/^https:\/\/wa\.me\//.test(cLink.href)&&cLink.href.indexOf('text=')!==-1,'Link conferido sem clicar ou enviar mensagem.');
+    add('Resumo do pedido inclui ID',!!cLink.dataset.order&&cLink.dataset.order.indexOf('12345678')!==-1,'Confere os dados estruturados do pedido.');
+    id.value='1234567';w.updateIdHint();w.calcC();
+    add('ID com 7 dígitos bloqueia WhatsApp',!d.getElementById('wppC').classList.contains('show')&&d.getElementById('needC').classList.contains('show'),'Link não deve ser liberado.');
+    id.value='00000000';w.updateIdHint();
+    add('ID composto por zeros é rejeitado',!w.isIdValid(),'Validação de formato.');
+    id.value='12345678';w.updateIdHint();coins.value='999';w.calcC();
+    add('Quantidade abaixo do mínimo bloqueada',d.getElementById('errC').classList.contains('show'),'999 moedas devem mostrar o aviso de mínimo.');
+    value.value='6';w.calcR();
+    add('Cálculo valor → moedas',d.getElementById('resR').classList.contains('show')&&d.getElementById('valR').textContent.indexOf('1.500')!==-1,'R$ 6,00 deve calcular 1500 moedas; resultado: '+d.getElementById('valR').textContent);
+    var rLink=d.getElementById('wppR');
+    add('Link WhatsApp do cálculo por valor',rLink.classList.contains('show')&&/^https:\/\/wa\.me\//.test(rLink.href)&&rLink.href.indexOf('text=')!==-1,'Link conferido sem clicar ou enviar mensagem.');
+    value.value='1,2,3';w.calcR();
+    add('Valor malformado mostra erro',d.getElementById('errR').classList.contains('show')&&d.getElementById('errRMsg').textContent.indexOf('valor válido')!==-1,'A entrada não deve gerar uma quantidade de moedas.');
+    value.value='0';w.calcR();
+    add('Valor zero mostra erro',d.getElementById('errR').classList.contains('show'),'O valor precisa ser maior que zero.');
+    show();
+  }
+  frame.addEventListener('load',function(){ready=true;run();});
+  runButton.addEventListener('click',function(){if(ready)run();else{summary.textContent='A página principal ainda está carregando.';}});
+  setTimeout(function(){if(!ready){add('Carregamento da página principal',false,'Tempo limite ao carregar index.html. Confira se o site foi publicado e tente novamente.');show();}},12000);
+})();
+</script>
+</body>
+</html>
