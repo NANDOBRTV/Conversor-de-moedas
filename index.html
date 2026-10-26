@@ -1253,11 +1253,14 @@ function calcC(){
 }
 
 function calcR(){
-  var v=num(document.getElementById('reais').value);
+  var entradaValor=document.getElementById('reais').value;
+  var v=num(entradaValor);
   var rr=document.getElementById('resR'),er=document.getElementById('errR'),wr=document.getElementById('wppR'),nr=document.getElementById('needR');
   wr.removeAttribute('data-order');
   rr.classList.remove('show');er.classList.remove('show');wr.classList.remove('show');nr.classList.remove('show');wr.removeAttribute('href');
-  if(!(v>0))return;
+  if(!String(entradaValor).trim())return;
+  if(!Number.isFinite(v)){er.classList.add('show');document.getElementById('errRMsg').textContent='Digite um valor válido, por exemplo 10,50, sem repetir separadores.';return;}
+  if(v<=0){er.classList.add('show');document.getElementById('errRMsg').textContent='Informe um valor maior que zero.';return;}
   
   var custoLocal=custoPorMoeda(moeda);
   var qtd=Math.floor(v/custoLocal+1e-9);
