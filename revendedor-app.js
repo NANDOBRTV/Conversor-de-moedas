@@ -60,9 +60,12 @@ function hideMessage(el) { el.textContent = ''; el.className = 'login-message' }
 async function checkPasswordLeak(password) {
   let response;
   try {
+    const bytes = new TextEncoder().encode(password);
+    const digest = await crypto.subtle.digest('SHA-1', bytes);
+    const sha1 = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
     response = await fetch('https://conversor-sanba-protection.onrender.com/v1/password-check', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }), cache: 'no-store'
+      body: JSON.stringify({ sha1 }), cache: 'no-store'
     });
   } catch (_) {
     throw new Error('Não foi possível verificar a segurança da senha agora. Tente novamente em instantes.');
