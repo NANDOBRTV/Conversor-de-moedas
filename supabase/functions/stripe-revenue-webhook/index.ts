@@ -67,23 +67,28 @@ Deno.serve(async (req: Request) => {
       return reply({ received: true, confirmed: true, order_type: "plan" });
     }
 
-    const { data: order, error } = await admin.from("revenue_orders").select("id,user_id,amount,currency,status,payment_provider,payment_method,stripe_checkout_session_id,stripe_payment_intent_id").eq("id", orderId).maybeSingle();
+    const { data: order, error } = await admin.from("revenue_orders").select("id,user_id,product_code,amount,currency,status,payment_provider,payment_method,stripe_checkout_session_id,stripe_payment_intent_id").eq("id", orderId).maybeSingle();
     if (error) throw error;
     if (!order) return reply({ error: "Pedido não encontrado." }, 404);
-    if (order.user_id !== userId || order.payment_provider !== "stripe" || order.status !== "pending") {
-      if (order.user_id === userId && order.payment_provider === "stripe" && order.status === "payment_confirmed") return reply({ received: true, duplicate: true });
-      return reply({ error: "O pagamento não corresponde a um pedido pendente." }, 409);
-    }
+    if (order.user_id !== userId || order.payment_provider !== "stripe") return reply({ error: "O pagamento não corresponde ao pedido." }, 409);
     const expectedCents = Math.round(Number(order.amount) * 100);
     if (amountCents !== expectedCents || currency !== String(order.currency).toUpperCase()) return reply({ error: "Valor ou moeda não corresponde ao pedido." }, 409);
     if (order.stripe_checkout_session_id !== sessionId) return reply({ error: "Sessão Stripe não corresponde ao pedido." }, 409);
+    if (!["pending", "payment_confirmed", "delivered"].includes(order.status)) return reply({ error: "O pedido não está em um estado válido para confirmar pagamento." }, 409);
+    if (order.product_code === "planilha_lucro") {
+      const { error: entitlementError } = await admin.from("product_entitlements").upsert({
+        user_id: userId, product_code: "planilha_lucro", source_order_id: order.id, active: true, granted_at: new Date().toISOString()
+      }, { onConflict: "user_id,product_code" });
+      if (entitlementError) throw entitlementError;
+    }
+    if (order.status !== "pending") return reply({ received: true, duplicate: true, access_granted: order.product_code === "planilha_lucro" });
     const now = new Date().toISOString();
     const { data: updated, error: updateError } = await admin.from("revenue_orders").update({
       status: "payment_confirmed", payment_confirmed_at: now, updated_at: now
     }).eq("id", order.id).eq("status", "pending").eq("payment_provider", "stripe").select("id").maybeSingle();
     if (updateError) throw updateError;
     if (!updated) return reply({ received: true, duplicate: true });
-    return reply({ received: true, confirmed: true, order_type: "revenue" });
+    return reply({ received: true, confirmed: true, order_type: "revenue", access_granted: order.product_code === "planilha_lucro" });
   } catch (error) {
     console.error("stripe webhook error:", error instanceof Error ? error.message : "unknown");
     return reply({ error: "Falha ao processar evento Stripe." }, 500);
