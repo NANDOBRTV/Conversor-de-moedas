@@ -819,9 +819,26 @@ body{
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
 
+
+/* Seletor de idioma no canto superior esquerdo */
+.language-switcher{position:absolute;top:20px;left:20px;z-index:1300;display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(255,255,255,.65);border-radius:12px;background:#fff;color:#1e3c72;box-shadow:0 5px 18px rgba(0,0,0,.18)}
+.language-switcher .language-icon{font-size:18px;line-height:1}
+.language-switcher select{width:auto;max-width:130px;margin:0;padding:5px 20px 5px 2px;border:0;background:transparent;color:#1e3c72;font-size:12px;font-weight:800;cursor:pointer}
+.language-switcher select:focus-visible{outline:3px solid #ffbf47;outline-offset:2px}
+@media(max-width:520px){.language-switcher{top:10px;left:10px;padding:4px 6px}.language-switcher select{font-size:11px;max-width:112px}.site-menu-wrap{margin-top:42px}}
+
 </style>
 </head>
 <body>
+<div class="language-switcher" aria-label="Language / Idioma">
+  <span class="language-icon" aria-hidden="true">🌐</span>
+  <select id="languageSwitcher" aria-label="Selecionar idioma / Select language">
+    <option value="auto">🌎 Automático</option>
+    <option value="pt">🇧🇷 Português</option>
+    <option value="en">🇺🇸 English</option>
+    <option value="es">🇪🇸 Español</option>
+  </select>
+</div>
 <div class="site-menu-wrap">
   <button type="button" class="project-menu-button" id="openSiteMenu" aria-haspopup="true" aria-expanded="false" aria-controls="siteMiniMenu">☰ Menu</button>
   <nav class="site-mini-menu" id="siteMiniMenu" aria-label="Menu principal" hidden>
@@ -1454,5 +1471,87 @@ if (cfg.url && cfg.anonKey) {
   document.body.classList.remove('customer-authenticated');
 }
 </script>
+
+<script>
+/* Idioma da interface: detecção pelo idioma preferido do navegador, com escolha manual persistente. */
+(function(){
+  var picker=document.getElementById('languageSwitcher');
+  if(!picker)return;
+  var dictionaries={
+    en:{
+      '☰ Menu':'☰ Menu','🪙 Calculadora Sanba':'🪙 Sanba Calculator','🧑 Área do Cliente':'🧑 Customer Area','👤 Painel do Revendedor':'👤 Reseller Panel','📋 Relatórios do projeto':'📋 Project reports',
+      'Conversor de Moedas':'Currency Converter','Converta valores de forma rápida e simples':'Convert values quickly and easily','Calcule sua recarga de moedas Sanba':'Calculate your Sanba coin top-up',
+      '🛒 Quer comprar moedas com nossos revendedores?':'🛒 Want to buy coins from our resellers?','Crie sua conta grátis para acompanhar seus pedidos e recargas.':'Create a free account to track your orders and top-ups.','✨ Criar minha conta':'✨ Create my account',
+      '🌎 País / região':'🌎 Country / region','🇧🇷 Brasil — pagamento em reais (BRL)':'🇧🇷 Brazil — payment in reais (BRL)','🇺🇸 Internacional — dólar (USD)':'🇺🇸 International — US dollar (USD)','🇻🇪 Venezuela — bolívares (VES)':'🇻🇪 Venezuela — bolívars (VES)',
+      '💳 Moeda de pagamento':'💳 Payment currency','🔄 Detectando sugestão de moeda...':'🔄 Detecting currency suggestion...','Alterar manualmente':'Change manually',
+      'A taxa pode variar conforme o país/região. O preço exibido é uma referência; confirme no WhatsApp antes de pagar.':'Rates may vary by country/region. The displayed price is an estimate; confirm on WhatsApp before paying.',
+      '🆔 Seu ID ':'🆔 Your ID ','Digite seu ID Sanba':'Enter your Sanba ID','Digite 8 dígitos (ex: 76328158)':'Enter 8 digits (e.g. 76328158)',
+      ' Lembrar meu ID somente neste navegador (opcional)':' Remember my ID on this browser only (optional)','Seu ID não será salvo se esta opção ficar desmarcada.':'Your ID will not be saved unless this option is checked.',
+      '⚠️ ID inválido! Confira os 8 dígitos antes de continuar.':'⚠️ Invalid ID! Check the 8 digits before continuing.','Tipo de cálculo':'Calculation type','🪙 Moedas → Valor':'🪙 Coins → Value','💵 Valor → Moedas':'💵 Value → Coins',
+      'Modo ativo: Moedas → Valor':'Active mode: Coins → Value','Modo ativo: Valor → Moedas':'Active mode: Value → Coins','🧹 Limpar tudo':'🧹 Clear all',
+      'Quantidade de moedas':'Coin amount','Ex: 6666':'E.g. 6666','Mínimo: ':'Minimum: ','⚠️ Valor abaixo do mínimo!':'⚠️ Value below minimum!','Valor calculado (referência)':'Calculated value (estimate)','📋 Copiar resumo':'📋 Copy summary','🖨️ Imprimir / salvar em PDF':'🖨️ Print / save as PDF',
+      '💳 Para pagar':'💳 Amount to pay','⚠️ Digite seu ID (8 dígitos) para liberar a compra':'⚠️ Enter your 8-digit ID to enable purchase','📱 Comprar pelo WhatsApp':'📱 Buy via WhatsApp',
+      'Valor em moeda':'Amount in currency','Ex: 20,00':'E.g. 20.00','Você recebe':'You receive',
+      '⚠️ VALOR APENAS DE REFERÊNCIA. Confirme o preço final com o atendimento pelo WhatsApp antes de realizar qualquer pagamento. A recarga é concluída manualmente.':'⚠️ ESTIMATE ONLY. Confirm the final price with support on WhatsApp before paying. Top-ups are completed manually.',
+      '📋 Regras de atendimento, pagamento e privacidade':'📋 Support, payment and privacy rules','Aceitamos pagamentos via Pix':'We accept payments via Pix','ℹ️ Atendimento independente':'ℹ️ Independent service',
+      'Desenvolvido por ':'Developed by ','Todos os direitos reservados':'All rights reserved','Visão geral':'Overview','Funções':'Features','Segurança':'Security','Alterações':'Changes','Testes':'Tests','Próximas melhorias':'Upcoming improvements'
+    },
+    es:{
+      '☰ Menu':'☰ Menú','🪙 Calculadora Sanba':'🪙 Calculadora Sanba','🧑 Área do Cliente':'🧑 Área del cliente','👤 Painel do Revendedor':'👤 Panel del revendedor','📋 Relatórios do projeto':'📋 Informes del proyecto',
+      'Conversor de Moedas':'Conversor de monedas','Converta valores de forma rápida e simples':'Convierte valores de forma rápida y sencilla','Calcule sua recarga de moedas Sanba':'Calcula tu recarga de monedas Sanba',
+      '🛒 Quer comprar moedas com nossos revendedores?':'🛒 ¿Quieres comprar monedas a nuestros revendedores?','Crie sua conta grátis para acompanhar seus pedidos e recargas.':'Crea una cuenta gratis para seguir tus pedidos y recargas.','✨ Criar minha conta':'✨ Crear mi cuenta',
+      '🌎 País / região':'🌎 País / región','🇧🇷 Brasil — pagamento em reais (BRL)':'🇧🇷 Brasil — pago en reales (BRL)','🇺🇸 Internacional — dólar (USD)':'🇺🇸 Internacional — dólar estadounidense (USD)','🇻🇪 Venezuela — bolívares (VES)':'🇻🇪 Venezuela — bolívares (VES)',
+      '💳 Moeda de pagamento':'💳 Moneda de pago','🔄 Detectando sugestão de moeda...':'🔄 Detectando sugerencia de moneda...','Alterar manualmente':'Cambiar manualmente',
+      'A taxa pode variar conforme o país/região. O preço exibido é uma referência; confirme no WhatsApp antes de pagar.':'La tarifa puede variar según el país o la región. El precio mostrado es una referencia; confirma por WhatsApp antes de pagar.',
+      '🆔 Seu ID ':'🆔 Tu ID ','Digite seu ID Sanba':'Introduce tu ID de Sanba','Digite 8 dígitos (ex: 76328158)':'Introduce 8 dígitos (ej.: 76328158)',
+      ' Lembrar meu ID somente neste navegador (opcional)':' Recordar mi ID solo en este navegador (opcional)','Seu ID não será salvo se esta opção ficar desmarcada.':'Tu ID no se guardará si esta opción no está marcada.',
+      '⚠️ ID inválido! Confira os 8 dígitos antes de continuar.':'⚠️ ¡ID no válido! Comprueba los 8 dígitos antes de continuar.','Tipo de cálculo':'Tipo de cálculo','🪙 Moedas → Valor':'🪙 Monedas → Valor','💵 Valor → Moedas':'💵 Valor → Monedas',
+      'Modo ativo: Moedas → Valor':'Modo activo: Monedas → Valor','Modo ativo: Valor → Moedas':'Modo activo: Valor → Monedas','🧹 Limpar tudo':'🧹 Borrar todo',
+      'Quantidade de moedas':'Cantidad de monedas','Ex: 6666':'Ej.: 6666','Mínimo: ':'Mínimo: ','⚠️ Valor abaixo do mínimo!':'⚠️ ¡Valor inferior al mínimo!','Valor calculado (referência)':'Valor calculado (referencia)','📋 Copiar resumo':'📋 Copiar resumen','🖨️ Imprimir / salvar em PDF':'🖨️ Imprimir / guardar como PDF',
+      '💳 Para pagar':'💳 A pagar','⚠️ Digite seu ID (8 dígitos) para liberar a compra':'⚠️ Introduce tu ID de 8 dígitos para habilitar la compra','📱 Comprar pelo WhatsApp':'📱 Comprar por WhatsApp',
+      'Valor em moeda':'Valor en moneda','Ex: 20,00':'Ej.: 20,00','Você recebe':'Recibes',
+      '⚠️ VALOR APENAS DE REFERÊNCIA. Confirme o preço final com o atendimento pelo WhatsApp antes de realizar qualquer pagamento. A recarga é concluída manualmente.':'⚠️ SOLO ES UNA REFERENCIA. Confirma el precio final por WhatsApp antes de pagar. Las recargas se completan manualmente.',
+      '📋 Regras de atendimento, pagamento e privacidade':'📋 Normas de atención, pago y privacidad','Aceitamos pagamentos via Pix':'Aceptamos pagos por Pix','ℹ️ Atendimento independente':'ℹ️ Atención independiente',
+      'Desenvolvido por ':'Desarrollado por ','Todos os direitos reservados':'Todos los derechos reservados','Visão geral':'Resumen','Funções':'Funciones','Segurança':'Seguridad','Alterações':'Cambios','Testes':'Pruebas','Próximas melhorias':'Próximas mejoras'
+    }
+  };
+  var originals=new WeakMap();
+  function detect(){var l=(navigator.languages&&navigator.languages[0]||navigator.language||'pt').toLowerCase();return l.indexOf('es')===0?'es':l.indexOf('en')===0?'en':'pt';}
+  function language(){if(picker.value==='auto')return detect();return picker.value;}
+  function translateNode(node,lang){
+    if(node.nodeType===Node.TEXT_NODE){
+      if(!originals.has(node))originals.set(node,node.nodeValue);
+      var original=originals.get(node),trim=original.trim(),dict=dictionaries[lang];
+      if(!trim)return;
+      var translated=dict&&dict[trim];
+      if(translated){var start=original.indexOf(trim);node.nodeValue=original.slice(0,start)+translated+original.slice(start+trim.length);}
+      else if(lang==='pt')node.nodeValue=original;
+    }else if(node.nodeType===Node.ELEMENT_NODE){
+      ['placeholder','aria-label','title'].forEach(function(attr){
+        if(node.hasAttribute(attr)){
+          var key='attr:'+attr;
+          if(!originals.has(node))originals.set(node,{});
+          var attrs=originals.get(node);
+          if(!attrs[key])attrs[key]=node.getAttribute(attr);
+          var original=attrs[key],dict=dictionaries[lang];
+          if(lang==='pt')node.setAttribute(attr,original);
+          else if(dict&&dict[original])node.setAttribute(attr,dict[original]);
+        }
+      });
+      Array.from(node.childNodes).forEach(function(child){translateNode(child,lang);});
+    }
+  }
+  function apply(){
+    var lang=language();
+    document.documentElement.lang=lang==='pt'?'pt-BR':lang;
+    translateNode(document.body,lang);
+    picker.setAttribute('aria-label',lang==='en'?'Select language':lang==='es'?'Seleccionar idioma':'Selecionar idioma');
+  }
+  try{var saved=localStorage.getItem('sanba_language');if(['pt','en','es','auto'].indexOf(saved)>=0)picker.value=saved;else picker.value='auto';}catch(e){picker.value='auto';}
+  picker.addEventListener('change',function(){try{localStorage.setItem('sanba_language',picker.value);}catch(e){}apply();});
+  apply();
+})();
+</script>
+
 </body>
 </html>
