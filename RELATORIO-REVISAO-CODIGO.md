@@ -167,3 +167,41 @@ Esta seção registra o que já existe no repositório, o que está em revisão 
 ### Critério de conclusão
 
 O projeto só deve ser marcado como pronto para produção depois que os PRs relevantes forem revisados/mesclados, as mudanças necessárias forem implantadas no ambiente correto, os testes autenticados e de pagamento forem concluídos, e os avisos de segurança tiverem uma decisão documentada. Até lá, itens acima permanecem em desenvolvimento ou validação, conforme indicado.
+
+
+---
+
+## Atualização de navegação e layout — 26/10/2026
+
+### Alterações concluídas
+- Restaurado o comportamento visual original de seis páginas ao remover a referência à folha compartilhada `sanba-theme.css`, que estava interferindo nos estilos próprios dessas páginas:
+  - `kit-divulgacao-online.html`
+  - `kit-divulgacao.html`
+  - `novas-receitas.html`
+  - `pedidos-revendedores.html`
+  - `planilha-lucro.html`
+  - `revendedor.html`
+- Os estilos próprios e as referências de favicon existentes foram preservados.
+- Adicionado à `cliente.html` um link para **Kit de Divulgação Online**, que existia no repositório mas não estava ligado à navegação identificada.
+- Revisadas 13 páginas HTML e 103 referências locais de `href`/`src`: não foram encontrados caminhos locais ausentes na verificação estática.
+- Os commits das correções foram enviados à branch principal; a última alteração registrada nesta sequência foi `cae087b44c176ea71e3ee95b7ae33654a31ccb41`.
+
+### Limites da verificação
+- A verificação de caminhos e referências foi estática. Ainda não foi concluído um teste visual página por página em celular e computador.
+- A existência de links locais válidos não garante que todos os botões, formulários, autenticação, permissões ou chamadas ao Supabase estejam funcionando em tempo real.
+- A página principal `index.html` não foi modificada nesta correção.
+
+### Próximas atualizações — ordem recomendada
+1. **Teste visual das páginas restauradas:** abrir as seis páginas em celular e computador, verificar responsividade, cores, espaçamento, navegação e eventuais estilos quebrados.
+2. **Teste de navegação completa:** percorrer os links entre Área do Cliente, Kit de Divulgação Online, kit tradicional, calculadora, planilha de lucro, pedidos, convites, aprovações e painel do revendedor; identificar páginas que ainda não têm entrada clara no fluxo.
+3. **Teste funcional com conta de teste:** verificar login, sessão, permissões por nível, aprovação manual, criação/visualização de pedidos e tratamento de erros sem expor credenciais.
+4. **Revisão de interface Sanba:** revisar separadamente o PR #2 da interface futurista; não declarar essa camada visual publicada até confirmar merge e publicação.
+5. **Checkout Stripe:** manter o modo de teste e o preço temporário de R$ 1 restritos ao ambiente de testes; confirmar Pix/cartão, webhooks e liberação do plano antes de qualquer decisão de produção.
+6. **Segurança e Supabase:** avaliar a proteção contra senhas comprometidas e os avisos de RLS com cuidado, sem criar políticas públicas indiscriminadas.
+7. **Atualizar este relatório a cada lote de alterações**, registrando data, arquivos modificados, commits, testes realmente executados e pendências restantes.
+
+### Estado resumido em 26/10/2026
+- **Concluído:** restauração dos estilos originais das seis páginas e inclusão do link do Kit de Divulgação Online na Área do Cliente.
+- **Verificado estaticamente:** 13 páginas e 103 referências locais, sem caminhos locais ausentes na checagem.
+- **Pendente:** teste visual em dispositivos, validação dos fluxos interativos e confirmação ponta a ponta das funções autenticadas.
+- **Regra de trabalho:** distinguir sempre alterações no código, commits enviados, publicação do site, implantação de funções e testes práticos; não marcar uma etapa como concluída sem evidência correspondente.
