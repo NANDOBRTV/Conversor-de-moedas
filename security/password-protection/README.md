@@ -4,7 +4,7 @@ Serviço auxiliar para verificar se uma senha apareceu em vazamentos conhecidos 
 
 ## Endpoints
 - `GET /health`: estado do serviço.
-- `POST /v1/password-check`: recebe JSON `{"password":"..." }` e responde `{"ok":true,"compromised":true|false,"occurrences":N}`.
+- `POST /v1/password-check`: recebe JSON `{"sha1":"..." }` e responde `{"ok":true,"compromised":true|false,"occurrences":N}`.
 
 ## Privacidade e limites
 - A senha completa não é enviada ao Have I Been Pwned. O serviço calcula SHA-1 localmente e envia apenas os primeiros cinco caracteres do hash (modelo k-anonymity).
@@ -19,3 +19,8 @@ Este serviço é apenas um componente auxiliar. **Ele ainda não está conectado
 
 ## Render
 Runtime Node, build command `npm install`, start command `npm start`, plano Free. O Render fornece a variável `PORT`.
+
+
+## Privacidade da verificação
+
+O navegador calcula o resumo SHA-1 da senha localmente e envia somente o resumo hexadecimal de 40 caracteres ao serviço. O serviço não recebe a senha em texto puro; consulta o Have I Been Pwned enviando somente os primeiros cinco caracteres do resumo (modelo de k-anonymity). Não registre o resumo nem a senha em logs.
