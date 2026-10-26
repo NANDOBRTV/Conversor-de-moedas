@@ -188,6 +188,41 @@ body.invite-mode #loginCard #loginView { display:none; }
 .quick-menu-item[hidden]{display:none!important}
 @media(max-width:520px){.top{padding-left:50px;padding-right:0}.top-actions{margin-right:0;padding-right:0}}
 
+
+/* SANBA FUTURE UI — painel futurista, sem alterar fluxos de autenticação ou permissões */
+:root{color-scheme:dark;--ink:#eaf5ff;--muted:#9bb0cc;--line:#294461;--paper:#050b18;--white:#0b1830;--brand:#67e8f9;--brand-dark:#22d3ee;--mint:#123a4a;--blue:#142847;--red:#fda4af;--shadow:0 18px 55px rgba(0,0,0,.28)}
+html{background:#050b18}
+body{background:radial-gradient(ellipse at 12% 0%,rgba(14,116,144,.24),transparent 36%),radial-gradient(ellipse at 95% 24%,rgba(109,40,217,.2),transparent 32%),linear-gradient(145deg,#050b18,#09152b 55%,#10102b)!important;color:var(--ink)}
+.wrap{width:min(1180px,100%)}
+.brand{color:#eaf5ff}.brand span{color:var(--brand)}
+.nav-link,.settings-menu-toggle{background:rgba(10,25,47,.88)!important;color:#d9efff!important;border-color:#294461!important;box-shadow:0 6px 20px rgba(0,0,0,.15)}
+.nav-link:hover,.settings-menu-toggle:hover{border-color:#67e8f9!important;background:#10243e!important}
+.hero{background:linear-gradient(125deg,rgba(7,22,43,.98),rgba(12,52,72,.94),rgba(39,27,78,.94))!important;border:1px solid rgba(103,232,249,.25);box-shadow:0 25px 70px rgba(0,0,0,.3),0 0 38px rgba(34,211,238,.05)}
+.hero-mark{background:rgba(103,232,249,.08)!important;border-color:rgba(103,232,249,.22)!important}
+.login-card,.panel-card,.settings-menu{background:linear-gradient(150deg,rgba(12,27,50,.97),rgba(7,18,36,.98))!important;border-color:#294461!important;color:#eaf5ff;box-shadow:0 20px 55px rgba(0,0,0,.26),inset 0 1px rgba(255,255,255,.025)}
+.login-card h2,.panel-card h2,.settings-menu-head h2,.settings-section-title{color:#f0f9ff!important}
+.subtext,.footnote{color:#9bb0cc!important}
+.settings-account-summary,.settings-menu .settings-account-summary{background:#071428!important;border-color:#294461!important}
+.settings-account-summary span{color:#9bb0cc!important}.settings-account-summary strong{color:#eaf5ff!important}
+.field input,.field select,.field textarea,input,select,textarea{background:#071428!important;color:#f0f9ff!important;border-color:#294461!important;border-radius:11px}
+.field input:focus,.field select:focus,.field textarea:focus,input:focus,select:focus,textarea:focus{border-color:#67e8f9!important;box-shadow:0 0 0 3px rgba(103,232,249,.12)}
+input::placeholder,textarea::placeholder{color:#7089a8!important}
+.btn-primary{background:linear-gradient(115deg,#0e7490,#2563eb 58%,#6d28d9)!important;color:#fff!important;border:1px solid rgba(103,232,249,.28)!important;box-shadow:0 8px 24px rgba(37,99,235,.2)}
+.btn-light,.btn,.auth-tab,.quick-menu-item{border-color:#294461!important}
+.btn-light,.quick-menu-item{background:#0b1b33!important;color:#d8ebff!important}
+.btn-light:hover,.quick-menu-item:hover{background:#102744!important;border-color:#67e8f9!important}
+.auth-tabs{background:#071428!important;border-color:#294461!important}
+.auth-tab{background:transparent!important;color:#9bb0cc!important}
+.auth-tab.active{background:linear-gradient(115deg,#123d57,#272354)!important;color:#eafaff!important;box-shadow:inset 0 0 0 1px rgba(103,232,249,.22)}
+.quick-menu{background:#0b1830!important;border-color:#294461!important;box-shadow:0 20px 55px rgba(0,0,0,.38)}
+.status{background:rgba(103,232,249,.08)!important;border-color:rgba(103,232,249,.2)!important;color:#d9f8ff!important}
+.footer{color:#7189a8!important;border-color:#203b59!important}
+hr,.settings-divider{border-color:#294461!important;background:#294461!important}
+a{transition:color .18s,border-color .18s}button{transition:filter .18s,transform .18s,border-color .18s}button:hover{filter:brightness(1.07)}
+:focus-visible{outline:3px solid #67e8f9!important;outline-offset:3px}
+@media(max-width:640px){.wrap{padding:14px 12px 32px}.hero{padding:21px;border-radius:20px}.login-card,.panel-card{padding:18px;border-radius:17px}.top-actions{margin-right:48px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
 </style>
 </head>
 <body>
