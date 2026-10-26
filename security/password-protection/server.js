@@ -1,6 +1,4 @@
 import http from "node:http";
-import { createHash } from "node:crypto";
-
 const PORT = Number(process.env.PORT || 10000);
 const ALLOWED_ORIGINS = new Set([
   "https://nandobrtv.github.io",
@@ -64,9 +62,10 @@ async function readJson(req) {
   }
 }
 
-async function checkPwnedPassword(password) {
-  // The full password is never sent to HIBP: only the first five SHA-1 hex chars.
-  const hash = createHash("sha1").update(password, "utf8").digest("hex").toUpperCase();
+async function checkPwnedHash(sha1Value) {
+  // The browser sends only the SHA-1 digest, never the plaintext password.
+  const hash = sha1Value.toUpperCase();
+  if (!/^[A-F0-9]{40}$/.test(hash)) throw new Error("invalid_hash");
   const prefix = hash.slice(0, 5);
   const suffix = hash.slice(5);
   const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
@@ -107,10 +106,10 @@ const server = http.createServer(async (req, res) => {
 
   try {
     const body = await readJson(req);
-    if (typeof body.password !== "string" || body.password.length < 1 || body.password.length > 256) {
-      return json(res, 400, { error: "Informe uma senha válida para verificação." }, origin);
+    if (typeof body.sha1 !== "string" || !/^[A-Fa-f0-9]{40}$/.test(body.sha1)) {
+      return json(res, 400, { error: "Não foi possível verificar a senha." }, origin);
     }
-    const result = await checkPwnedPassword(body.password);
+    const result = await checkPwnedHash(body.sha1);
     return json(res, 200, { ok: true, ...result }, origin);
   } catch (error) {
     if (error?.status === 400 || error?.status === 413) {
