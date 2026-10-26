@@ -21,8 +21,8 @@ Deno.serve(async (req: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   if (!url || !serviceKey || !stripeKey) return json({ error: "Checkout Stripe ainda não está configurado no servidor." }, 503);
-  // O checkout publicado usa somente a chave secreta padrão de produção.
-  // Chaves de teste e chaves restritas não são aceitas nesta função.
+  // Produção: aceite somente a chave secreta padrão live. Chaves restritas (rk_live_)
+  // e chaves de teste são recusadas para evitar configuração incompatível.
   if (!stripeKey.startsWith("sk_live_")) return json({ error: "O checkout exige uma chave secreta padrão de produção (sk_live_). Confira STRIPE_SECRET_KEY no Supabase." }, 503);
   if (!token) return json({ error: "Entre na sua conta antes de comprar." }, 401);
 
@@ -58,10 +58,8 @@ Deno.serve(async (req: Request) => {
     const siteUrl = "https://nandobrtv.github.io/Conversor-de-moedas/revendedor.html";
     const params = new URLSearchParams();
     params.set("mode", "payment");
-    // Checkout apresenta Pix e cartão quando ambos estiverem habilitados e
-    // elegíveis para a conta Stripe. A confirmação do Pix é assíncrona.
-    params.append("payment_method_types[]", "card");
-    params.append("payment_method_types[]", "pix");
+    // Deixe o Stripe selecionar dinamicamente os métodos compatíveis. A API atual
+    // rejeita payment_method_types em Checkout Sessions; os métodos são geridos no Dashboard.
     params.set("success_url", siteUrl + "?payment=success&session_id={CHECKOUT_SESSION_ID}");
     params.set("cancel_url", siteUrl + "?payment=cancelled");
     params.set("customer_email", user.email || profile.email || "");
@@ -90,8 +88,8 @@ Deno.serve(async (req: Request) => {
     const stripe = await response.json().catch(() => ({}));
     if (!response.ok || !stripe.id || !stripe.url) {
       await admin.from("payment_orders").update({ status: "cancelled" }).eq("id", order.id);
-      console.error("Stripe checkout error", response.status, JSON.stringify(stripe).slice(0, 600));
-      return json({ error: "O Stripe não conseguiu iniciar o pagamento. Confira a chave de produção, a habilitação de Pix e cartão e as permissões da conta." }, 502);
+      console.error("Stripe checkout error", response.status, JSON.stringify({ type: stripe?.error?.type, code: stripe?.error?.code, param: stripe?.error?.param, message: stripe?.error?.message }).slice(0, 900));
+      return json({ error: "O Stripe recusou a criação do checkout: " + String(stripe?.error?.message || "erro sem detalhes") }, 502);
     }
 
     const { error: updateError } = await admin.from("payment_orders").update({
