@@ -34,6 +34,39 @@ input:focus{box-shadow:0 0 0 4px #67e8f91c}
 @media(max-width:650px){.hero{padding:21px 18px;border-radius:19px}.panel{padding:17px;border-radius:16px}.navlinks a{padding:9px 10px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
+
+/* Loja de produtos digitais — layout renovado */
+.store-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.store-head h2{font-size:clamp(23px,4vw,30px);letter-spacing:-.7px;margin:0 0 5px}
+.store-head .desc{font-size:13px;max-width:620px;margin:0}
+.store-badge{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #276b63;background:#0e302f;color:#b6fff1;border-radius:999px;font-size:11px;font-weight:850}
+.store-benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 17px}
+.store-benefit{display:flex;gap:9px;align-items:center;border:1px solid #274362;border-radius:13px;padding:12px;background:linear-gradient(135deg,#0b1b31,#0b1427);color:#c6d9ef;font-size:11px}
+.store-benefit b{display:block;color:#effaff;font-size:12px}
+.store-benefit .symbol{font-size:20px}
+.product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;align-items:stretch}
+.product-card{position:relative;display:flex;flex-direction:column;gap:13px;min-width:0;border:1px solid #294562;border-radius:18px;padding:17px;background:linear-gradient(160deg,#0e2038,#081426 78%);box-shadow:0 14px 35px #0002;overflow:hidden}
+.product-card:before{content:"";position:absolute;top:0;left:16px;right:16px;height:2px;background:linear-gradient(90deg,#67e8f9,#60a5fa);opacity:.8}
+.product-card.featured{border-color:#32869b;background:radial-gradient(ellipse at 100% 0%,#153d50 0,transparent 52%),linear-gradient(160deg,#10283c,#091426 78%)}
+.product-top{display:flex;align-items:center;gap:12px}
+.product-icon{display:grid;place-items:center;flex:0 0 47px;height:47px;border-radius:14px;background:#12354c;border:1px solid #27607a;font-size:23px}
+.product-label{font-size:10px;color:#9db7d3;text-transform:uppercase;letter-spacing:1px;font-weight:900}
+.product-card h3{font-size:16px;line-height:1.35;margin:0}
+.product-card p{font-size:12px;line-height:1.65;color:#a9bfd9;margin:0}
+.product-features{display:grid;gap:7px;margin:0;padding:0;list-style:none;color:#cfe3f7;font-size:11px}
+.product-features li:before{content:"✓";color:#86efac;font-weight:950;margin-right:8px}
+.product-buy{margin-top:auto;border-top:1px solid #243c58;padding-top:14px}
+.product-price-line{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:12px}
+.product-price{font-size:29px;font-weight:950;letter-spacing:-.7px;color:#a5f3fc}
+.product-once{font-size:10px;color:#91a8c7}
+.product-card .actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:0}
+.product-card .actions button,.product-card .actions .btn{width:100%;min-height:43px;font-size:12px}
+.product-card .message{margin-top:9px}
+.product-card .secondary{background:#122642}
+.store-note{font-size:11px;color:#91a8c7;text-align:center;margin:15px 0 0}
+@media(max-width:850px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.product-card:last-child{grid-column:1/-1}}
+@media(max-width:560px){.product-grid{grid-template-columns:1fr}.product-card:last-child{grid-column:auto}.store-benefits{grid-template-columns:1fr}.store-benefit{padding:10px}.product-card{padding:17px}.store-head{align-items:flex-start}}
+
 </style>
 </head>
 <body><main class="wrap">
@@ -56,7 +89,34 @@ input:focus{box-shadow:0 0 0 4px #67e8f91c}
 <div class="actions"><button id="authSubmit" type="submit">Entrar</button></div><div id="authMessage" class="message" role="status" aria-live="polite"></div>
 </form><div class="desc" style="margin-top:13px">Os pedidos ficam associados à sua conta, não apenas ao navegador.</div></section>
 <section class="panel hidden" id="profilePanel"><h2>👤 Minha conta</h2><p class="desc">Conta autenticada e dados básicos.</p><p class="accountline">Usuário: <strong id="profileUsername">—</strong></p><p class="accountline">E-mail: <strong id="profileEmail">—</strong></p><label for="customerName">Nome para o pedido</label><input id="customerName" maxlength="80" placeholder="Seu nome (opcional)"><div class="actions"><button id="saveName" class="secondary" type="button">Salvar nome</button><button id="signOut" class="secondary" type="button">Sair</button></div><div id="profileMessage" class="message" role="status"></div></section>
-<section class="panel full hidden" id="purchasePanel"><h2>🪙 Minhas recargas</h2><p class="desc">Seus pedidos de recarga aparecerão aqui depois que você os gerar na calculadora. Para iniciar uma recarga, acesse a calculadora e escolha Comprar pelo WhatsApp.</p><div class="actions"><a class="btn" href="./index.html">Abrir calculadora de recargas</a></div><div id="purchaseMessage" class="message" role="status" aria-live="polite"></div></section><section class="panel full hidden" id="productPanel"><h2>🧾 Produtos digitais</h2><p class="desc">Compre ferramentas digitais e acesse-as na sua conta após a confirmação segura do pagamento.</p><article class="plan featured"><div><h3>Planilha de Controle de Lucro Sanba</h3><p>Calcule custos, preço de venda, faturamento, lucro líquido, margem e ponto de equilíbrio. Acesso online vinculado à sua conta.</p></div><div class="price">R$ 9,90 <small>pagamento único</small></div><div class="actions"><button id="buyProfitSheet" type="button">Comprar com segurança</button><a id="openProfitSheet" class="btn hidden" href="./planilha-lucro.html">Abrir minha planilha</a></div><div id="productMessage" class="message" role="status" aria-live="polite"></div></article><article class="plan" style="margin-top:14px"><div><h3>📣 Kit de Divulgação para Revendedores</h3><p>PDF com mensagens para WhatsApp, legendas, Status, modelos de campanha e calendário de divulgação de 7 dias. Você poderá abrir e ler o material diretamente no navegador após a liberação.</p></div><div class="price">R$ 14,90 <small>pagamento único</small></div><div class="actions"><button id="buyKit" type="button">Comprar com segurança</button><button id="downloadKit" class="secondary hidden" type="button">Abrir meu kit no navegador</button><a class="btn secondary" href="./kit-divulgacao.html">Ver detalhes</a></div><div id="kitMessage" class="message" role="status" aria-live="polite"></div></article><article class="plan" style="margin-top:14px"><div><h3>🧮 Calculadora de Preços e Lucros Sanba</h3><p>Ferramenta online para simular preço de venda, taxas, lucro por unidade, margem e resultado total antes de fechar uma venda.</p></div><div class="price">R$ 19,90 <small>pagamento único</small></div><div class="actions"><button id="buyPriceCalc" type="button">Comprar com segurança</button><a id="openPriceCalc" class="btn hidden" href="./calculadora-precos.html">Abrir calculadora</a><a class="btn secondary" href="./calculadora-precos.html">Detalhes</a></div><div id="priceCalcMessage" class="message" role="status" aria-live="polite"></div></article></section>
+<section class="panel full hidden" id="purchasePanel"><h2>🪙 Minhas recargas</h2><p class="desc">Seus pedidos de recarga aparecerão aqui depois que você os gerar na calculadora. Para iniciar uma recarga, acesse a calculadora e escolha Comprar pelo WhatsApp.</p><div class="actions"><a class="btn" href="./index.html">Abrir calculadora de recargas</a></div><div id="purchaseMessage" class="message" role="status" aria-live="polite"></div></section><section class="panel full hidden" id="productPanel">
+<div class="store-head"><div><div class="eyebrow">Loja Sanba • produtos digitais</div><h2>Escolha sua próxima ferramenta</h2><p class="desc">Compre uma vez, tenha acesso na sua conta e use seus materiais online. Pagamento processado com segurança pelo Stripe.</p></div><span class="store-badge">✓ Compra segura · Acesso após confirmação</span></div>
+<div class="store-benefits">
+<div class="store-benefit"><span class="symbol">🔐</span><div><b>Compra protegida</b>Pagamento seguro pelo Stripe</div></div>
+<div class="store-benefit"><span class="symbol">⚡</span><div><b>Liberação automática</b>Após confirmação do pagamento</div></div>
+<div class="store-benefit"><span class="symbol">🌐</span><div><b>Acesso online</b>Abra as ferramentas no navegador</div></div>
+</div>
+<div class="product-grid">
+<article class="product-card">
+<div class="product-top"><div class="product-icon">📊</div><div><div class="product-label">Controle financeiro</div><h3>Planilha de Controle de Lucro</h3></div></div>
+<p>Organize os números do seu negócio e entenda quanto realmente sobra em cada venda.</p>
+<ul class="product-features"><li>Custos e preço de venda</li><li>Faturamento e lucro líquido</li><li>Margem e ponto de equilíbrio</li></ul>
+<div class="product-buy"><div class="product-price-line"><span class="product-price">R$ 9,90</span><span class="product-once">pagamento único</span></div><div class="actions"><button id="buyProfitSheet" type="button">Comprar agora <span>→</span></button><a id="openProfitSheet" class="btn hidden" href="./planilha-lucro.html">Abrir minha planilha</a></div><div id="productMessage" class="message" role="status" aria-live="polite"></div></div>
+</article>
+<article class="product-card featured">
+<div class="product-top"><div class="product-icon">📣</div><div><div class="product-label">Divulgação e vendas</div><h3>Kit de Divulgação para Revendedores</h3></div></div>
+<p>Tenha textos prontos para divulgar suas recargas sem precisar criar cada publicação do zero.</p>
+<ul class="product-features"><li>Mensagens para WhatsApp e Status</li><li>Legendas e modelos de campanhas</li><li>Calendário de divulgação de 7 dias</li></ul>
+<div class="product-buy"><div class="product-price-line"><span class="product-price">R$ 14,90</span><span class="product-once">pagamento único</span></div><div class="actions"><button id="buyKit" type="button">Comprar agora <span>→</span></button><button id="downloadKit" class="secondary hidden" type="button">Abrir kit completo</button><a class="btn secondary" href="./kit-divulgacao.html">Conhecer o produto</a></div><div id="kitMessage" class="message" role="status" aria-live="polite"></div></div>
+</article>
+<article class="product-card">
+<div class="product-top"><div class="product-icon">🧮</div><div><div class="product-label">Cálculos e preços</div><h3>Calculadora de Preços e Lucros</h3></div></div>
+<p>Simule valores antes de fechar uma venda e veja o efeito das taxas sobre seu resultado.</p>
+<ul class="product-features"><li>Preço de venda e taxas</li><li>Lucro por unidade e margem</li><li>Simulação de resultado total</li></ul>
+<div class="product-buy"><div class="product-price-line"><span class="product-price">R$ 19,90</span><span class="product-once">pagamento único</span></div><div class="actions"><button id="buyPriceCalc" type="button">Comprar agora <span>→</span></button><a id="openPriceCalc" class="btn hidden" href="./calculadora-precos.html">Abrir calculadora</a><a class="btn secondary" href="./calculadora-precos.html">Ver detalhes</a></div><div id="priceCalcMessage" class="message" role="status" aria-live="polite"></div></div>
+</article>
+</div><p class="store-note">Os produtos digitais são independentes das recargas Sanba. O acesso é liberado somente após a confirmação do pagamento ou quando já estiver autorizado na sua conta.</p>
+</section>
 <section class="panel full hidden" id="ordersPanel"><div class="section-head"><h2>📦 Minhas recargas</h2><button class="btn" id="refreshOrders" type="button">Atualizar</button></div><p class="desc">Acompanhe o status de cada recarga. A abertura do WhatsApp não confirma o pagamento; o status muda quando o atendimento atualiza o pedido.</p><div id="ordersList" class="list"><div class="empty">Carregando pedidos…</div></div></section>
 </div><footer>Conversor Sanba · Recargas com atendimento pelo WhatsApp · Produtos digitais com pagamento e liberação automática.</footer></main>
 <script src="./supabase-config.js"></script>
