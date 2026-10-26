@@ -12,6 +12,31 @@ function json(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
 
+async function reportSecurityEvent(type: string, count: number, severity = "high") {
+  const endpoint = Deno.env.get("SECURITY_ALERT_WEBHOOK_URL");
+  const secret = Deno.env.get("SECURITY_ALERT_WEBHOOK_SECRET");
+  if (!endpoint || !secret) return;
+  try {
+    await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + secret,
+      },
+      body: JSON.stringify({
+        type,
+        severity,
+        count,
+        occurredAt: new Date().toISOString(),
+      }),
+      signal: AbortSignal.timeout(2500),
+    });
+  } catch {
+    // Alerting must never log secrets or prevent legitimate authentication flow.
+    console.warn("Security alert delivery failed.");
+  }
+}
+
 async function checkVpn(req: Request): Promise<{ blocked: boolean; unavailable: boolean }> {
   // Prefer the edge-provided client IP; fall back to the forwarded chain.
   const clientIp = req.headers.get("cf-connecting-ip")?.trim()
@@ -124,6 +149,7 @@ Deno.serve(async (req: Request) => {
   }
 
   if (!(await consumeRateLimit(req, "login_ip", 20, 60))) {
+    await reportSecurityEvent("auth_rate_limit", 20, "high");
     return json({ error: "Muitas tentativas em pouco tempo. Aguarde e tente novamente." }, 429);
   }
 
@@ -146,6 +172,7 @@ Deno.serve(async (req: Request) => {
   }
 
   if (!(await consumeRateLimit(req, "login_ip", 20, 60, identifier))) {
+    await reportSecurityEvent("failed_login_burst", 8, "high");
     return json({ error: "Muitas tentativas de login. Aguarde 15 minutos antes de tentar novamente." }, 429);
   }
 
