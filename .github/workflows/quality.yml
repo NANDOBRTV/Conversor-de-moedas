@@ -1,0 +1,27 @@
+name: Quality checks
+
+on:
+  push:
+    branches: ["main", "improve/**", "fix/**", "feature/**"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Static quality checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test repository invariants
+        run: npm test
+      - name: Check JavaScript syntax
+        run: npm run check:js
