@@ -12,7 +12,7 @@
   }
   var script = document.createElement('script');
   script.type = 'module';
-  script.src = './revendedor-app.js?v=20261026-gold-test-price-1';
+  script.src = './revendedor-app.js?v=20261026-gold-price-restored-990';
   script.onerror = function () {
     showLoadError('Não foi possível baixar o sistema de login. Confira sua conexão e recarregue a página.');
   };
