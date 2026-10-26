@@ -4,7 +4,8 @@ const headers={"Access-Control-Allow-Origin":origin,"Access-Control-Allow-Header
 const reply=(body:Record<string,unknown>,status=200)=>new Response(JSON.stringify(body),{status,headers});
 const products={
  planilha_lucro:{name:"Planilha de Controle de Lucro Sanba",amount:990,description:"Acesso digital à ferramenta de custos, preço de venda, lucro e margem no Conversor Sanba."},
- kit_divulgacao:{name:"Kit de Divulgação para Revendedores Sanba",amount:1490,description:"Kit digital PDF com mensagens, legendas, status, campanhas e calendário de divulgação."}
+ kit_divulgacao:{name:"Kit de Divulgação para Revendedores Sanba",amount:1490,description:"Kit digital PDF com mensagens, legendas, status, campanhas e calendário de divulgação."},
+ calculadora_precos:{name:"Calculadora de Preços e Lucros Sanba",amount:1990,description:"Ferramenta digital online para simular preços de venda, taxas, lucro por unidade, margem e resultado total."}
 } as const;
 Deno.serve(async(req:Request)=>{
  if(req.method==="OPTIONS")return new Response("ok",{headers});
