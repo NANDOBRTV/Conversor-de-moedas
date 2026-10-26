@@ -43,6 +43,11 @@ function rateLimited(req) {
   const raw = String(req.headers["x-forwarded-for"] || "unknown").split(",")[0].trim().slice(0, 100);
   const key = createHash("sha256").update(raw).digest("hex");
   const now = Date.now();
+  if (requests.size > 5000) {
+    for (const [oldKey, oldEntry] of requests) {
+      if (now - oldEntry.startedAt >= WINDOW_MS) requests.delete(oldKey);
+    }
+  }
   let entry = requests.get(key);
   if (!entry || now - entry.startedAt >= WINDOW_MS) {
     entry = { startedAt: now, count: 0 };
@@ -128,9 +133,9 @@ const server = http.createServer(async (req, res) => {
     const now = Date.now();
     for (const [key, timestamp] of recentEvents) if (now - timestamp > 600000) recentEvents.delete(key);
     if (recentEvents.has(fingerprint)) return sendJson(res, 202, { ok: true, deduplicated: true });
-    recentEvents.set(fingerprint, now);
 
     await sendWhatsAppAlert({ type: body.type, severity, count, occurredAt });
+    recentEvents.set(fingerprint, now);
     console.log(JSON.stringify({ event: "security_alert_sent", type: body.type, severity, count, occurredAt }));
     return sendJson(res, 202, { ok: true, alert: "sent" });
   } catch (error) {
