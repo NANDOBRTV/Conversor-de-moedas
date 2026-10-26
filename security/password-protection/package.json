@@ -1,0 +1,14 @@
+{
+  "name": "conversor-sanba-protection",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API auxiliar de proteção de senhas para o Conversor Sanba",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
