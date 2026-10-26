@@ -245,3 +245,35 @@ Nesta sessão não havia um navegador conectado com capacidade de navegar/intera
 
 ### Próxima ação
 Executar a matriz pendente em dispositivos/navegadores reais e registrar evidências e resultados antes de declarar o conversor concluído. Os preços são referências configuradas no código, não uma cotação cambial ao vivo; devem ser confirmados pelo operador antes do pagamento.
+
+
+---
+
+## Atualização de validação numérica e testes automatizados — 26/10/2026
+
+### Alterações feitas
+- Atualizada a função `num()` em `index.html` para validar melhor números com separadores brasileiros e rejeitar formatos malformados, como `1,2,3`, `12.34,56` e `1.234.56`, em vez de interpretá-los parcialmente.
+- Atualizado o cálculo **Valor → Moedas** para exibir uma mensagem explícita quando a entrada não for um número válido ou quando o valor for zero/negativo.
+- Criada a página `testes-conversor.html`, que carrega a página principal em um iframe e executa verificações contra as funções reais da aplicação: parsing numérico, preços configurados, arredondamento, validação de ID, cálculos nos dois sentidos e estrutura dos links de WhatsApp.
+- A página de testes inspeciona os links sem clicar neles; não envia mensagens nem inicia pagamentos.
+
+### Como executar
+1. Abra https://nandobrtv.github.io/Conversor-de-moedas/testes-conversor.html
+2. Aguarde o carregamento da página principal dentro do teste.
+3. Confira a quantidade de testes aprovados e os casos individuais.
+4. Repita no Chrome para Android e em um navegador desktop.
+5. Se algum caso falhar, registre o nome do teste, o navegador e a mensagem apresentada antes de corrigir.
+
+### Estado dos testes
+- **Implementado no repositório:** parser mais rigoroso, validação explícita de valores inválidos e página de testes automatizados.
+- **Ainda não executado por esta sessão:** a bateria dentro da página publicada, porque o acesso de navegação externa necessário para executar o JavaScript no site não estava disponível nesta sessão.
+- **Ainda requer aparelho/navegador real:** visual responsivo, teclado, foco, rolagem, comportamento ao abrir WhatsApp, confirmação do número destinatário e comparação visual Android/desktop.
+- Os testes automatizados conferem a construção dos links; não clicam neles e não provam que a conta WhatsApp está acessível ou que o número é o destinatário correto.
+
+### Arquivos
+- `index.html`: validação numérica e mensagens de erro.
+- `testes-conversor.html`: testes de regressão que podem ser executados no navegador.
+- Este relatório: registro das alterações e dos limites da validação.
+
+### Critério para concluir esta etapa
+Executar a página de testes publicada e obter aprovação em todos os casos, depois percorrer visualmente o conversor em Android e desktop e verificar manualmente os links de WhatsApp sem enviar mensagem. Não registrar como teste real aquilo que não foi executado.
