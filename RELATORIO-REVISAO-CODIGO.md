@@ -277,3 +277,22 @@ Executar a matriz pendente em dispositivos/navegadores reais e registrar evidên
 
 ### Critério para concluir esta etapa
 Executar a página de testes publicada e obter aprovação em todos os casos, depois percorrer visualmente o conversor em Android e desktop e verificar manualmente os links de WhatsApp sem enviar mensagem. Não registrar como teste real aquilo que não foi executado.
+
+
+---
+
+## Seletor de idioma automático — 26/10/2026
+
+### Alterações registradas
+- Adicionado um seletor com ícone de globo no canto superior esquerdo da página principal.
+- Idiomas disponíveis: Português, English e Español, além da opção Automático.
+- Em Automático, o site usa o idioma preferido informado pelo navegador (navigator.language / navigator.languages): espanhol para navegadores em espanhol, inglês para navegadores em inglês e português como padrão para os demais.
+- A escolha manual fica salva no armazenamento local deste navegador; o visitante pode voltar para Automático a qualquer momento.
+- Incluídas traduções para os principais textos estáticos da calculadora, navegação, seleção de moeda, validações visíveis, ações de cálculo e avisos principais.
+- O idioma declarado no documento (lang) é atualizado para apoiar acessibilidade e leitores de tela.
+
+### Limites e testes pendentes
+- A tradução implementada cobre os textos estáticos incluídos no dicionário da interface principal. Mensagens geradas dinamicamente por outras rotinas, conteúdos extensos dos relatórios e algumas informações auxiliares podem continuar no idioma original; a cobertura deve ser ampliada após revisão visual.
+- A detecção usa o idioma configurado no navegador, não GPS nem localização física exata. Isso evita solicitar acesso à localização do visitante.
+- Alteração gravada no index.html pelo commit a92f3c59f685036a53c7761803b6de16d56ca83e.
+- Ainda falta abrir a publicação em navegador real, conferir a posição do seletor em Android e desktop, trocar manualmente entre os três idiomas e confirmar que a preferência persiste ao recarregar a página. Não registrar esses testes como concluídos até executá-los.
