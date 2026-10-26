@@ -111,6 +111,6 @@ Deno.serve(async(req:Request)=>{
   const access=await admin.from("product_entitlements").select("active").eq("user_id",result.data.user.id).eq("product_code","kit_divulgacao").maybeSingle();
   if(access.error)throw access.error;
   if(!access.data?.active)return json({error:"O Kit de Divulgacao ainda nao esta liberado nesta conta. Conclua a compra para baixar."},403);
-  return new Response(makePdf(),{status:200,headers:{...cors,"Content-Type":"application/pdf","Content-Disposition":"attachment; filename=\"Kit_de_Divulgacao_Sanba.pdf\"","Cache-Control":"private, no-store, max-age=0","X-Content-Type-Options":"nosniff"}});
+  return new Response(makePdf(),{status:200,headers:{...cors,"Content-Type":"application/pdf","Content-Disposition":"inline; filename=\"Kit_de_Divulgacao_Sanba.pdf\"","Cache-Control":"private, no-store, max-age=0","X-Content-Type-Options":"nosniff"}});
  }catch(e){console.error("download-kit-divulgacao",e instanceof Error?e.message:"unknown");return json({error:"Nao foi possivel liberar o download agora."},500);}
 });
