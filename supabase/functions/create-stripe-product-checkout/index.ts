@@ -17,7 +17,7 @@ Deno.serve(async(req:Request)=>{
  if(!token)return reply({error:"Entre na sua conta antes de comprar."},401);
  let body:{product_code?:unknown};try{body=await req.json()}catch{return reply({error:"Pedido inválido."},400)}
  const code=body.product_code;
- if(typeof code!=="string"||!(code in products))return reply({error:"Produto não disponível."},400);
+ if(typeof code!=="string"||!Object.prototype.hasOwnProperty.call(products,code))return reply({error:"Produto não disponível."},400);
  const product=products[code as keyof typeof products];
  try{
   const admin=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
