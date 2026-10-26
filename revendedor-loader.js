@@ -12,7 +12,7 @@
   }
   var script = document.createElement('script');
   script.type = 'module';
-  script.src = './revendedor-app.js?v=20261025-stripe-2';
+  script.src = './revendedor-app.js?v=20261026-plan-visibility-1';
   script.onerror = function () {
     showLoadError('Não foi possível baixar o sistema de login. Confira sua conexão e recarregue a página.');
   };
