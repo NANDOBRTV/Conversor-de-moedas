@@ -296,3 +296,21 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - A detecção usa o idioma configurado no navegador, não GPS nem localização física exata. Isso evita solicitar acesso à localização do visitante.
 - Alteração gravada no index.html pelo commit a92f3c59f685036a53c7761803b6de16d56ca83e.
 - Ainda falta abrir a publicação em navegador real, conferir a posição do seletor em Android e desktop, trocar manualmente entre os três idiomas e confirmar que a preferência persiste ao recarregar a página. Não registrar esses testes como concluídos até executá-los.
+
+
+---
+
+## Tradução compartilhada em todas as páginas — 26/10/2026
+
+### Alterações registradas
+- Criado o arquivo compartilhado `idiomas.js`, que exibe o seletor de idioma no canto superior esquerdo em todas as páginas HTML do repositório.
+- Integrado o serviço Google Website Translator para traduzir a página completa, incluindo textos e conteúdos que não estavam no dicionário limitado da página principal.
+- Aplicado o seletor a: `index.html`, `cliente.html`, `revendedor.html`, `admin-pedidos.html`, `aprovacoes-revendedores.html`, `desenvolvedor.html`, `convites-revendedores.html`, `calculadora-precos.html`, `kit-divulgacao.html`, `novas-receitas.html`, `pedidos-revendedores.html`, `planilha-lucro.html`, `kit-divulgacao-online.html` e `testes-conversor.html`.
+- A escolha Português/English/Español ou Automático é compartilhada entre as páginas através de `localStorage` e do cookie de tradução. Em Automático, a língua preferida do navegador escolhe espanhol, inglês ou português como padrão.
+- Ajustada a Content Security Policy nas páginas que a utilizam para permitir os recursos necessários do tradutor.
+
+### Privacidade, dependências e limitações
+- A tradução integral depende de um serviço externo do Google e de conexão com a internet. O conteúdo da página é processado pelo serviço de tradução; isso deve ser considerado antes de inserir informações pessoais ou privadas. Páginas autenticadas também recebem o seletor, mas não foram testadas com sessão de usuário.
+- O serviço pode falhar por bloqueadores, restrições de rede ou mudanças do Google; nesses casos a página original continua disponível, mas pode não ser traduzida.
+- Foi feita verificação estática de que as 14 páginas HTML carregam `idiomas.js` e que o seletor antigo exclusivo da página principal foi removido. Ainda falta testar a tradução real, a persistência e a navegação entre páginas em navegador Android e desktop; não registrar esses testes como concluídos até executá-los.
+- Arquivo compartilhado criado no commit `98c061361c9f43a12532346682ef99ba9dd7b316`.
