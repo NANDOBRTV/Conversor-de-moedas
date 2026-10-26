@@ -74,7 +74,7 @@ async function checkPasswordLeak(password) {
       : 'A verificação de segurança está temporariamente indisponível. Tente novamente mais tarde.');
   }
   if (result.compromised === true) {
-    throw new Error('Essa senha aparece em vazamentos conhecidos. Escolha uma senha diferente que você não use em outros sites.');
+    throw new Error('Não foi possível utilizar essa senha. Escolha outra e tente novamente.');
   }
 }
 function money(value, currency = 'BRL') { return Number(value).toLocaleString('pt-BR', {style:'currency',currency}); }
