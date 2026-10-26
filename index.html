@@ -6,7 +6,7 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://esm.sh; connect-src 'self' https://api.github.com https://esm.sh https://kllewmcyvjltfzqxnmyz.supabase.co; form-action 'self' https://wa.me">
 <title>Conversor de Moedas Sanba</title>
-<meta name="theme-color" content="#f7faff">
+<meta name="theme-color" content="#f6f7f8">
 <meta name="description" content="Calcule recargas Sanba, confira valores por moeda e finalize seu pedido pelo WhatsApp com praticidade.">
 <link rel="icon" type="image/png" href="./1793036671323.png">
 <link rel="shortcut icon" type="image/png" href="./1793036671323.png">
@@ -548,6 +548,128 @@ body{gap:16px}
   html{scroll-behavior:auto}
 }
 
+
+/* Direção visual inspirada no Shopify Dawn — clean, leve e focada na conversão */
+:root{
+  --dawn-bg:#f6f7f8;
+  --dawn-surface:#ffffff;
+  --dawn-ink:#17212b;
+  --dawn-muted:#667482;
+  --dawn-line:#e2e7eb;
+  --dawn-accent:#1769aa;
+  --dawn-accent-dark:#125487;
+}
+html{background:var(--dawn-bg)}
+body{
+  color:var(--dawn-ink);
+  background:radial-gradient(ellipse at 50% -12%,#e8f3fc 0,transparent 42%),var(--dawn-bg);
+  padding:24px;
+  gap:18px;
+}
+.site-menu-wrap{margin-bottom:0}
+.project-menu-button{
+  background:#fff;color:#243746;border:1px solid #dce3e8;
+  border-radius:999px;box-shadow:0 2px 7px rgba(21,42,61,.04);
+  min-height:42px;padding:10px 17px;font-weight:650;
+}
+.project-menu-button:hover{background:#f7fafc;border-color:#b7c8d6;box-shadow:0 4px 12px rgba(21,42,61,.08)}
+.site-mini-menu{background:#fff;border:1px solid var(--dawn-line);border-radius:15px;box-shadow:0 14px 35px rgba(18,35,51,.12)}
+.site-mini-menu a,.site-mini-menu button{color:#243746}
+.site-mini-menu a:hover,.site-mini-menu button:hover{background:#f2f7fa}
+.card{
+  background:var(--dawn-surface);color:var(--dawn-ink);
+  border:1px solid #e5e9ed;border-radius:22px;
+  box-shadow:0 10px 38px rgba(25,48,67,.065);
+  padding:clamp(22px,3vw,38px);
+}
+.card:before{height:3px;background:linear-gradient(90deg,#1769aa,#48a6cf,#9dcbe0);opacity:.95}
+.brand-logo-header{border-bottom:1px solid #edf0f2;padding:5px 0 19px;margin-bottom:14px}
+.site-logo{filter:none}
+.brand-divider{background:#e0e7ec}
+.brand-heading h1{color:#17212b;font-weight:750;letter-spacing:-.9px}
+.brand-heading p{color:#74818d}
+.card>.sub{color:#526271}
+.signup-cta{
+  color:#20384a;background:#f3f8fb;border:1px solid #dceaf3;
+  border-radius:15px;box-shadow:none;
+}
+.signup-cta strong{color:#173b58}
+.signup-cta span{color:#5b7182}
+.signup-cta b{background:var(--dawn-accent);box-shadow:none;border-radius:9px}
+.signup-cta b:hover{background:var(--dawn-accent-dark)}
+.card>label{color:#334756;font-size:12px;letter-spacing:.25px;font-weight:700}
+.card select,.card input:not([type=checkbox]){
+  color:#1f2e3a;background:#fff;border:1px solid #d5dfe6;
+  border-radius:11px;box-shadow:none;
+}
+.card select:hover,.card input:not([type=checkbox]):hover{border-color:#9bb2c2}
+.card select:focus,.card input:not([type=checkbox]):focus{
+  border-color:#3688bf;box-shadow:0 0 0 3px rgba(23,105,170,.11);outline:none;
+}
+.detect-status{background:#f4f8fb;color:#4a6477;border:1px solid #e1ebf1}
+.auto-detect.show{color:#365a71}
+.region-warning{background:#fff8e9;color:#795b23;border:1px solid #f1e3bd}
+.hint{color:#778591}
+.remember-row{color:#465967;background:#f8fafb;border-color:#e5eaee}
+.tabs{background:#f0f3f5;border:1px solid #e7ebee;border-radius:13px}
+.tab{color:#526473;background:transparent;border-radius:9px}
+.tab.active,.tab[data-m="c"].active,.tab[data-m="r"].active{
+  color:#fff;background:var(--dawn-accent);box-shadow:0 2px 5px rgba(23,105,170,.17)
+}
+.active-mode-label{background:#f8fafb;border:1px solid #e6ebef;color:#60707d}
+.clear-btn{color:#657581;background:#fff;border:1px solid #e1e6ea;border-radius:10px}
+.clear-btn:hover{color:#9b3c42;background:#fff7f7;border-color:#edcfd0}
+.mode>label{color:#334756}
+.minimo{color:#627584}
+.result{background:#edf7fc;color:#173b54;border:1px solid #d7eaf5;box-shadow:none}
+.result .tit{color:#547185}
+.result .val{color:#155e91}
+.result .det{color:#496a80}
+.result .summary{color:#304e61;background:rgba(255,255,255,.78);border:1px solid #dcebf3}
+.copy-btn{color:#fff;background:var(--dawn-accent);border:1px solid var(--dawn-accent);box-shadow:none}
+.copy-btn:hover{background:var(--dawn-accent-dark)}
+.print-btn{color:#425b6d;background:#fff;border:1px solid #d7e1e8}
+.pgto{color:#23465e;background:#f1f8fc;border:1px solid #dcecf5;border-radius:11px}
+.needid{color:#795b23;background:#fff9ed;border:1px solid #f0e3c6;border-radius:10px}
+.wpp{box-shadow:none;border-radius:11px}
+.important-notice{color:#745b28;background:#fff9ed;border:1px solid #f0e4c9;border-radius:12px;line-height:1.65}
+.policy-panel{color:#3e5260;background:#fbfcfd;border:1px solid #e2e8ed;border-radius:13px}
+.policy-panel summary{color:#2c4659}
+.brand-footer{border-top:1px solid #edf0f2}
+.pix-text{color:#4b6b7d}
+.brand-link{color:#233b4d}
+.brand-slogan{color:#788793}
+.operator-notice{color:#5a6c79;background:#f8fafb;border-color:#e3e9ed}
+.creator-credit,.footer-info{color:#788692}
+.license-seal{color:#627381}
+.desktop-side-card{
+  background:#fff;color:#263d4e;border:1px solid #e1e7eb;
+  border-radius:20px;box-shadow:0 8px 28px rgba(25,48,67,.055);
+}
+.desktop-side-card h2{color:#172d3d}
+.desktop-side-card p,.desktop-step span{color:#687987}
+.desktop-step-number{color:#1769aa;background:#edf6fb;border:1px solid #d9eaf5}
+.desktop-step strong{color:#273e4e}
+.desktop-side-link{color:#2c4c62;background:#fff;border:1px solid #e1e7eb}
+.desktop-side-link:hover{color:#155e91;background:#f4f9fc;border-color:#c6deed}
+.desktop-side-note{color:#775e2d;background:#fff9ed;border-color:#f0e3c6}
+.desktop-trust{border-top-color:#e4e9ed;color:#748390}
+.desktop-trust b{color:#344f61}
+.project-panel{border:1px solid #e0e7eb;box-shadow:0 8px 26px rgba(25,48,67,.05)}
+.project-panel-head{background:#f1f7fa;color:#203f54}
+.project-tab.active{background:var(--dawn-accent);color:#fff}
+@media(min-width:1000px){
+  body{gap:20px;padding:28px}
+  .card{padding:clamp(30px,3.1vw,46px)}
+}
+@media(max-width:600px){
+  body{padding:12px;gap:12px}
+  .card{padding:19px 15px;border-radius:17px}
+  .brand-logo-header{padding-bottom:15px}
+  .signup-cta{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
 </style>
 </head>
 <body>
@@ -676,7 +798,7 @@ body{gap:16px}
   <div class="creator-credit">Desenvolvido por <strong>Fernando Francisco de Lira</strong></div>
   <div class="footer-info">
     <div class="license-seal">🛡️ © Fernando Francisco de Lira · Todos os direitos reservados</div>
-    <div class="version">Calculadora independente · v1.3.22 · Atualizada em 26/10/2026</div>
+    <div class="version">Calculadora independente · v1.3.23 · Atualizada em 26/10/2026</div>
   </div>
 </div>
 
