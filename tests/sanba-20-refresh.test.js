@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
 
 const root = new URL("../", import.meta.url);
 const readRoot = (path) => readFile(new URL(path, root), "utf8");
@@ -34,4 +35,19 @@ test("as áreas de cliente e revendedor mantêm a estrutura e recebem o tema San
   assert.match(reseller, /id="sanba-20-refresh"/);
   assert.match(reseller, /revendedor-loader\.js/);
   assert.match(reseller, /supabase-config\.js/);
+});
+
+test("o JavaScript inline do protótipo passa na verificação de sintaxe do Node", async () => {
+  const html = await readRoot("prototipo-sanba-2.html");
+  const scripts = [...html.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)]
+    .map((match) => match[1].trim())
+    .filter(Boolean);
+  assert.ok(scripts.length > 0, "Nenhum script inline encontrado");
+  for (const script of scripts) {
+    const check = spawnSync(process.execPath, ["--check", "--input-type=commonjs"], {
+      input: script,
+      encoding: "utf8",
+    });
+    assert.equal(check.status, 0, check.stderr || check.stdout);
+  }
 });
