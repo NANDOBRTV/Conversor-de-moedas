@@ -48,10 +48,11 @@
         <div class="money-field"><input id="amount" type="number" min="0" step="any" value="100" inputmode="decimal" aria-label="Valor a converter"><select id="from" aria-label="Moeda de origem"><option value="BRL">BRL · R$</option><option value="USD">USD · $</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option><option value="CAD">CAD · C$</option></select></div>
         <div class="swap-row"><div class="swap-line"></div><button class="swap" id="swap" type="button" aria-label="Inverter moedas">↕</button><div class="swap-line"></div></div>
         <label class="field-label" for="to">Você recebe</label>
-        <div class="money-field"><input id="result" type="text" value="—" readonly aria-label="Resultado estimado"><select id="to" aria-label="Moeda de destino"><option value="USD">USD · $</option><option value="BRL">BRL · R$</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option></select></div>
+        <div class="money-field"><input id="result" type="text" value="—" readonly aria-label="Resultado estimado"><select id="to" aria-label="Moeda de destino"><option value="USD">USD · $</option><option value="BRL">BRL · R$</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option><option value="CAD">CAD · C$</option></select></div>
         <div class="result-box"><small id="result-label">Cotação de referência</small><span class="result-value" id="result-line">Buscando cotação…</span><small id="rate-line" role="status" aria-live="polite">Consultando fonte externa.</small></div>
         <p class="fineprint">Taxas de referência atualizadas diariamente pela fonte de dados. Não são cotações em tempo real, não incluem tarifas/spread e não garantem o preço final de uma operação.</p>
-        <button class="primary full" id="copy" type="button">Copiar resumo da simulação</button>
+        <button class="primary full" id="copy" type="button" disabled>Copiar resumo da simulação</button>
+        <button class="secondary full" id="refresh-rates" type="button">Atualizar cotações</button>
         <p id="copy-status" class="fineprint" role="status" aria-live="polite"></p>
       </div>
     </div>
@@ -98,7 +99,7 @@
   const rates={BRL:1};
   let quoteDate=null;
   const amount=document.getElementById('amount'),from=document.getElementById('from'),to=document.getElementById('to'),result=document.getElementById('result'),line=document.getElementById('result-line'),rateLine=document.getElementById('rate-line'),status=document.getElementById('copy-status'),badge=document.getElementById('quote-badge'),sourceNote=document.getElementById('quote-source-note');
-  const copyButton=document.getElementById('copy');
+  const copyButton=document.getElementById('copy'),refreshButton=document.getElementById('refresh-rates');
   function fmt(value,currency){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:currency,maximumFractionDigits:2}).format(value)}
   function dateFmt(date){return new Intl.DateTimeFormat('pt-BR',{dateStyle:'medium',timeZone:'UTC'}).format(new Date(date+'T12:00:00Z'))}
   function ready(){return currencies.every(code=>code==='BRL'||Number.isFinite(rates[code])&&rates[code]>0)}
@@ -113,7 +114,7 @@
     copyButton.disabled=false;
   }
   async function loadRates(){
-    badge.textContent='Carregando cotações';line.textContent='Buscando cotação…';copyButton.disabled=true;
+    badge.textContent='Carregando cotações';line.textContent='Buscando cotação…';copyButton.disabled=true;refreshButton.disabled=true;refreshButton.textContent='Consultando fonte…';
     try{
       const response=await fetch(API,{headers:{Accept:'application/json'},cache:'no-store'});
       if(!response.ok)throw new Error('A fonte respondeu HTTP '+response.status);
@@ -131,15 +132,16 @@
       badge.textContent='Taxas de referência';badge.style.background='#dcfce7';badge.style.color='#166534';
       sourceNote.textContent='Fonte: Frankfurter API · data da cotação: '+dateFmt(quoteDate)+'. Taxas de referência, sem tarifas ou spread.';
       for(const code of ['USD','EUR','GBP','CAD'])document.getElementById('rate-'+code).textContent=fmt(1/rates[code],'BRL');
-      update();
+      update();refreshButton.disabled=false;refreshButton.textContent='Atualizar cotações';
     }catch(error){
       badge.textContent='Cotação indisponível';badge.style.background='#fff1f2';badge.style.color='#9f1239';
       line.textContent='Não foi possível carregar as taxas.';
       rateLine.textContent='Verifique sua conexão e tente novamente.';
       sourceNote.textContent='Não foi possível consultar a fonte de cotações. Nenhum valor fictício será exibido como se fosse atual.';
-      copyButton.disabled=true;result.value='';
+      copyButton.disabled=true;result.value='';refreshButton.disabled=false;refreshButton.textContent='Tentar novamente';
     }
   }
+  refreshButton.addEventListener('click',loadRates);
   amount.addEventListener('input',update);from.addEventListener('change',update);to.addEventListener('change',update);
   document.getElementById('swap').addEventListener('click',function(){const old=from.value;from.value=to.value;to.value=old;update()});
   copyButton.addEventListener('click',async function(){
