@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f172a">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.frankfurter.dev">
   <title>Sanba 2.0 — Protótipo de atualização</title>
   <meta name="description" content="Protótipo visual da nova experiência do Conversor Sanba. Valores ilustrativos, não são cotações em tempo real.">
   <style>
@@ -42,14 +43,14 @@
         <div class="trust"><span>Interface simples</span><span>Foco em transparência</span><span>Feito para celular</span></div>
       </div>
       <div class="converter" id="conversor">
-        <div class="converter-head"><div><h2>Conversor de moedas</h2><span class="muted" style="font-size:.82rem">Simule antes de decidir</span></div><span class="demo-tag">Demonstração</span></div>
+        <div class="converter-head"><div><h2>Conversor de moedas</h2><span class="muted" style="font-size:.82rem">Simule antes de decidir</span></div><span class="demo-tag" id="quote-badge">Carregando cotações</span></div>
         <label class="field-label" for="amount">Você envia</label>
-        <div class="money-field"><input id="amount" type="number" min="0" step="any" value="100" inputmode="decimal" aria-label="Valor a converter"><select id="from" aria-label="Moeda de origem"><option value="BRL">BRL · R$</option><option value="USD">USD · $</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option></select></div>
+        <div class="money-field"><input id="amount" type="number" min="0" step="any" value="100" inputmode="decimal" aria-label="Valor a converter"><select id="from" aria-label="Moeda de origem"><option value="BRL">BRL · R$</option><option value="USD">USD · $</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option><option value="CAD">CAD · C$</option></select></div>
         <div class="swap-row"><div class="swap-line"></div><button class="swap" id="swap" type="button" aria-label="Inverter moedas">↕</button><div class="swap-line"></div></div>
         <label class="field-label" for="to">Você recebe</label>
         <div class="money-field"><input id="result" type="text" value="—" readonly aria-label="Resultado estimado"><select id="to" aria-label="Moeda de destino"><option value="USD">USD · $</option><option value="BRL">BRL · R$</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option></select></div>
-        <div class="result-box"><small>Estimativa ilustrativa</small><span class="result-value" id="result-line">US$ 20,00</span><small id="rate-line">Taxa de demonstração: 1 BRL = 0,20 USD</small></div>
-        <p class="fineprint">Esta prévia usa taxas fictícias apenas para demonstrar a interface. Não é cotação em tempo real nem oferta comercial.</p>
+        <div class="result-box"><small id="result-label">Cotação de referência</small><span class="result-value" id="result-line">Buscando cotação…</span><small id="rate-line" role="status" aria-live="polite">Consultando fonte externa.</small></div>
+        <p class="fineprint">Taxas de referência atualizadas diariamente pela fonte de dados. Não são cotações em tempo real, não incluem tarifas/spread e não garantem o preço final de uma operação.</p>
         <button class="primary full" id="copy" type="button">Copiar resumo da simulação</button>
         <p id="copy-status" class="fineprint" role="status" aria-live="polite"></p>
       </div>
@@ -62,14 +63,14 @@
   </div>
   <section class="content" id="moedas">
     <div class="shell">
-      <div class="section-head"><div><span class="section-kicker">Visão rápida</span><h2>Moedas em destaque</h2></div><p>Um resumo visual das moedas mais usadas. Os números abaixo são exemplos de interface, não taxas atuais.</p></div>
+      <div class="section-head"><div><span class="section-kicker">Visão rápida</span><h2>Moedas em destaque</h2></div><p>Taxas de referência por unidade da moeda estrangeira, calculadas a partir da cotação publicada para BRL.</p></div>
       <div class="rate-grid">
-        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇺🇸</span><span>Dólar americano <small style="display:block;font-weight:600">USD</small></span></div><strong>R$ 5,00</strong><small>Valor demonstrativo por US$ 1</small></article>
-        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇪🇺</span><span>Euro <small style="display:block;font-weight:600">EUR</small></span></div><strong>R$ 5,45</strong><small>Valor demonstrativo por € 1</small></article>
-        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇬🇧</span><span>Libra esterlina <small style="display:block;font-weight:600">GBP</small></span></div><strong>R$ 6,30</strong><small>Valor demonstrativo por £ 1</small></article>
-        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇨🇦</span><span>Dólar canadense <small style="display:block;font-weight:600">CAD</small></span></div><strong>R$ 3,65</strong><small>Valor demonstrativo por C$ 1</small></article>
+        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇺🇸</span><span>Dólar americano <small style="display:block;font-weight:600">USD</small></span></div><strong id="rate-USD">Carregando…</strong><small>Por US$ 1</small></article>
+        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇪🇺</span><span>Euro <small style="display:block;font-weight:600">EUR</small></span></div><strong id="rate-EUR">Carregando…</strong><small>Por € 1</small></article>
+        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇬🇧</span><span>Libra esterlina <small style="display:block;font-weight:600">GBP</small></span></div><strong id="rate-GBP">Carregando…</strong><small>Por £ 1</small></article>
+        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇨🇦</span><span>Dólar canadense <small style="display:block;font-weight:600">CAD</small></span></div><strong id="rate-CAD">Carregando…</strong><small>Por C$ 1</small></article>
       </div>
-      <p class="rate-note">Antes de publicar, conectar esta área à fonte de cotação aprovada e exibir data/hora da atualização, taxas aplicadas e eventuais tarifas.</p>
+      <p class="rate-note" id="quote-source-note" role="status" aria-live="polite">Fonte: Frankfurter API. A data da taxa será exibida após a consulta.</p>
     </div>
   </section>
   <section class="content" id="recursos" style="background:#fff;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0">
@@ -92,26 +93,63 @@
 <footer class="footer"><div class="shell footer-inner"><span>© Sanba · Protótipo de atualização 2.0</span><span>Valores demonstrativos · Não representa cotação financeira em tempo real</span></div></footer>
 <script>
 (function(){
-  const rates={BRL:1,USD:0.2,EUR:0.1835,GBP:0.1587};
-  const symbols={BRL:'R$',USD:'US$',EUR:'€',GBP:'£'};
-  const amount=document.getElementById('amount'),from=document.getElementById('from'),to=document.getElementById('to'),result=document.getElementById('result'),line=document.getElementById('result-line'),rateLine=document.getElementById('rate-line'),status=document.getElementById('copy-status');
+  const API='https://api.frankfurter.dev/v2/rates?base=BRL&quotes=USD,EUR,GBP,CAD';
+  const currencies=['BRL','USD','EUR','GBP','CAD'];
+  const rates={BRL:1};
+  let quoteDate=null;
+  const amount=document.getElementById('amount'),from=document.getElementById('from'),to=document.getElementById('to'),result=document.getElementById('result'),line=document.getElementById('result-line'),rateLine=document.getElementById('rate-line'),status=document.getElementById('copy-status'),badge=document.getElementById('quote-badge'),sourceNote=document.getElementById('quote-source-note');
+  const copyButton=document.getElementById('copy');
   function fmt(value,currency){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:currency,maximumFractionDigits:2}).format(value)}
+  function dateFmt(date){return new Intl.DateTimeFormat('pt-BR',{dateStyle:'medium',timeZone:'UTC'}).format(new Date(date+'T12:00:00Z'))}
+  function ready(){return currencies.every(code=>code==='BRL'||Number.isFinite(rates[code])&&rates[code]>0)}
   function update(){
     const n=Number(amount.value);const valid=Number.isFinite(n)&&n>=0&&amount.value!=='';
-    if(!valid){result.value='';line.textContent='Informe um valor válido';rateLine.textContent='';return}
+    if(!valid){result.value='';line.textContent='Informe um valor válido';rateLine.textContent='';copyButton.disabled=true;return}
+    if(!ready()){result.value='';line.textContent='Cotação indisponível';rateLine.textContent='Aguardando taxas válidas da fonte externa.';copyButton.disabled=true;return}
     const rate=rates[to.value]/rates[from.value];const value=n*rate;
     result.value=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value);
-    line.textContent=fmt(value,to.value);rateLine.textContent='Taxa de demonstração: 1 '+from.value+' = '+rate.toLocaleString('pt-BR',{maximumFractionDigits:4})+' '+to.value;
+    line.textContent=fmt(value,to.value);
+    rateLine.textContent='1 '+from.value+' = '+rate.toLocaleString('pt-BR',{maximumFractionDigits:6})+' '+to.value+' · referência de '+dateFmt(quoteDate);
+    copyButton.disabled=false;
+  }
+  async function loadRates(){
+    badge.textContent='Carregando cotações';line.textContent='Buscando cotação…';copyButton.disabled=true;
+    try{
+      const response=await fetch(API,{headers:{Accept:'application/json'},cache:'no-store'});
+      if(!response.ok)throw new Error('A fonte respondeu HTTP '+response.status);
+      const rows=await response.json();
+      if(!Array.isArray(rows)||!rows.length)throw new Error('A fonte retornou dados em formato inesperado.');
+      const next={BRL:1};let newestDate=null;
+      for(const row of rows){
+        const code=String(row.quote||'').toUpperCase();
+        if(currencies.includes(code)&&Number.isFinite(Number(row.rate))&&Number(row.rate)>0)next[code]=Number(row.rate);
+        if(row.date&&(!newestDate||row.date>newestDate))newestDate=row.date;
+      }
+      for(const code of ['USD','EUR','GBP','CAD'])if(!Number.isFinite(next[code]))throw new Error('A fonte não retornou a moeda '+code+'.');
+      if(!newestDate)throw new Error('A fonte não informou a data da cotação.');
+      Object.assign(rates,next);quoteDate=newestDate;
+      badge.textContent='Taxas de referência';badge.style.background='#dcfce7';badge.style.color='#166534';
+      sourceNote.textContent='Fonte: Frankfurter API · data da cotação: '+dateFmt(quoteDate)+'. Taxas de referência, sem tarifas ou spread.';
+      for(const code of ['USD','EUR','GBP','CAD'])document.getElementById('rate-'+code).textContent=fmt(1/rates[code],'BRL');
+      update();
+    }catch(error){
+      badge.textContent='Cotação indisponível';badge.style.background='#fff1f2';badge.style.color='#9f1239';
+      line.textContent='Não foi possível carregar as taxas.';
+      rateLine.textContent='Verifique sua conexão e tente novamente.';
+      sourceNote.textContent='Não foi possível consultar a fonte de cotações. Nenhum valor fictício será exibido como se fosse atual.';
+      copyButton.disabled=true;result.value='';
+    }
   }
   amount.addEventListener('input',update);from.addEventListener('change',update);to.addEventListener('change',update);
   document.getElementById('swap').addEventListener('click',function(){const old=from.value;from.value=to.value;to.value=old;update()});
-  document.getElementById('copy').addEventListener('click',async function(){
-    const n=Number(amount.value);if(!Number.isFinite(n)||n<0||amount.value===''){status.textContent='Digite um valor válido antes de copiar.';return}
-    const text='Simulação Sanba (valores ilustrativos): '+fmt(n,from.value)+' ≈ '+fmt(n*rates[to.value]/rates[from.value],to.value)+'. Taxas demonstrativas, não cotação em tempo real.';
+  copyButton.addEventListener('click',async function(){
+    const n=Number(amount.value);if(!ready()||!Number.isFinite(n)||n<0||amount.value===''){status.textContent='Aguarde uma cotação válida e informe um valor.';return}
+    const converted=n*rates[to.value]/rates[from.value];
+    const text='Simulação Sanba: '+fmt(n,from.value)+' ≈ '+fmt(converted,to.value)+'. Taxa de referência de '+dateFmt(quoteDate)+' via Frankfurter API; não inclui tarifas ou spread e não é cotação em tempo real.';
     try{await navigator.clipboard.writeText(text);status.textContent='Resumo copiado.'}catch(e){status.textContent=text}
   });
-  update();
+  update();loadRates();
 })();
-</script>
+</script>>
 </body>
 </html>
