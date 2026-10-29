@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.frankfurter.dev">
+  <title>Sanba 2.0 — Protótipo de atualização</title>
+  <meta name="description" content="Protótipo visual do Conversor Sanba com taxas de referência diárias e estimativas transparentes.">
+  <style>
+    :root{--navy:#0f172a;--teal:#0f766e;--teal-dark:#115e59;--mint:#ccfbf1;--bg:#f4f7fb;--white:#fff;--muted:#63748a;--line:#e2e8f0;--shadow:0 18px 50px rgba(15,23,42,.09);--radius:24px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+    a{color:inherit;text-decoration:none}button,input,select{font:inherit}button,a,input,select{outline-offset:4px}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #14b8a6}
+    .shell{max-width:1180px;margin:auto;padding:0 24px}.topbar{background:var(--navy);color:#fff}.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:-.04em;font-size:1.22rem}.brand-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:var(--mint);color:var(--teal-dark);font-weight:900}.navlinks{display:flex;align-items:center;gap:26px;color:#dbe5f2;font-size:.92rem}.navlinks a:hover{color:#fff}.nav-cta,.primary{border:0;border-radius:14px;padding:12px 18px;background:var(--mint);color:var(--teal-dark);font-weight:800;cursor:pointer}.hero{padding:62px 0 44px;background:radial-gradient(ellipse at 90% 10%,rgba(20,184,166,.15),transparent 35%),linear-gradient(180deg,#0f172a 0%,#15243b 100%);color:white}.hero-grid{display:grid;grid-template-columns:1fr minmax(340px,.82fr);align-items:center;gap:54px}.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(204,251,241,.28);background:rgba(204,251,241,.08);color:#ccfbf1;border-radius:999px;padding:7px 12px;font-size:.78rem;font-weight:750;letter-spacing:.04em;text-transform:uppercase}.eyebrow span{width:7px;height:7px;border-radius:50%;background:#5eead4}.hero h1{font-size:clamp(2.5rem,5vw,4.6rem);line-height:1.02;letter-spacing:-.065em;margin:22px 0}.hero h1 em{font-style:normal;color:#5eead4}.hero-copy{max-width:550px;color:#cbd5e1;font-size:1.08rem}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}.primary{background:#5eead4;color:#042f2e;padding:14px 20px}.secondary{display:inline-flex;align-items:center;padding:13px 18px;border:1px solid #475569;border-radius:14px;font-weight:750;color:white}.trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:28px;color:#cbd5e1;font-size:.85rem}.trust span:before{content:"✓";color:#5eead4;font-weight:900;margin-right:7px}
+    .converter{background:white;color:var(--navy);padding:25px;border-radius:26px;box-shadow:0 28px 80px rgba(0,0,0,.24)}.converter-head{display:flex;align-items:start;justify-content:space-between;gap:12px;margin-bottom:20px}.converter h2{font-size:1.25rem;letter-spacing:-.035em;margin:0}.muted{color:var(--muted)}.demo-tag{font-size:.68rem;font-weight:850;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;background:#fef3c7;color:#92400e;padding:6px 9px;white-space:nowrap}.field-label{display:block;font-size:.8rem;font-weight:750;color:#475569;margin:14px 0 7px}.money-field{display:flex;align-items:center;border:1px solid var(--line);border-radius:15px;padding:13px 14px;gap:12px;background:#fff}.money-field:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,118,110,.1)}.money-field input{width:100%;border:0;outline:0;font-size:1.35rem;font-weight:800;min-width:0;color:var(--navy);background:transparent}.money-field select{border:0;background:transparent;font-weight:800;color:var(--navy);max-width:105px}.swap-row{display:flex;align-items:center;gap:12px;margin:9px 0}.swap-line{height:1px;flex:1;background:var(--line)}.swap{width:38px;height:38px;border:1px solid var(--line);background:#f8fafc;color:var(--teal);border-radius:12px;cursor:pointer;font-size:1.15rem}.result-box{margin-top:16px;padding:17px;border-radius:17px;background:#f0fdfa;border:1px solid #ccfbf1}.result-box small{color:var(--teal-dark);font-weight:750}.result-value{font-size:1.8rem;font-weight:900;letter-spacing:-.04em;display:block;margin:2px 0 4px;overflow-wrap:anywhere}.fineprint{font-size:.75rem;color:var(--muted);margin:14px 0 0}.full{width:100%;margin-top:15px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:-1px}.stat{background:white;border:1px solid var(--line);padding:18px 20px;display:flex;align-items:center;gap:13px}.stat:first-child{border-radius:0 0 0 18px}.stat:last-child{border-radius:0 0 18px 0}.stat-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:#ccfbf1;color:var(--teal-dark);font-size:1.2rem}.stat strong{display:block;font-size:.96rem}.stat small{color:var(--muted);font-size:.78rem}
+    section.content{padding:70px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:26px}.section-head h2{font-size:clamp(1.8rem,3vw,2.6rem);letter-spacing:-.055em;line-height:1.1;margin:10px 0}.section-head p{max-width:520px;color:var(--muted);margin:0}.section-kicker{color:var(--teal);font-weight:850;font-size:.78rem;text-transform:uppercase;letter-spacing:.09em}.rate-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.rate-card{padding:20px;background:white;border:1px solid var(--line);border-radius:20px;box-shadow:0 5px 18px rgba(15,23,42,.025)}.currency{display:flex;align-items:center;gap:10px;font-weight:850}.flag{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:#f1f5f9;font-size:1.25rem}.rate-card strong{display:block;font-size:1.35rem;letter-spacing:-.035em;margin:19px 0 2px}.rate-card small{color:var(--muted)}.rate-note{margin-top:16px;font-size:.78rem;color:var(--muted)}
+    .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature{background:white;border:1px solid var(--line);border-radius:22px;padding:24px}.feature-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:#ccfbf1;color:#115e59;font-size:1.35rem}.feature h3{margin:18px 0 7px;font-size:1.12rem;letter-spacing:-.025em}.feature p{color:var(--muted);font-size:.92rem;margin:0}.feature .status{display:inline-block;margin-top:17px;font-size:.72rem;font-weight:800;color:#475569;background:#f1f5f9;border-radius:999px;padding:5px 9px}
+    .cta-panel{background:var(--navy);border-radius:28px;padding:38px;color:white;display:flex;align-items:center;justify-content:space-between;gap:24px}.cta-panel h2{font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:-.05em;margin:0 0 8px}.cta-panel p{color:#cbd5e1;margin:0;max-width:600px}.footer{padding:28px 0 38px;color:var(--muted);font-size:.82rem}.footer-inner{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding-top:22px}
+    @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:34px}.converter{max-width:600px}.rate-grid{grid-template-columns:repeat(2,1fr)}.navlinks{gap:14px}.feature-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.shell{padding:0 16px}.nav{min-height:66px}.navlinks a:not(.nav-cta){display:none}.hero{padding:45px 0 34px}.hero h1{font-size:2.75rem}.converter{padding:19px}.stats{grid-template-columns:1fr;gap:0}.stat,.stat:first-child,.stat:last-child{border-radius:0;padding:15px 18px}.stat:first-child{border-radius:16px 16px 0 0}.stat:last-child{border-radius:0 0 16px 16px}.section-head{display:block}.section-head p{margin-top:12px}.rate-grid,.feature-grid{grid-template-columns:1fr}.rate-card{padding:17px}.cta-panel{padding:26px;align-items:start;flex-direction:column}.footer-inner{flex-direction:column;gap:8px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+  </style>
+  <link rel="stylesheet" href="./sanba-20-theme.css?v=20261029" />
+</head>
+<body>
+<header class="topbar">
+  <div class="shell nav">
+    <a class="brand" href="#inicio" aria-label="Sanba, início"><span class="brand-mark">S</span><span>sanba<span style="color:#5eead4">.</span></span></a>
+    <nav class="navlinks" aria-label="Navegação principal">
+      <a href="#moedas">Moedas</a><a href="#recursos">Recursos</a><a href="#area-cliente">Área do cliente</a>
+      <a class="nav-cta" href="#conversor">Fazer conversão ↗</a>
+    </nav>
+  </div>
+</header>
+<main id="inicio">
+  <section class="hero">
+    <div class="shell hero-grid">
+      <div>
+        <div class="eyebrow"><span></span> Uma nova experiência Sanba</div>
+        <h1>Seu dinheiro.<br>Novas <em>possibilidades.</em></h1>
+        <p class="hero-copy">Uma experiência mais clara para simular conversões, entender custos e acompanhar suas operações — tudo em um só lugar.</p>
+        <div class="hero-actions"><a class="primary" href="#conversor">Simular conversão <span aria-hidden="true">→</span></a><a class="secondary" href="#recursos">Conhecer novidades</a></div>
+        <div class="trust"><span>Interface simples</span><span>Foco em transparência</span><span>Feito para celular</span></div>
+      </div>
+      <div class="converter" id="conversor">
+        <div class="converter-head"><div><h2>Conversor de moedas</h2><span class="muted" style="font-size:.82rem">Simule antes de decidir</span></div><span class="demo-tag" id="quote-badge">Carregando cotações</span></div>
+        <label class="field-label" for="amount">Você envia</label>
+        <div class="money-field"><input id="amount" type="number" min="0" step="any" value="100" inputmode="decimal" aria-label="Valor a converter"><select id="from" aria-label="Moeda de origem"><option value="BRL">BRL · R$</option><option value="USD">USD · $</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option><option value="CAD">CAD · C$</option></select></div>
+        <div class="swap-row"><div class="swap-line"></div><button class="swap" id="swap" type="button" aria-label="Inverter moedas">↕</button><div class="swap-line"></div></div>
+        <label class="field-label" for="to">Você recebe</label>
+        <div class="money-field"><input id="result" type="text" value="—" readonly aria-label="Resultado estimado"><select id="to" aria-label="Moeda de destino"><option value="USD">USD · $</option><option value="BRL">BRL · R$</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option><option value="CAD">CAD · C$</option></select></div>
+        <div class="result-box"><small id="result-label">Cotação de referência</small><span class="result-value" id="result-line">Buscando cotação…</span><small id="rate-line" role="status" aria-live="polite">Consultando fonte externa.</small></div>
+        <p class="fineprint">Taxas de referência atualizadas diariamente pela fonte de dados. Não são cotações em tempo real, não incluem tarifas/spread e não garantem o preço final de uma operação.</p>
+        <button class="primary full" id="copy" type="button" disabled>Copiar resumo da simulação</button>
+        <button class="secondary full" id="refresh-rates" type="button">Atualizar cotações</button>
+        <p id="copy-status" class="fineprint" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+  <div class="shell stats" aria-label="Destaques da proposta">
+    <div class="stat"><span class="stat-icon" aria-hidden="true">↔</span><div><strong>Conversão mais clara</strong><small>Origem, destino e estimativa à vista</small></div></div>
+    <div class="stat"><span class="stat-icon" aria-hidden="true">◎</span><div><strong>Custos explicados</strong><small>Mais contexto antes de confirmar</small></div></div>
+    <div class="stat"><span class="stat-icon" aria-hidden="true">▤</span><div><strong>Histórico acessível</strong><small>Retome simulações recentes</small></div></div>
+  </div>
+  <section class="content" id="moedas">
+    <div class="shell">
+      <div class="section-head"><div><span class="section-kicker">Visão rápida</span><h2>Moedas em destaque</h2></div><p>Taxas de referência por unidade da moeda estrangeira, calculadas a partir da cotação publicada para BRL.</p></div>
+      <div class="rate-grid">
+        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇺🇸</span><span>Dólar americano <small style="display:block;font-weight:600">USD</small></span></div><strong id="rate-USD">Carregando…</strong><small>Por US$ 1</small></article>
+        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇪🇺</span><span>Euro <small style="display:block;font-weight:600">EUR</small></span></div><strong id="rate-EUR">Carregando…</strong><small>Por € 1</small></article>
+        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇬🇧</span><span>Libra esterlina <small style="display:block;font-weight:600">GBP</small></span></div><strong id="rate-GBP">Carregando…</strong><small>Por £ 1</small></article>
+        <article class="rate-card"><div class="currency"><span class="flag" aria-hidden="true">🇨🇦</span><span>Dólar canadense <small style="display:block;font-weight:600">CAD</small></span></div><strong id="rate-CAD">Carregando…</strong><small>Por C$ 1</small></article>
+      </div>
+      <p class="rate-note" id="quote-source-note" role="status" aria-live="polite">Fonte: Frankfurter API. A data da taxa será exibida após a consulta.</p>
+    </div>
+  </section>
+  <section class="content" id="recursos" style="background:#fff;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0">
+    <div class="shell">
+      <div class="section-head"><div><span class="section-kicker">Novas ideias</span><h2>Mais do que converter</h2></div><p>O redesenho organiza as ferramentas para que cada pessoa encontre o próximo passo com menos esforço.</p></div>
+      <div class="feature-grid">
+        <article class="feature"><span class="feature-icon" aria-hidden="true">☆</span><h3>Moedas favoritas</h3><p>Fixe os pares que usa mais e acesse-os sem preencher tudo de novo.</p><span class="status">Ideia para próxima etapa</span></article>
+        <article class="feature"><span class="feature-icon" aria-hidden="true">◷</span><h3>Histórico inteligente</h3><p>Consulte simulações recentes, restaure valores e exporte os dados quando precisar.</p><span class="status">Aproveita recurso existente</span></article>
+        <article class="feature"><span class="feature-icon" aria-hidden="true">▦</span><h3>Simulador de custos</h3><p>Veja separadamente valor convertido, tarifa e total estimado antes de avançar.</p><span class="status">Planejado</span></article>
+        <article class="feature"><span class="feature-icon" aria-hidden="true">↗</span><h3>Resumo compartilhável</h3><p>Copie ou compartilhe uma simulação com os valores e a hora de referência.</p><span class="status">Ideia para próxima etapa</span></article>
+        <article class="feature"><span class="feature-icon" aria-hidden="true">♧</span><h3>Área do cliente simplificada</h3><p>Deixe pedidos, situação e ações importantes fáceis de localizar no celular.</p><span class="status">Redesign proposto</span></article>
+        <article class="feature"><span class="feature-icon" aria-hidden="true">⌂</span><h3>Painel do revendedor</h3><p>Reúna pedidos, ferramentas de preço, divulgação e acompanhamento em uma navegação consistente.</p><span class="status">Redesign proposto</span></article>
+      </div>
+    </div>
+  </section>
+  <section class="content" id="area-cliente">
+    <div class="shell"><div class="cta-panel"><div><h2>Uma experiência mais simples, do início ao próximo passo.</h2><p>Esta página é um protótipo visual independente. As ações de cliente, revendedor, pedidos e pagamentos continuam dependendo da integração real com o sistema.</p></div><a class="primary" href="#conversor">Testar a simulação ↗</a></div></div>
+  </section>
+</main>
+<footer class="footer"><div class="shell footer-inner"><span>© Sanba · Protótipo de atualização 2.0</span><span>Taxas de referência diárias · Não são cotações em tempo real</span></div></footer>
+<script>
+(function(){
+  const API='https://api.frankfurter.dev/v2/rates?base=BRL&quotes=USD,EUR,GBP,CAD';
+  const currencies=['BRL','USD','EUR','GBP','CAD'];
+  const rates={BRL:1};
+  let quoteDate=null;
+  const amount=document.getElementById('amount'),from=document.getElementById('from'),to=document.getElementById('to'),result=document.getElementById('result'),line=document.getElementById('result-line'),rateLine=document.getElementById('rate-line'),status=document.getElementById('copy-status'),badge=document.getElementById('quote-badge'),sourceNote=document.getElementById('quote-source-note');
+  const copyButton=document.getElementById('copy'),refreshButton=document.getElementById('refresh-rates');
+  function fmt(value,currency){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:currency,maximumFractionDigits:2}).format(value)}
+  function dateFmt(date){return new Intl.DateTimeFormat('pt-BR',{dateStyle:'medium',timeZone:'UTC'}).format(new Date(date+'T12:00:00Z'))}
+  function ready(){return currencies.every(code=>code==='BRL'||Number.isFinite(rates[code])&&rates[code]>0)}
+  function update(){
+    const n=Number(amount.value);const valid=Number.isFinite(n)&&n>=0&&amount.value!=='';
+    if(!valid){result.value='';line.textContent='Informe um valor válido';rateLine.textContent='';copyButton.disabled=true;return}
+    if(!ready()){result.value='';line.textContent='Cotação indisponível';rateLine.textContent='Aguardando taxas válidas da fonte externa.';copyButton.disabled=true;return}
+    const rate=rates[to.value]/rates[from.value];const value=n*rate;
+    result.value=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value);
+    line.textContent=fmt(value,to.value);
+    rateLine.textContent='1 '+from.value+' = '+rate.toLocaleString('pt-BR',{maximumFractionDigits:6})+' '+to.value+' · referência de '+dateFmt(quoteDate);
+    copyButton.disabled=false;
+  }
+  async function loadRates(){
+    badge.textContent='Carregando cotações';line.textContent='Buscando cotação…';copyButton.disabled=true;refreshButton.disabled=true;refreshButton.textContent='Consultando fonte…';
+    try{
+      const response=await fetch(API,{headers:{Accept:'application/json'},cache:'no-store'});
+      if(!response.ok)throw new Error('A fonte respondeu HTTP '+response.status);
+      const rows=await response.json();
+      if(!Array.isArray(rows)||!rows.length)throw new Error('A fonte retornou dados em formato inesperado.');
+      const next={BRL:1};let newestDate=null;
+      for(const row of rows){
+        const code=String(row.quote||'').toUpperCase();
+        if(currencies.includes(code)&&Number.isFinite(Number(row.rate))&&Number(row.rate)>0)next[code]=Number(row.rate);
+        if(row.date&&(!newestDate||row.date>newestDate))newestDate=row.date;
+      }
+      for(const code of ['USD','EUR','GBP','CAD'])if(!Number.isFinite(next[code]))throw new Error('A fonte não retornou a moeda '+code+'.');
+      if(!newestDate)throw new Error('A fonte não informou a data da cotação.');
+      Object.assign(rates,next);quoteDate=newestDate;
+      badge.textContent='Taxas de referência';badge.style.background='#dcfce7';badge.style.color='#166534';
+      sourceNote.textContent='Fonte: Frankfurter API · data da cotação: '+dateFmt(quoteDate)+'. Taxas de referência, sem tarifas ou spread.';
+      for(const code of ['USD','EUR','GBP','CAD'])document.getElementById('rate-'+code).textContent=fmt(1/rates[code],'BRL');
+      update();refreshButton.disabled=false;refreshButton.textContent='Atualizar cotações';
+    }catch(error){
+      badge.textContent='Cotação indisponível';badge.style.background='#fff1f2';badge.style.color='#9f1239';
+      line.textContent='Não foi possível carregar as taxas.';
+      rateLine.textContent='Verifique sua conexão e tente novamente.';
+      sourceNote.textContent='Não foi possível consultar a fonte de cotações. Nenhum valor fictício será exibido como se fosse atual.';
+      copyButton.disabled=true;result.value='';refreshButton.disabled=false;refreshButton.textContent='Tentar novamente';
+    }
+  }
+  refreshButton.addEventListener('click',loadRates);
+  amount.addEventListener('input',update);from.addEventListener('change',update);to.addEventListener('change',update);
+  document.getElementById('swap').addEventListener('click',function(){const old=from.value;from.value=to.value;to.value=old;update()});
+  copyButton.addEventListener('click',async function(){
+    const n=Number(amount.value);if(!ready()||!Number.isFinite(n)||n<0||amount.value===''){status.textContent='Aguarde uma cotação válida e informe um valor.';return}
+    const converted=n*rates[to.value]/rates[from.value];
+    const text='Simulação Sanba: '+fmt(n,from.value)+' ≈ '+fmt(converted,to.value)+'. Taxa de referência de '+dateFmt(quoteDate)+' via Frankfurter API; não inclui tarifas ou spread e não é cotação em tempo real.';
+    try{await navigator.clipboard.writeText(text);status.textContent='Resumo copiado.'}catch(e){status.textContent=text}
+  });
+  update();loadRates();
+})();
+</script>>
+</body>
+</html>
