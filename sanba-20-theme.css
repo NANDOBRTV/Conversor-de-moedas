@@ -175,3 +175,9 @@ button:not(.tab):not(.project-menu-button):not(.mini-btn):not(.clear-btn):not(.p
   .sanba-rate-item, [data-surface="light"]) { color: #000; }
 :where(.sanba-rates-heading h2, .sanba-rate-item h4, .sanba-rate-item strong) { color: #000; }
 :where(.sanba-rates-heading p, .sanba-rates-note, .sanba-rates-status, .sanba-rate-item p) { color: #404040; }
+
+
+/* Paleta tipográfica estrita: preto e branco; pseudo-elementos herdam a cor contrastante. */
+body *::before, body *::after { color: inherit !important; }
+:where(input, select, textarea)::placeholder { color: #000 !important; opacity: 1 !important; }
+::selection { color: #fff; background: #000; }
