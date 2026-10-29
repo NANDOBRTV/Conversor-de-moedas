@@ -788,6 +788,20 @@ setInterval(() => {
     fetchExchangeRate($('calcCurrency').value);
   }
 }, 5 * 60 * 1000);
+function updatePackageCountField() {
+  const packageCoins = Number($('calcQuantity').value);
+  const lotCoins = Number($('calcLotCoins').value);
+  const field = $('calcPackageCount');
+  if (!field) return;
+  field.value = Number.isInteger(packageCoins) && packageCoins > 0 &&
+    Number.isInteger(lotCoins) && lotCoins > 0
+    ? String(Math.floor(lotCoins / packageCoins))
+    : '';
+}
+$('calcQuantity').addEventListener('input', updatePackageCountField);
+$('calcLotCoins').addEventListener('input', updatePackageCountField);
+updatePackageCountField();
+
 function calculate(showErrors=true) {
   hideMessage(calcMessage);
   const currency=$('calcCurrency').value;
@@ -855,7 +869,7 @@ $('profitCalculator').addEventListener('submit', event => {
   }
 });
 $('clearCalculator').addEventListener('click', () => {
-  $('calcQuantity').value = '1500'; $('calcLotCoins').value = '160000'; $('calcCost').value = '100'; $('calcUsdRate').value = $('calcCurrency').value === 'USD' ? '1' : ''; updateSuggestedSalePrice(); $('calcExtras').value = '0'; $('calcFeePercent').value = '0';
+  $('calcQuantity').value = '1500'; $('calcLotCoins').value = '160000'; updatePackageCountField(); $('calcCost').value = '100'; $('calcUsdRate').value = $('calcCurrency').value === 'USD' ? '1' : ''; updateSuggestedSalePrice(); $('calcExtras').value = '0'; $('calcFeePercent').value = '0';
   latestCalculation = null; $('calcResults').style.display = 'none'; hideMessage(calcMessage);
   updateUsdRateField();
   $('calcCost').focus();
