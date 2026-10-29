@@ -53,3 +53,16 @@ test("a camada visual não injeta scripts nem depende de recursos externos", asy
   assert.doesNotMatch(css, /https?:\/\//i);
   assert.doesNotMatch(css, /<script/i);
 });
+
+test("a página principal mostra cotações diárias sem substituir os preços comerciais Sanba", async () => {
+  const html = await readRoot("index.html");
+  const script = await readRoot("sanba-cotacoes.js");
+  assert.match(html, /id=["']sanbaReferenceRates["']/);
+  assert.match(html, /sanba-cotacoes\.js/);
+  assert.match(html, /https:\/\/api\.frankfurter\.dev/);
+  assert.match(html, /não representam preço oficial de recarga/i);
+  assert.match(script, /api\.frankfurter\.dev\/v2\/rates\?base=BRL&quotes=USD,EUR,GBP,CAD/);
+  assert.match(script, /Tentar novamente/);
+  assert.match(script, /não foi possível carregar as cotações/i);
+  assert.doesNotMatch(script, /fallbackRates|fakeRates|mockRates/i);
+});
