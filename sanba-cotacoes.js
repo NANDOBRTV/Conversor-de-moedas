@@ -10,7 +10,6 @@
   var refresh = root.querySelector('[data-rate-refresh]');
   var endpoint = 'https://api.frankfurter.dev/v2/rates?base=BRL&quotes=USD,EUR,GBP,CAD';
   var labels = { USD: 'Dólar americano', EUR: 'Euro', GBP: 'Libra esterlina', CAD: 'Dólar canadense' };
-  var number = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
   var brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 4 });
   var foreign = {
     USD: new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 4 }),
