@@ -50,3 +50,9 @@ Documento de referência visual e funcional para manter o site consistente entre
 - Configurar os segredos do Mercado Pago no Supabase e validar pagamento de teste e webhook antes de anunciar a compra como automática.
 - Revisar acessibilidade, links, estados de carregamento e mensagens de erro.
 - Alterações na página principal devem preservar a validação do ID, os cálculos e o fluxo manual pelo WhatsApp.
+
+## Aplicação compartilhada do Sanba 2.0
+- O arquivo `sanba-20-theme.css` centraliza tokens visuais, tipografia, campos, foco acessível, tabelas, responsividade e respeito a `prefers-reduced-motion`.
+- As páginas HTML do projeto carregam essa camada compartilhada; componentes e estruturas específicas continuam próprios de cada fluxo.
+- A camada visual não altera autenticação, permissões, cálculo comercial, pedidos, checkout, webhooks ou confirmação de pagamento.
+- Ao criar uma página nova, incluir `<link rel="stylesheet" href="./sanba-20-theme.css?v=20261029" />` no `<head>` e validar a página em celular e desktop.
