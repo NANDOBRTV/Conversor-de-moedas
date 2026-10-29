@@ -112,3 +112,66 @@ button:not(.tab):not(.project-menu-button):not(.mini-btn):not(.clear-btn):not(.p
   .sanba-rate-list { grid-template-columns: minmax(0, 1fr); }
   .sanba-rates-refresh { width: 100%; }
 }
+
+
+/* Contraste tipográfico global — texto claro em superfícies escuras e escuro em superfícies claras.
+   Regras compartilhadas para todas as páginas; preservam estados, ícones e texto colorido de marca. */
+:where(.hero, .panel, .metric, .order, .plan, .plan.featured, .empty, .tabs, .tab.active,
+  .navlinks a, .nav a, .nav-link, .nav-link-dark, .btn-dark, .secondary, .danger,
+  .message.error, .message.success, .msg.error, .msg.success, .login-message.error,
+  .login-message.success, .status, .pill, .result, .notice, .error-panel,
+  .admin-card-dark, .dark-card, .dark-panel, [data-theme="dark"], [data-surface="dark"]) {
+  color: #fff;
+}
+:where(.hero, .panel, .metric, .order, .plan, .plan.featured, .empty, .tabs,
+  .navlinks a, .nav a, .nav-link, .btn-dark, .secondary, .danger,
+  .message.error, .message.success, .msg.error, .msg.success,
+  .login-message.error, .login-message.success, .status, .pill, .result, .notice,
+  .dark-card, .dark-panel, [data-theme="dark"], [data-surface="dark"])
+  :where(h1,h2,h3,h4,h5,h6,p,span,label,small,strong,b,em,li,dt,dd,legend,summary,td,th,a) {
+  color: inherit;
+}
+:where(.hero, .panel, .metric, .order, .plan, .plan.featured, .empty, .tabs,
+  .navlinks a, .nav a, .nav-link, .btn-dark, .secondary, .danger,
+  .message.error, .message.success, .msg.error, .msg.success,
+  .login-message.error, .login-message.success, .status, .pill, .result, .notice,
+  .dark-card, .dark-panel, [data-theme="dark"], [data-surface="dark"])
+  :where(input,select,textarea) {
+  color: #fff;
+}
+:where(.card, .panel-card, .account-card, .calculator, .history-card, .helper, .stat,
+  .auth-card, .content-card, .page-card, .tool-card, .section-card, .form-card,
+  .result-card, .report-card, .admin-card, .plan-option, .login-card, .settings-menu,
+  .settings-account-summary, .sanba-reference-rates, .sanba-rate-item,
+  [data-theme="light"], [data-surface="light"]) {
+  color: #000;
+}
+:where(.card, .panel-card, .account-card, .calculator, .history-card, .helper, .stat,
+  .auth-card, .content-card, .page-card, .tool-card, .section-card, .form-card,
+  .result-card, .report-card, .admin-card, .plan-option, .login-card, .settings-menu,
+  .settings-account-summary, .sanba-reference-rates, .sanba-rate-item,
+  [data-theme="light"], [data-surface="light"])
+  :where(h1,h2,h3,h4,h5,h6,p,span,label,small,strong,b,em,li,dt,dd,legend,summary,td,th,a) {
+  color: inherit;
+}
+/* Campos permanecem legíveis independentemente do tema do cartão. */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+  color: #000;
+  background-color: #fff;
+}
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea)::placeholder {
+  color: #595959;
+}
+:where(.hero, .panel, .metric, .order, .plan, .plan.featured, .dark-card, .dark-panel,
+  [data-theme="dark"], [data-surface="dark"]) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea) {
+  color: #000;
+  background-color: #fff;
+}
+/* Elementos de ação escuros precisam de texto branco; ações claras, texto preto. */
+:where(.btn-primary, .primary-button, .copy-btn, .submit-btn, .calculate-btn,
+  button[type="submit"], .primary, .btn-dark, .danger, .reject, .sanba-rates-refresh) { color: #fff; }
+:where(.btn-light, .btn-secondary, .btn-outline, .secondary-button, .btn-light, .nav-link,
+  .settings-menu-close, .settings-menu, .settings-account-summary, .sanba-reference-rates,
+  .sanba-rate-item, [data-surface="light"]) { color: #000; }
+:where(.sanba-rates-heading h2, .sanba-rate-item h4, .sanba-rate-item strong) { color: #000; }
+:where(.sanba-rates-heading p, .sanba-rates-note, .sanba-rates-status, .sanba-rate-item p) { color: #404040; }
