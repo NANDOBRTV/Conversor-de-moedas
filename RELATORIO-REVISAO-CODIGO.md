@@ -358,3 +358,28 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 5. Conferir a configuração publicada de GitHub Pages e testar cada rota no navegador. A ferramenta de navegação desta revisão não conseguiu abrir as URLs publicadas, então o teste visual externo permanece pendente.
 
 **Estado:** o projeto está publicado e os checks existentes estão verdes, mas ainda não está certificado como completo ou estável para produção. Os riscos de Stripe, a proteção de senha desativada e os testes de navegador/autenticação/pedidos continuam bloqueadores.
+
+
+## Fechamento da revisão de 01/11/2026
+
+### O que foi concluído e publicado
+- PR #14 (`QA de navegação/idiomas e índice de entitlements`) foi mesclada por squash no commit `261f6f35186f04434a63585ca2698e3a492aeddf`.
+- O novo conjunto de testes estáticos passou no CI da PR (run `41359370758`) e novamente em `main` (run `41359403408`): `npm test` e `npm run check:js` concluídos com sucesso.
+- GitHub Pages publicou a atualização de `main`; o workflow `pages build and deployment` terminou com sucesso (run `41359402888`).
+- A migração aditiva `add_product_entitlements_source_order_index` foi aplicada com sucesso no projeto Supabase. A consulta confirmou o índice `product_entitlements_source_order_id_idx`; o Advisor deixou de apontar a chave estrangeira sem índice. O aviso de índice ainda não utilizado inclui esse índice recém-criado e foi mantido, sem remoção de índices existentes.
+- Não houve alteração de HTML/layout, autenticação, preços no código, checkout, webhook, segredos ou permissões RLS. Nenhum checkout foi criado e nenhuma cobrança foi realizada.
+
+### Achado adicional de autorização no fluxo de planos
+- A função implantada `create-stripe-plan-checkout` consulta apenas `membership_tier` e aceita o estado `common`, sem exigir `reseller_application_status = approved` e `access_status = active`.
+- O webhook `stripe-revenue-webhook` repete a verificação apenas por `membership_tier` e, após o pagamento, altera o perfil para Ouro/Diamante e `access_status = active`.
+- Isso pode permitir que uma conta Comum sem aprovação manual compre um plano e contorne a etapa de aprovação descrita no guia Supabase. O controle precisa ser aplicado tanto na criação do checkout quanto no webhook, e testado com contas Comum pendente, revendedor aprovado e Desenvolvedor. Não foi alterado nesta revisão por envolver autorização e pagamento.
+
+### Estado final deste ciclo
+- Código de navegação/idiomas e índice: alterado, testado pelo CI e publicado.
+- Banco: migração aditiva aplicada; sem exclusão ou alteração de dados/permissões.
+- Supabase Auth: proteção contra senhas vazadas continua desativada (pendente de configuração no painel).
+- Stripe: permanece bloqueador. A função implantada ainda exige `sk_live_` e cobra R$ 1,00 no Ouro, enquanto o arquivo de `main` indica R$ 9,90; o segredo não foi consultado, então não é possível afirmar se há chave live configurada. Checkout de produtos e verificação também exigem `sk_live_`. A PR #1 cobre somente parte do fluxo e não deve ser mesclada como solução completa.
+- PRs #1, #2 e #3 continuam abertas e não foram mescladas: #1 envolve checkout/preço temporário; #2 é atualização visual sem QA de navegador; #3 é serviço auxiliar de senha ainda sem integração efetiva ao Auth.
+- QA visual em Android/desktop, tradução real em inglês/espanhol, login/logout, recuperação de sessão, pedidos, convites/aprovações e níveis ainda não foram executados em navegador. O workflow de publicação passou, mas o navegador de verificação não conseguiu abrir as URLs públicas nesta execução.
+
+**Conclusão:** o repositório e a publicação passaram nos testes automatizados deste ciclo, mas o site não deve ser declarado completo ou pronto para produção. Os bloqueadores prioritários são a divergência e o modo live do Stripe, a falta de validação da aprovação de revendedor no checkout/webhook, a proteção de senha vazada desativada e o QA funcional/visual real.
