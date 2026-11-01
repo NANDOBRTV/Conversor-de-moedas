@@ -21,9 +21,12 @@ Deno.serve(async (req: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   if (!url || !serviceKey || !stripeKey) return json({ error: "Checkout Stripe ainda não está configurado no servidor." }, 503);
-  // Produção: aceite somente a chave secreta padrão live. Chaves restritas (rk_live_)
-  // e chaves de teste são recusadas para evitar configuração incompatível.
-  if (!stripeKey.startsWith("sk_live_")) return json({ error: "O checkout exige uma chave secreta padrão de produção (sk_live_). Confira STRIPE_SECRET_KEY no Supabase." }, 503);
+
+  // Segurança: esta versão é exclusivamente para testes. Recusa chaves live
+  // para evitar cobranças reais enquanto o preço temporário de R$ 1 estiver ativo.
+  if (!stripeKey.startsWith("sk_test_")) {
+    return json({ error: "Checkout de teste exige uma chave STRIPE_SECRET_KEY iniciada por sk_test_. Nenhuma cobrança real foi iniciada." }, 503);
+  }
   if (!token) return json({ error: "Entre na sua conta antes de comprar." }, 401);
 
   let body: { tier?: unknown };
@@ -45,8 +48,10 @@ Deno.serve(async (req: Request) => {
     if (profile.membership_tier !== "common") return json({ error: "Sua conta já possui um plano. Fale com o suporte para renovação ou alteração." }, 409);
     if (!user.email && !profile.email) return json({ error: "Adicione um e-mail válido à sua conta antes de pagar." }, 400);
 
-    const amount = tier === "gold" ? 9.90 : 49.90;
-    const planName = tier === "gold" ? "Plano Ouro (30 dias)" : "Plano Diamante";
+    // Preço temporário de teste solicitado: R$ 1,00 para qualquer plano.
+    // Antes de produção, restaurar Ouro = R$ 9,90 e Diamante = R$ 49,90.
+    const amount = 1.00;
+    const planName = tier === "gold" ? "Plano Ouro (30 dias) — TESTE" : "Plano Diamante — TESTE";
     const { data: order, error: orderError } = await admin.from("payment_orders").insert({
       user_id: user.id, plan_tier: tier, amount, currency: "BRL", status: "pending", provider: "stripe"
     }).select("id").single();
@@ -58,8 +63,6 @@ Deno.serve(async (req: Request) => {
     const siteUrl = "https://nandobrtv.github.io/Conversor-de-moedas/revendedor.html";
     const params = new URLSearchParams();
     params.set("mode", "payment");
-    // Deixe o Stripe selecionar dinamicamente os métodos compatíveis. A API atual
-    // rejeita payment_method_types em Checkout Sessions; os métodos são geridos no Dashboard.
     params.set("success_url", siteUrl + "?payment=success&session_id={CHECKOUT_SESSION_ID}");
     params.set("cancel_url", siteUrl + "?payment=cancelled");
     params.set("customer_email", user.email || profile.email || "");
@@ -69,8 +72,8 @@ Deno.serve(async (req: Request) => {
     params.set("line_items[0][price_data][unit_amount]", String(Math.round(amount * 100)));
     params.set("line_items[0][price_data][product_data][name]", planName);
     params.set("line_items[0][price_data][product_data][description]", tier === "gold"
-      ? "Acesso ao Painel Sanba por 30 dias. Sem renovação automática."
-      : "Acesso aos recursos do Plano Diamante conforme os termos do serviço.");
+      ? "Acesso de teste ao Painel Sanba por 30 dias. Preço temporário de R$ 1,00."
+      : "Acesso de teste aos recursos do Plano Diamante. Preço temporário de R$ 1,00.");
     params.set("metadata[order_type]", "plan");
     params.set("metadata[order_id]", order.id);
     params.set("metadata[supabase_user_id]", user.id);
