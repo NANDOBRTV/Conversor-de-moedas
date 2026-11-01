@@ -322,3 +322,39 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - Foram ajustados os cookies para os caminhos raiz e /Conversor-de-moedas/, com limpeza dos dois caminhos ao selecionar português.
 - Idiomas disponíveis: automático, português, inglês e espanhol.
 - Limitação importante: a tradução é fornecida pelo Google Website Translator e depende de ligação externa; não foi possível confirmar o resultado visual em navegador real nesta execução. É necessário testar a página publicada em inglês/espanhol, navegar para uma página interna e confirmar que o idioma se mantém.
+
+
+## Revisão de estabilidade — 01/11/2026
+
+### Estado do repositório e publicação
+- Branch principal verificada: `main`, commit `f94758bc8084eea872af3d634b39567ef801f5bc`.
+- GitHub Actions no commit principal: `Quality checks` e `pages build and deployment` concluídos com sucesso em 29/10/2026 (runs 40914431398 e 40914430553).
+- A revisão das 13 páginas operacionais confirmou que todas incluem `idiomas.js`; os links HTML locais encontrados apontam para arquivos existentes. Isso é verificação estática, não teste visual do Google Translate em navegador.
+- Foram identificados três PRs ainda abertos (#1 Stripe em modo de teste/preço temporário, #2 atualização visual antiga e #3 serviço auxiliar de verificação de senhas). Nenhum foi mesclado nesta revisão; #1 e #3 envolvem pagamento/segurança e exigem validação específica.
+
+### Supabase — leitura do projeto ativo
+- Projeto `conversor-sanba` (`kllewmcyvjltfzqxnmyz`) está `ACTIVE_HEALTHY`.
+- RLS está habilitado nas tabelas consultadas. As tabelas `bot_rate_limits`, `reseller_invites` e `revenue_orders` aparecem sem políticas; permanecem intencionalmente sem acesso direto do cliente e são operadas por Edge Functions com credenciais de servidor. Não foram criadas políticas permissivas.
+- O Advisor de segurança continua apontando a proteção de senhas vazadas do Supabase Auth desativada. A configuração ainda precisa ser ativada no painel Auth e validada com uma conta de teste.
+- O Advisor de performance identificou falta de índice em `product_entitlements.source_order_id`. Foi preparada nesta branch uma migração aditiva e idempotente para criar esse índice; nenhum dado ou permissão é removido.
+- Índices marcados como não utilizados não foram removidos, pois a observação isolada não comprova que sejam dispensáveis.
+
+### Stripe — alerta que bloqueia a declaração de conclusão
+- As Edge Functions implantadas `create-stripe-plan-checkout` (v10), `create-stripe-product-checkout` (v4) e `verify-product-payment` (v1) exigem chave `sk_live_`; não foram feitas chamadas de checkout nem cobranças nesta revisão.
+- A versão implantada de `create-stripe-plan-checkout` difere do arquivo em `main`: o checkout Ouro está configurado em R$ 1,00 e o Diamante em R$ 49,90. Se o segredo do Supabase for uma chave live, a função pode criar um checkout real pelo valor temporário de R$ 1,00. O valor efetivo do segredo não foi lido nem alterado.
+- O arquivo do repositório em `main` mantém Ouro em R$ 9,90 e Diamante em R$ 49,90, mas também aceita somente `sk_live_`. Há, portanto, divergência entre código versionado e função implantada. Não foi feita alteração de pagamento nem implantação de função nesta revisão.
+- O webhook Stripe implantado valida a assinatura, o estado pago, o pedido, o usuário, a sessão, a moeda e o valor; ainda requer teste de ponta a ponta com credenciais de teste e eventos duplicados/assíncronos antes de qualquer liberação comercial.
+
+### Alterações desta branch
+- Adicionado `tests/navigation-and-language.test.js` para verificar as 13 páginas operacionais, a persistência do idioma, a existência dos links internos e as permissões CSP necessárias ao tradutor.
+- Adicionada a migração `20261101225000_add_product_entitlements_source_order_index.sql`, somente com `CREATE INDEX IF NOT EXISTS`.
+- CI, aplicação da migração e QA visual/funcional ainda pendentes no momento desta anotação. Nenhuma mudança foi publicada no site nem implantada no Supabase nesta etapa.
+
+### Pendências essenciais
+1. Resolver a divergência entre Stripe implantado e código do GitHub; manter checkout bloqueado para testes até confirmar explicitamente o ambiente e os preços. Não usar chave live nem executar cobrança real durante QA.
+2. Ativar a proteção de senhas vazadas do Supabase Auth e validar em conta de teste.
+3. Executar QA real em Android e desktop: seleção de idioma na página inicial e persistência nas 13 páginas, navegação, login/logout, pedidos, convites/aprovações e níveis Comum/Ouro/Diamante.
+4. Executar checkout somente com chave e webhook de teste, verificando Pix/cartão, cancelamento, evento duplicado, valor divergente e liberação de entitlement; sem transações reais.
+5. Conferir a configuração publicada de GitHub Pages e testar cada rota no navegador. A ferramenta de navegação desta revisão não conseguiu abrir as URLs publicadas, então o teste visual externo permanece pendente.
+
+**Estado:** o projeto está publicado e os checks existentes estão verdes, mas ainda não está certificado como completo ou estável para produção. Os riscos de Stripe, a proteção de senha desativada e os testes de navegador/autenticação/pedidos continuam bloqueadores.
