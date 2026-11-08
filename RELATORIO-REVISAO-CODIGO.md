@@ -399,7 +399,7 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - Identificada uma melhoria de privacidade/performance: a versão anterior carregava o script externo do Google Translate mesmo quando o idioma efetivo era português.
 - Na branch `maintenance/lazy-google-translate-20261108`, `idiomas.js` foi ajustado para não carregar o tradutor externo em português e carregá-lo somente quando o idioma efetivo for inglês ou espanhol. A interface visual do seletor foi preservada.
 - Adicionado `tests/translation-runtime.test.js` com testes de execução simulada para: português na página inicial sem requisição externa; inglês salvo numa página interna sem repetir o seletor; seleção de espanhol com persistência/reload; e detecção automática de espanhol.
-- Esses testes ainda precisam passar no GitHub Actions da PR. Eles verificam a lógica local de inicialização e persistência, não a tradução visual fornecida pelo Google.
+- Os testes passaram no GitHub Actions da PR #15 (run `42529033042`, 08/11/2026): `npm test` e `npm run check:js` concluíram com sucesso. Eles verificam a lógica local de inicialização e persistência, não a tradução visual fornecida pelo Google.
 
 ### Supabase — estado verificado em 08/11/2026
 - Projeto `conversor-sanba` (`kllewmcyvjltfzqxnmyz`) está `ACTIVE_HEALTHY`.
@@ -426,3 +426,9 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - Nenhuma migração destrutiva, alteração de dados, mudança de RLS, troca de chave ou publicação de mudança de pagamento/segurança foi realizada neste ciclo.
 
 **Estado em 08/11/2026:** repositório e publicação principal têm checks automatizados verdes, mas o site não está certificado como completo nem pronto para produção. Os bloqueadores são a divergência e o modo live do Stripe, a lacuna de aprovação de revendedores, a proteção de senha vazada desativada e a falta de QA real de navegador/autenticação/pedidos.
+
+
+### Resultado do CI da PR #15 — 08/11/2026
+- PR #15 (`Carregar Google Translate somente quando necessário e testar idioma`) permanece aberta como draft, sem merge.
+- O workflow `Quality checks` terminou com sucesso no run `42529033042`; as etapas `Test repository invariants` e `Check JavaScript syntax` foram aprovadas.
+- A mudança ainda não foi publicada no GitHub Pages porque não foi mesclada em `main`. O merge depende de QA real da tradução e navegação nas 13 páginas.
