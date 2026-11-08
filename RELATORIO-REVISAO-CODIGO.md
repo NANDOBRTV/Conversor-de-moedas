@@ -383,3 +383,52 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - QA visual em Android/desktop, tradução real em inglês/espanhol, login/logout, recuperação de sessão, pedidos, convites/aprovações e níveis ainda não foram executados em navegador. O workflow de publicação passou, mas o navegador de verificação não conseguiu abrir as URLs públicas nesta execução.
 
 **Conclusão:** o repositório e a publicação passaram nos testes automatizados deste ciclo, mas o site não deve ser declarado completo ou pronto para produção. Os bloqueadores prioritários são a divergência e o modo live do Stripe, a falta de validação da aprovação de revendedor no checkout/webhook, a proteção de senha vazada desativada e o QA funcional/visual real.
+
+
+## Revisão de estabilidade — 08/11/2026
+
+### Repositório, PRs e publicação
+- Branch principal observada: `main`, commit `2c16c6629f4754b8a54f378609d41a92cbb2034c`.
+- Os workflows `Quality checks` e `pages build and deployment` do commit principal terminaram com sucesso em 02/11/2026 (runs `41370957363` e `41370956234`). Isso confirma os checks automatizados e o deploy do Pages naquele commit, mas não substitui QA visual/funcional em navegador.
+- PR #14 está mesclada. PR #1 continua aberta e altera somente `create-stripe-plan-checkout`; PR #2 e #3 foram encerradas sem merge porque estavam antigas/divergentes. A lista de PRs foi conferida diretamente na API do GitHub.
+- Não há mudanças desta revisão mescladas em `main`. Foi aberta uma branch separada para uma melhoria pequena do carregamento do tradutor; a validação do CI dessa branch/PR deve ser acompanhada antes de qualquer merge.
+
+### Idioma nas 13 páginas
+- As 13 páginas operacionais (`index.html` e 12 páginas internas) carregam uma única referência a `./idiomas.js`.
+- O seletor continua restrito à página principal. As páginas internas usam a preferência `sanba_language` e o cookie `googtrans`; não foi adicionado menu repetido às páginas internas.
+- Identificada uma melhoria de privacidade/performance: a versão anterior carregava o script externo do Google Translate mesmo quando o idioma efetivo era português.
+- Na branch `maintenance/lazy-google-translate-20261108`, `idiomas.js` foi ajustado para não carregar o tradutor externo em português e carregá-lo somente quando o idioma efetivo for inglês ou espanhol. A interface visual do seletor foi preservada.
+- Adicionado `tests/translation-runtime.test.js` com testes de execução simulada para: português na página inicial sem requisição externa; inglês salvo numa página interna sem repetir o seletor; seleção de espanhol com persistência/reload; e detecção automática de espanhol.
+- Os testes passaram no GitHub Actions da PR #15 (run `42529033042`, 08/11/2026): `npm test` e `npm run check:js` concluíram com sucesso. Eles verificam a lógica local de inicialização e persistência, não a tradução visual fornecida pelo Google.
+
+### Supabase — estado verificado em 08/11/2026
+- Projeto `conversor-sanba` (`kllewmcyvjltfzqxnmyz`) está `ACTIVE_HEALTHY`.
+- A migração `20261101225353_add_product_entitlements_source_order_index` aparece no histórico e a consulta somente leitura confirmou `public.product_entitlements_source_order_id_idx`.
+- Advisor de saúde: sem alertas.
+- Advisor de segurança: proteção contra senhas vazadas continua desativada. O aviso de RLS sem política aparece para `bot_rate_limits`, `reseller_invites` e `revenue_orders`; consulta de grants confirmou que `anon` e `authenticated` não possuem privilégios diretos nessas três tabelas. Não foram criadas políticas permissivas.
+- Advisor de performance: sete índices aparecem como não utilizados (nível informativo). Nenhum índice foi removido, pois ainda não há evidência suficiente para remoção segura.
+- Funções implantadas consultadas: `create-stripe-plan-checkout` v10, `stripe-revenue-webhook` v11, `create-stripe-product-checkout` v4 e `verify-product-payment` v1. As funções com `verify_jwt=false` implementam verificações próprias de token/origem ou assinatura, mas precisam de testes de integração para comprovar o fluxo completo.
+
+### Stripe e níveis de revendedor — bloqueadores mantidos
+- A função implantada `create-stripe-plan-checkout` v10 exige uma chave `sk_live_` e define Ouro por R$ 1,00 (com identificação de teste); Diamante permanece R$ 49,90. O arquivo de `main` exige igualmente `sk_live_`, mas define Ouro por R$ 9,90. Há divergência real entre o código versionado e a função implantada.
+- `create-stripe-product-checkout` v4 e `verify-product-payment` v1 também exigem `sk_live_`. A PR #1 não corrige essas duas funções nem o webhook; ela altera apenas o checkout de planos para aceitar `sk_test_` e aplicar R$ 1,00 aos dois níveis. Portanto, a PR #1 isoladamente não torna todo o Stripe seguro para testes e não deve ser mesclada como solução completa.
+- O checkout de planos consulta apenas `membership_tier` para permitir a compra de uma conta `common`; não exige explicitamente `reseller_application_status = approved` nem `access_status = active`. O webhook também valida somente o nível de associação antes de promover o perfil. Isso deixa uma lacuna em relação ao fluxo de aprovação manual de revendedores e precisa ser corrigido/testado em uma mudança coordenada de checkout + webhook.
+- Não foram feitas chamadas de checkout, não foram criadas sessões de pagamento, não houve cobranças, não foram lidos valores de segredos e nenhuma chave foi alterada. Nenhuma função de pagamento foi implantada nesta revisão.
+
+### Pedidos, autenticação e permissões
+- As funções administrativas consultadas usam token de sessão e conferem perfil Desenvolvedor ativo antes de executar operações administrativas; a função de convites também valida a conta chamadora. A leitura de código não substitui testes com contas de cada nível.
+- A função `manage-revenue-orders` está com `verify_jwt=false`, mas valida o token manualmente via `auth.getUser` antes de processar ações. A configuração precisa continuar coberta por testes de acesso negado para usuário comum e acesso permitido apenas para Desenvolvedor.
+- A proteção contra senhas vazadas deve ser ativada no painel Supabase Auth e validada com conta de teste. Não foi alterada nesta revisão.
+
+### Limitações e próximos testes
+- O endpoint público do GitHub Pages não pôde ser aberto pelo navegador de verificação nesta execução; o ambiente de execução também não conseguiu resolver o host externo para fazer uma navegação real. Portanto, não há evidência de QA visual em Android/desktop nem de tradução real das 13 páginas.
+- Permanecem pendentes: teste visual em Android/desktop; seleção de idioma na página inicial e navegação por todas as 12 páginas internas; login/logout e recuperação de sessão; pedidos e convites; aprovação/rejeição e níveis Comum/Ouro/Diamante/Desenvolvedor; teste Stripe completo em sandbox (cartão, Pix se habilitado, cancelamento, webhook, duplicidade, valor/moeda divergentes e concessão de entitlement); e ativação da proteção contra senhas vazadas.
+- Nenhuma migração destrutiva, alteração de dados, mudança de RLS, troca de chave ou publicação de mudança de pagamento/segurança foi realizada neste ciclo.
+
+**Estado em 08/11/2026:** repositório e publicação principal têm checks automatizados verdes, mas o site não está certificado como completo nem pronto para produção. Os bloqueadores são a divergência e o modo live do Stripe, a lacuna de aprovação de revendedores, a proteção de senha vazada desativada e a falta de QA real de navegador/autenticação/pedidos.
+
+
+### Resultado do CI da PR #15 — 08/11/2026
+- PR #15 (`Carregar Google Translate somente quando necessário e testar idioma`) permanece aberta como draft, sem merge.
+- O workflow `Quality checks` terminou com sucesso no run `42529033042`; as etapas `Test repository invariants` e `Check JavaScript syntax` foram aprovadas.
+- A mudança ainda não foi publicada no GitHub Pages porque não foi mesclada em `main`. O merge depende de QA real da tradução e navegação nas 13 páginas.
