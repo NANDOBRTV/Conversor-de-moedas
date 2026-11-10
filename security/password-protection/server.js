@@ -2,8 +2,7 @@ import http from "node:http";
 
 const PORT = Number(process.env.PORT || 10000);
 const ALLOWED_ORIGINS = new Set([
-  "https://nandobrtv.github.io",
-  "https://cute-easy-worlds-kawaii-coloring-series-for-kids.catalog.yampi.io"
+  "https://nandobrtv.github.io"
 ]);
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 20;
