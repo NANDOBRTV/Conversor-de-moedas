@@ -10,7 +10,7 @@ async function walk(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     if (entry.isDirectory()) {
       if (!ignoredDirectories.has(entry.name)) await walk(join(directory, entry.name));
-    } else if (entry.isFile() && entry.name.endsWith(".js") && !entry.name.endsWith(".test.js")) {
+    } else if (entry.isFile() && (entry.name.endsWith(".js") || entry.name.endsWith(".mjs")) && !entry.name.endsWith(".test.js")) {
       files.push(join(directory, entry.name));
     }
   }
