@@ -140,11 +140,15 @@ Deno.serve(async (req: Request) => {
     const user = authData?.user;
     if (authError || !user) return json({ error: "Sua sessão expirou. Entre novamente." }, 401);
     const { data: profile, error: profileError } = await admin.from("reseller_profiles")
-      .select("user_id, username, email, membership_tier")
+      .select("user_id, username, email, membership_tier, access_status, access_until, reseller_application_status")
       .eq("user_id", user.id).maybeSingle();
     if (profileError || !profile) return json({ error: "Não encontramos seu perfil de revendedor." }, 404);
     if (profile.membership_tier === "developer") return json({ error: "A conta Desenvolvedor não precisa comprar um plano." }, 409);
     if (profile.membership_tier !== "common") return json({ error: "Sua conta já possui um plano. Fale com o suporte para alterações ou renovação." }, 409);
+    if (profile.reseller_application_status !== "approved" || profile.access_status !== "active" ||
+        (profile.access_until && new Date(profile.access_until).getTime() <= Date.now())) {
+      return json({ error: "Seu cadastro precisa estar aprovado e ativo antes de realizar pagamentos." }, 403);
+    }
 
     const amount = tier === "gold" ? 9.90 : 49.90;
     const planName = tier === "gold" ? "Plano Ouro - 30 dias" : "Plano Diamante";

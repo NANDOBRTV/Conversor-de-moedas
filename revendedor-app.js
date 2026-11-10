@@ -58,26 +58,26 @@ function hideMessage(el) { el.textContent = ''; el.className = 'login-message' }
 
 // Check leaked passwords before signup; fail closed if the service is unavailable.
 async function checkPasswordLeak(password) {
-  let response;
+  let response, suffix;
   try {
     const bytes = new TextEncoder().encode(password);
     const digest = await crypto.subtle.digest('SHA-1', bytes);
-    const sha1 = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    const sha1 = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+    suffix = sha1.slice(5);
     response = await fetch('https://conversor-sanba-protection.onrender.com/v1/password-check', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sha1 }), cache: 'no-store'
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sha1_prefix:sha1.slice(0,5)}), cache:'no-store'
     });
   } catch (_) {
-    throw new Error('Não foi possível verificar a segurança da senha agora. Tente novamente em instantes.');
+    throw new Error('Não foi possível verificar a segurança da senha agora. Tente novamente.');
   }
   const result = await response.json().catch(() => ({}));
-  if (!response.ok || result.ok !== true) {
-    throw new Error(response.status === 429
-      ? 'Muitas tentativas de verificação. Aguarde um minuto e tente novamente.'
-      : 'A verificação de segurança está temporariamente indisponível. Tente novamente mais tarde.');
+  if (!response.ok || result.ok !== true || !Array.isArray(result.suffixes) ||
+      result.suffixes.length > 10000 || !result.suffixes.every(x => /^[A-F0-9]{35}$/.test(x))) {
+    throw new Error('A verificação de segurança está indisponível. Tente novamente.');
   }
-  if (result.compromised === true) {
-    throw new Error('Não foi possível utilizar essa senha. Escolha outra e tente novamente.');
+  if (result.suffixes.includes(suffix)) {
+    throw new Error('Não foi possível utilizar essa senha. Escolha outra.');
   }
 }
 function money(value, currency = 'BRL') { return Number(value).toLocaleString('pt-BR', {style:'currency',currency}); }
@@ -443,11 +443,12 @@ $('changePasswordForm').addEventListener('submit', async event => {
   if (!supabase || !currentProfile) { message(feedback, 'Entre novamente para alterar sua senha.'); return; }
   const password = $('settingsNewPassword').value;
   const confirmation = $('settingsConfirmPassword').value;
-  if (password.length < 8) { message(feedback, 'A nova senha precisa ter pelo menos 8 caracteres.'); return; }
+  if (password.length < 12) { message(feedback, 'A nova senha precisa ter pelo menos 12 caracteres.'); return; }
   if (password !== confirmation) { message(feedback, 'As duas senhas não são iguais. Confira e tente novamente.'); return; }
   const button = $('changePasswordButton');
   button.disabled = true; button.textContent = 'Atualizando…';
   try {
+    await checkPasswordLeak(password);
     const { data, error } = await supabase.auth.updateUser({ password });
     if (error) throw error;
     if (!data || !data.user) throw new Error('Não foi possível confirmar a atualização. Entre novamente e tente de novo.');
@@ -515,8 +516,8 @@ $('registerForm').addEventListener('submit', async event => {
     message(registerMessage, 'O nome de usuário deve ter de 3 a 30 caracteres: letras sem acento, números, ponto, hífen ou sublinhado.');
     return;
   }
-  if (password.length < 8) {
-    message(registerMessage, 'Use uma senha com pelo menos 8 caracteres.');
+  if (password.length < 12) {
+    message(registerMessage, 'Use uma senha com pelo menos 12 caracteres.');
     return;
   }
   const submit = $('registerSubmit');

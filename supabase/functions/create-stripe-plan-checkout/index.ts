@@ -21,9 +21,12 @@ Deno.serve(async (req: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   if (!url || !serviceKey || !stripeKey) return json({ error: "Checkout Stripe ainda não está configurado no servidor." }, 503);
-  // Produção: aceite somente a chave secreta padrão live. Chaves restritas (rk_live_)
-  // e chaves de teste são recusadas para evitar configuração incompatível.
-  if (!stripeKey.startsWith("sk_live_")) return json({ error: "O checkout exige uma chave secreta padrão de produção (sk_live_). Confira STRIPE_SECRET_KEY no Supabase." }, 503);
+  // Explicit mode prevents test/live confusion and accidental real charges.
+  const stripeMode = Deno.env.get("STRIPE_MODE");
+  if (!["test", "live"].includes(stripeMode || "") ||
+      !stripeKey.startsWith(stripeMode === "live" ? "sk_live_" : "sk_test_")) {
+    return json({ error: "Modo Stripe inconsistente. Configure STRIPE_MODE e a chave correspondente." }, 503);
+  }
   if (!token) return json({ error: "Entre na sua conta antes de comprar." }, 401);
 
   let body: { tier?: unknown };
@@ -38,12 +41,25 @@ Deno.serve(async (req: Request) => {
     if (authError || !user) return json({ error: "Sua sessão expirou. Entre novamente." }, 401);
 
     const { data: profile, error: profileError } = await admin.from("reseller_profiles")
-      .select("user_id, username, email, membership_tier")
+      .select("user_id, username, email, membership_tier, reseller_application_status, access_status, access_until")
       .eq("user_id", user.id).maybeSingle();
     if (profileError || !profile) return json({ error: "Não encontramos seu perfil." }, 404);
     if (profile.membership_tier === "developer") return json({ error: "A conta Desenvolvedor não precisa comprar um plano." }, 409);
     if (profile.membership_tier !== "common") return json({ error: "Sua conta já possui um plano. Fale com o suporte para renovação ou alteração." }, 409);
+    // Never charge an unapproved, suspended or expired reseller.
+    if (profile.reseller_application_status !== "approved" ||
+        profile.access_status !== "active" ||
+        (profile.access_until && new Date(profile.access_until).getTime() <= Date.now())) {
+      return json({ error: "O cadastro de revendedor precisa estar aprovado e ativo antes de comprar um plano." }, 403);
+    }
     if (!user.email && !profile.email) return json({ error: "Adicione um e-mail válido à sua conta antes de pagar." }, 400);
+
+    const cutoff = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { data: recent, error: recentError } = await admin.from("payment_orders")
+      .select("id").eq("user_id", user.id).eq("provider", "stripe")
+      .eq("status", "pending").gte("created_at", cutoff).limit(3);
+    if (recentError) return json({ error: "Não foi possível validar tentativas recentes." }, 503);
+    if ((recent || []).length >= 3) return json({ error: "Muitas tentativas recentes de pagamento. Aguarde uma hora." }, 429);
 
     const amount = tier === "gold" ? 9.90 : 49.90;
     const planName = tier === "gold" ? "Plano Ouro (30 dias)" : "Plano Diamante";
@@ -82,14 +98,14 @@ Deno.serve(async (req: Request) => {
 
     const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
       method: "POST",
-      headers: { Authorization: "Bearer " + stripeKey, "Content-Type": "application/x-www-form-urlencoded" },
+      headers: { Authorization: "Bearer " + stripeKey, "Content-Type": "application/x-www-form-urlencoded", "Idempotency-Key": "sanba-plan-" + order.id },
       body: params,
     });
     const stripe = await response.json().catch(() => ({}));
     if (!response.ok || !stripe.id || !stripe.url) {
       await admin.from("payment_orders").update({ status: "cancelled" }).eq("id", order.id);
       console.error("Stripe checkout error", response.status, JSON.stringify({ type: stripe?.error?.type, code: stripe?.error?.code, param: stripe?.error?.param, message: stripe?.error?.message }).slice(0, 900));
-      return json({ error: "O Stripe recusou a criação do checkout: " + String(stripe?.error?.message || "erro sem detalhes") }, 502);
+      return json({ error: "O provedor não conseguiu criar o checkout. Tente novamente ou entre em contato com o suporte." }, 502);
     }
 
     const { error: updateError } = await admin.from("payment_orders").update({
