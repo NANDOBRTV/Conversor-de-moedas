@@ -116,10 +116,15 @@ Deno.serve(async (req: Request) => {
     if (!await verifyStripeSignature(raw, req.headers.get("Stripe-Signature") || "", secret))
       return reply({ error: "Assinatura inválida." }, 400);
     const event = JSON.parse(raw);
+    const stripeMode = Deno.env.get("STRIPE_MODE");
+    if (!["test", "live"].includes(stripeMode || "")) return reply({ error: "Modo Stripe não configurado." }, 503);
+    if (Boolean(event.livemode) !== (stripeMode === "live"))
+      return reply({ error: "Evento Stripe pertence a outro ambiente." }, 409);
     const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
     if (["charge.refunded", "charge.dispute.created"].includes(event.type)) {
       const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-      if (!stripeKey) return reply({ error: "Conciliação Stripe não configurada." }, 503);
+      if (!stripeKey || !stripeKey.startsWith(stripeMode === "live" ? "sk_live_" : "sk_test_"))
+        return reply({ error: "Chave de conciliação Stripe incompatível." }, 503);
       return reply(await handlePaymentReversal(event, admin, stripeKey));
     }
     if (!["checkout.session.completed", "checkout.session.async_payment_succeeded"].includes(event.type))
