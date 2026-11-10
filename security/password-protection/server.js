@@ -87,7 +87,7 @@ async function checkPwnedPasswordPrefix(prefix) {
   const raw = await response.text();
   if (raw.length > 100000) throw new Error("hibp_unexpected_size");
   const suffixes = [];
-  for (const line of raw.split(/\\r?\\n/)) {
+  for (const line of raw.split(/\r?\n/)) {
     const [suffix, count] = line.trim().split(":");
     if (/^[a-f0-9]{35}$/i.test(suffix || "") && Number(count) > 0) {
       suffixes.push(suffix.toUpperCase());
