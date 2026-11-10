@@ -255,8 +255,8 @@ body{background:radial-gradient(circle at 4% 0%,rgba(204,251,241,.85),transparen
       <h3 class="settings-section-title">🔐 Segurança e senha</h3>
       <p class="subtext">Defina uma nova senha para sua conta. Use pelo menos 8 caracteres.</p>
       <form id="changePasswordForm">
-        <label class="field"><span>Nova senha</span><input id="settingsNewPassword" type="password" minlength="8" maxlength="128" autocomplete="new-password" required></label>
-        <label class="field"><span>Confirmar nova senha</span><input id="settingsConfirmPassword" type="password" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+        <label class="field"><span>Nova senha</span><input id="settingsNewPassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" required></label>
+        <label class="field"><span>Confirmar nova senha</span><input id="settingsConfirmPassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" required></label>
         <button class="btn btn-primary" id="changePasswordButton" type="submit">Atualizar senha</button>
         <div class="login-message" id="changePasswordMessage" role="status" aria-live="polite"></div>
       </form>
@@ -300,7 +300,7 @@ body{background:radial-gradient(circle at 4% 0%,rgba(204,251,241,.85),transparen
       <form id="registerForm" autocomplete="on" method="post" style="display:none">
         <label class="field"><span>Seu e-mail</span><input id="registerEmail" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required maxlength="254"></label>
         <label class="field"><span>Nome de usuário</span><input id="registerUsername" name="username" type="text" placeholder="Escolha seu usuário" autocomplete="username" required minlength="3" maxlength="30" pattern="[A-Za-z0-9_.-]{3,30}" autocapitalize="none" spellcheck="false"></label>
-        <label class="field"><span>Crie uma senha</span><input id="registerPassword" name="new-password" type="password" placeholder="Pelo menos 8 caracteres" autocomplete="new-password" required minlength="8" maxlength="128"></label>
+        <label class="field"><span>Crie uma senha</span><input id="registerPassword" name="new-password" type="password" placeholder="Pelo menos 8 caracteres" autocomplete="new-password" required minlength="12" maxlength="128"></label>
         <button class="btn btn-dark login-submit" type="submit" id="registerSubmit">Criar minha conta</button>
         <div class="login-message error" id="registerMessage" role="status" aria-live="polite"></div>
       </form>
