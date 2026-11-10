@@ -21,9 +21,12 @@ Deno.serve(async (req: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   if (!url || !serviceKey || !stripeKey) return json({ error: "Checkout Stripe ainda não está configurado no servidor." }, 503);
-  // Produção: aceite somente a chave secreta padrão live. Chaves restritas (rk_live_)
-  // e chaves de teste são recusadas para evitar configuração incompatível.
-  if (!stripeKey.startsWith("sk_live_")) return json({ error: "O checkout exige uma chave secreta padrão de produção (sk_live_). Confira STRIPE_SECRET_KEY no Supabase." }, 503);
+  // Explicit mode prevents test/live confusion and accidental real charges.
+  const stripeMode = Deno.env.get("STRIPE_MODE");
+  if (!["test", "live"].includes(stripeMode || "") ||
+      !stripeKey.startsWith(stripeMode === "live" ? "sk_live_" : "sk_test_")) {
+    return json({ error: "Modo Stripe inconsistente. Configure STRIPE_MODE e a chave correspondente." }, 503);
+  }
   if (!token) return json({ error: "Entre na sua conta antes de comprar." }, 401);
 
   let body: { tier?: unknown };
