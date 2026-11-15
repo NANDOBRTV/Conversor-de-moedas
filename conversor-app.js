@@ -9,7 +9,7 @@
   }
 })();
 
-var WHATSAPP_BRL="5582996843269", WHATSAPP_INTERNACIONAL="584145154287", CUSTO_USD=0.99/1500, CUSTO_BRL=6/1500, CUSTO_VES=1450/1500, MINIMO_MOEDAS=1000, TAMANHO_ID=8;
+var WHATSAPP_BRL="5582996843269", WHATSAPP_INTERNACIONAL="584145154287", CUSTO_USD=0.99/1500, CUSTO_BRL=6/1500, CUSTO_VES=1450/1500, MINIMO_MOEDAS=1000, MAXIMO_MOEDAS=10000000, TAMANHO_ID=8;
 var PRECOS_SESSAO={BRL:6,USD:0.99,VES:1450};
 function atualizarCustoSessao(){CUSTO_BRL=PRECOS_SESSAO.BRL/1500;CUSTO_USD=PRECOS_SESSAO.USD/1500;CUSTO_VES=PRECOS_SESSAO.VES/1500;}
 function custoPorMoeda(c){if(c==='BRL')return CUSTO_BRL;if(c==='VES')return CUSTO_VES;return CUSTO_USD*(TAXAS[c]||1)}
@@ -122,6 +122,7 @@ function calcC(){
   if(!(m>0))return;
   if(!Number.isInteger(m)){ec.classList.add('show');document.getElementById('errCMsg').textContent='Informe uma quantidade inteira de moedas, sem casas decimais.';return}
   if(m<MINIMO_MOEDAS){ec.classList.add('show');document.getElementById('errCMsg').innerHTML='Faltam <b>'+fmtN.format(MINIMO_MOEDAS-m)+'</b> moedas';return}
+  if(m>MAXIMO_MOEDAS){ec.classList.add('show');document.getElementById('errCMsg').textContent='O limite por pedido é '+fmtN.format(MAXIMO_MOEDAS)+' moedas. Reduza a quantidade.';return}
   
   var custoLocal=custoPorMoeda(moeda);
   var exato=m*custoLocal;
@@ -158,6 +159,7 @@ function calcR(){
   var qtd=Math.floor(v/custoLocal+1e-9);
   var valorCobrado=arredondarParaCima(qtd*custoLocal,moeda);
   while(qtd>0&&valorCobrado>v+1e-9){qtd--;valorCobrado=arredondarParaCima(qtd*custoLocal,moeda)}
+  if(qtd>MAXIMO_MOEDAS){er.classList.add('show');document.getElementById('errRMsg').textContent='O limite por pedido é '+fmtN.format(MAXIMO_MOEDAS)+' moedas. Reduza o valor informado.';return}
   if(qtd<MINIMO_MOEDAS){er.classList.add('show');var minV=arredondarParaCima(MINIMO_MOEDAS*custoLocal,moeda);document.getElementById('errRMsg').innerHTML='O valor mínimo para receber '+fmtN.format(MINIMO_MOEDAS)+' moedas é <b>'+fmtRd(minV,moeda)+'</b>';return}
   document.getElementById('valR').textContent=fmtM(qtd);
   document.getElementById('detR').textContent='Orçamento: '+fmtRd(v,moeda)+' · custo estimado das moedas: '+fmtRd(valorCobrado,moeda);
@@ -239,8 +241,8 @@ function copiarTexto(texto, statusEl){
   else fallbackCopiar(texto,statusEl);
 }
 function fallbackCopiar(texto,statusEl){var ta=document.createElement('textarea');ta.value=texto;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{var ok=document.execCommand('copy');statusEl.textContent=ok?'Resumo copiado! Cole no WhatsApp para enviar.':'Não foi possível copiar automaticamente. Selecione e copie o resumo.';}catch(e){statusEl.textContent='Não foi possível copiar automaticamente.';}ta.remove();}
-document.getElementById('copyC').addEventListener('click',function(){var m=num(document.getElementById('moedas').value);if(!Number.isInteger(m)||m<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryC').textContent='Informe um ID válido de 8 dígitos e pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(m)+' moedas\nValor estimado: '+document.getElementById('valC').textContent+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryC'));});
-document.getElementById('copyR').addEventListener('click',function(){var v=num(document.getElementById('reais').value);var custoLocal=custoPorMoeda(moeda);var qtd=Math.floor(v/custoLocal+1e-9);var cobrado=arredondarParaCima(qtd*custoLocal,moeda);while(qtd>0&&cobrado>v+1e-9){qtd--;cobrado=arredondarParaCima(qtd*custoLocal,moeda);}if(!Number.isFinite(v)||qtd<MINIMO_MOEDAS||!isIdValid()){document.getElementById('summaryR').textContent='Informe um ID válido de 8 dígitos e valor suficiente para pelo menos 1.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(qtd)+' moedas\nValor estimado: '+fmtRd(cobrado,moeda)+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryR'));});
+document.getElementById('copyC').addEventListener('click',function(){var m=num(document.getElementById('moedas').value);if(!Number.isInteger(m)||m<MINIMO_MOEDAS||m>MAXIMO_MOEDAS||!isIdValid()){document.getElementById('summaryC').textContent='Informe um ID válido de 8 dígitos e uma quantidade entre 1.000 e 10.000.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(m)+' moedas\nValor estimado: '+document.getElementById('valC').textContent+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryC'));});
+document.getElementById('copyR').addEventListener('click',function(){var v=num(document.getElementById('reais').value);var custoLocal=custoPorMoeda(moeda);var qtd=Math.floor(v/custoLocal+1e-9);var cobrado=arredondarParaCima(qtd*custoLocal,moeda);while(qtd>0&&cobrado>v+1e-9){qtd--;cobrado=arredondarParaCima(qtd*custoLocal,moeda);}if(!Number.isFinite(v)||qtd<MINIMO_MOEDAS||qtd>MAXIMO_MOEDAS||!isIdValid()){document.getElementById('summaryR').textContent='Informe um ID válido de 8 dígitos e um valor para uma quantidade entre 1.000 e 10.000.000 moedas.';return;}copiarTexto('ID Sanba: '+getUserId()+'\nQuantidade: '+fmtN.format(qtd)+' moedas\nValor estimado: '+fmtRd(cobrado,moeda)+'\nMoeda/região: '+moeda+'\nValor apenas de referência — confirme antes de pagar.',document.getElementById('summaryR'));});
 document.getElementById('clearAll').addEventListener('click',function(){
   document.getElementById('userId').value='';
   if(!rememberIdEl.checked){try{localStorage.removeItem('sanba_calculadora_id');}catch(e){}}
