@@ -71,3 +71,10 @@
 6. **QA visual/funcional real continua pendente.** Não foi possível abrir o GitHub Pages no navegador de verificação desta execução. Faltam Android/desktop, troca de idioma e navegação real nas 13 páginas, login/logout/recuperação de sessão, pedidos e níveis de revendedor, checkout de teste, Pix assíncrono, reembolso e disputa.
 
 **Decisão desta revisão:** manter este PR em draft e não mesclar nem implantar até resolver os itens 1–4, executar os testes de homologação e validar a compatibilidade do fluxo manual. Usar exclusivamente STRIPE_MODE=test + credenciais sk_test_ em homologação. Não configurar modo live nesta etapa.
+
+
+### Resultado após correções de testes — 15/11/2026
+- O limite de 10.000.000 moedas definido pelo gatilho SQL agora também é validado no cliente em conversor-app.js, tanto em Moedas → Valor quanto em Valor → Moedas e nas ações de cópia. Isso evita que o usuário gere um pedido que o servidor rejeitaria pelo limite.
+- O conjunto de regressão agora verifica que o limite e os preços de referência BRL/USD/VES coincidem entre cliente e migração.
+- O commit c365c6335b94870817994121c41c46ef88e41677 passou no GitHub Actions, run 75: 27 testes aprovados, 0 falhas; verificação de sintaxe JavaScript também aprovada.
+- Esse resultado é de CI estático. Não equivale a teste de navegador, checkout real, webhook assinado, Pix assíncrono ou migração aplicada. O PR continua draft e não foi implantado.
