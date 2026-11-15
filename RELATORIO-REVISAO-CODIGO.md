@@ -428,3 +428,13 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - Corrigi os testes para refletir o código real no commit 9ab092fcd3efe91899a7c3e2c831e6a200a010fb. O resultado do CI para esse commit ainda não foi disponibilizado nesta revisão; manter como pendente até aparecer sucesso.
 - PR #1 foi convertida para draft porque altera somente a criação do checkout de plano, não fecha o ciclo com verificação/webhook e mantém preço temporário de R$ 1,00. Não foi mesclada nem implantada.
 - Foi registrado comentário de revisão na PR #16 (review 5913221216) com os bloqueadores de idempotência, compatibilidade do pedido manual com conteúdo privado, proteção nativa de senha vazada e homologação. A PR #16 continua draft.
+
+
+### Aditamento final deste ciclo — 15/11/2026
+- PR #16: o limite máximo de 10.000.000 moedas do gatilho SQL foi alinhado no cliente (conversor-app.js) para as duas formas de cálculo e para copiar os resultados. Foi acrescentado teste de paridade do limite e dos preços BRL/USD/VES.
+- PR #16: commit de testes c365c6335b94870817994121c41c46ef88e41677 passou no run 75 com 27/27 testes e verificação de sintaxe JavaScript; a atualização documental subsequente 852f87a0fd34968652e8758e8aed914553240e15 também passou no run 76. A PR permanece draft e não foi mesclada/implantada.
+- PR #15: acrescentado teste para conferir que as 13 páginas operacionais carregam o controlador compartilhado idiomas.js. A verificação estática direta confirmou esse script nas 13 páginas do repositório. O commit a3e6e40fcbdd4b8ef7e27c132ea5822bffc90018 ainda não apresentou execução de CI nesta revisão; o run 63 aprovado pertence ao commit anterior. A tradução real em inglês/espanhol continua sem QA visual em navegador.
+- PR #1 foi convertida para draft para impedir merge acidental de uma alteração isolada de checkout com preço temporário de R$ 1,00, sem validação conjunta de webhook e verificação.
+- A revisão formal da PR #16 permanece como comentário, não aprovação. Nenhuma cobrança, migração, deploy, alteração de segredo ou merge foi realizado.
+
+**Próximo passo:** resolver a deduplicação de checkout e a compatibilidade de pedidos manuais com conteúdo privado; depois ativar a proteção nativa de senhas vazadas e executar homologação completa com Stripe test/Pix, autenticação, pedidos, níveis e QA visual das 13 páginas antes de qualquer merge ou implantação.
