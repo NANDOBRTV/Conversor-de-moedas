@@ -438,3 +438,8 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - A revisão formal da PR #16 permanece como comentário, não aprovação. Nenhuma cobrança, migração, deploy, alteração de segredo ou merge foi realizado.
 
 **Próximo passo:** resolver a deduplicação de checkout e a compatibilidade de pedidos manuais com conteúdo privado; depois ativar a proteção nativa de senhas vazadas e executar homologação completa com Stripe test/Pix, autenticação, pedidos, níveis e QA visual das 13 páginas antes de qualquer merge ou implantação.
+
+
+### Nota de verificação operacional — 15/11/2026
+- Os registros de CI 67/68/70/72 citados nos aditamentos intermediários foram falhas dos novos testes estáticos; os padrões foram corrigidos. O resultado final relevante da branch #16 é o run 75 (27/27) e o run 76 (documentação), ambos aprovados.
+- A saúde do serviço auxiliar conversor-sanba-protection no Render não foi confirmada neste ciclo: a listagem de workspaces exige seleção interativa, indisponível nesta execução não interativa. O endpoint /health não foi chamado.
