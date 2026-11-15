@@ -421,3 +421,10 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - Nenhuma alteração foi publicada no GitHub Pages ou implantada no Supabase nesta revisão.
 
 **Conclusão:** manter PR #15 e PR #16 em draft. Não declarar o site completo. Antes de qualquer merge/deploy de segurança/pagamentos, resolver a deduplicação de checkout, decidir o fluxo de pedidos manuais, ativar a proteção nativa de senhas vazadas e executar homologação com STRIPE_MODE=test e sk_test_, sem cobrança real.
+
+
+### Aditamento da revisão — 15/11/2026, 19:20 (horário local)
+- Os runs 67 e 68 do PR #16 falharam em 2 dos 26 testes, ambos por asserções novas excessivamente específicas: o padrão da checagem de prefixo de sessão Stripe não correspondia à formatação real do arquivo e o cálculo de arredondamento foi procurado em index.html, embora tenha sido externalizado para conversor-app.js. Não foi detectada falha de execução no código de produção nesses dois casos.
+- Corrigi os testes para refletir o código real no commit 9ab092fcd3efe91899a7c3e2c831e6a200a010fb. O resultado do CI para esse commit ainda não foi disponibilizado nesta revisão; manter como pendente até aparecer sucesso.
+- PR #1 foi convertida para draft porque altera somente a criação do checkout de plano, não fecha o ciclo com verificação/webhook e mantém preço temporário de R$ 1,00. Não foi mesclada nem implantada.
+- Foi registrado comentário de revisão na PR #16 (review 5913221216) com os bloqueadores de idempotência, compatibilidade do pedido manual com conteúdo privado, proteção nativa de senha vazada e homologação. A PR #16 continua draft.
