@@ -383,3 +383,41 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - QA visual em Android/desktop, tradução real em inglês/espanhol, login/logout, recuperação de sessão, pedidos, convites/aprovações e níveis ainda não foram executados em navegador. O workflow de publicação passou, mas o navegador de verificação não conseguiu abrir as URLs públicas nesta execução.
 
 **Conclusão:** o repositório e a publicação passaram nos testes automatizados deste ciclo, mas o site não deve ser declarado completo ou pronto para produção. Os bloqueadores prioritários são a divergência e o modo live do Stripe, a falta de validação da aprovação de revendedor no checkout/webhook, a proteção de senha vazada desativada e o QA funcional/visual real.
+
+
+## Revisão de estabilidade — 15/11/2026
+
+### Estado do GitHub
+- Branch principal: main, commit-base 2c16c6629f4754b8a54f378609d41a92cbb2034c.
+- PR #14 está mesclada. PR #15 (idiomas) e PR #16 (hardening de segurança/pagamentos) continuam abertas em draft; nenhuma foi mesclada nesta revisão.
+- PR #15: CI do commit dc61dc3eef3a83aafa41fccf47d486420926e587 aprovado no run 63. O seletor continua previsto apenas na página principal e o script compartilhado é carregado nas 13 páginas, mas a tradução visual real ainda não foi testada.
+- PR #16: CI do commit 023003bd35d8c863ac0dabffe966f94bb9cd85a1 aprovado no run 66 antes dos testes adicionais desta revisão. Foram adicionados três testes de regressão em tests/security-hardening.test.js no commit b6cc8d0ea853a6532b742fc7243d99774d5d581d; depois, o plano de segurança recebeu esta revisão no commit e5b9d922f74604f1cd117c39de50964a6efa7e7a. O CI dos commits novos ainda precisa ser confirmado.
+
+### Alterações efetivamente realizadas nesta revisão
+- Somente na branch security/hardening-2026-11-10: adicionados testes estáticos de consistência STRIPE_MODE/sk_test_/sk_live_, rejeição de replay de pedidos cancelados/revertidos e alinhamento do arredondamento de recargas com as permissões de atualização previstas na migração.
+- Atualizado docs/SECURITY-HARDENING-2026-11-10.md com achados de produção, limitações e critérios de homologação.
+- Nenhuma alteração funcional foi aplicada em main. Não houve merge, deploy, migração, alteração de RLS, leitura ou alteração de segredos, criação de checkout ou cobrança.
+
+### Supabase — estado observado em 15/11/2026
+- Projeto conversor-sanba: ACTIVE_HEALTHY.
+- Última migração registrada: 20261101225353. As migrações de 10/11 propostas na PR #16 não foram aplicadas.
+- Bucket premium-content não existe; get-premium-content não está implantada.
+- Security Advisor: três tabelas com RLS habilitado e sem políticas (bot_rate_limits, reseller_invites, revenue_orders), nível INFO; o padrão é negar acesso direto a clientes e o uso atual é por Edge Functions privilegiadas. Não adicionar políticas amplas.
+- Security Advisor: proteção contra senhas vazadas do Supabase Auth desativada (WARN). A verificação HIBP da PR #16 no cliente/serviço auxiliar não impede chamadas diretas à API de Auth.
+- Performance Advisor: sete índices não utilizados (INFO). Nenhum índice foi removido.
+
+### Divergências e riscos de produção confirmados
+- create-stripe-plan-checkout implantada v10 ainda exige sk_live_ e define Plano Ouro em R$ 1,00; a branch de hardening propõe R$ 9,90 e STRIPE_MODE explícito. Não alterar a chave nem implantar até homologação.
+- create-stripe-product-checkout v4 e verify-product-payment v1 também exigem sk_live_. stripe-revenue-webhook v11 ainda não contém tratamento de charge.refunded/charge.dispute.created.
+- create-checkout v9 e mercadopago-webhook v8 implantadas ainda não repetem a verificação de reseller_application_status aprovada presente na branch #16.
+- A idempotência proposta ainda não impede submissões duplicadas: o checkout de plano cria novo ID de pedido por requisição e usa esse ID na chave; o checkout de produto não envia Idempotency-Key. Os dois permitem até três tentativas pendentes recentes. Exigir deduplicação estável/reuso de sessão antes de liberar checkout de teste amplo.
+- A função implantada manage-revenue-orders v8 aceita pedidos manuais whatsapp_manual para planilha_lucro e kit_divulgacao, mas não cria product_entitlements ao marcar o pedido como payment_confirmed/delivered. O novo gate privado exige entitlement ativo, pedido pago e payment_provider=stripe. O fluxo manual não libera os arquivos privados; decidir se esses produtos devem deixar de aceitar pedido manual ou se a função será versionada e ajustada com concessão restrita ao Desenvolvedor. A função implantada não possui fonte correspondente no caminho supabase/functions/manage-revenue-orders/index.ts do GitHub.
+
+### Testes e publicação
+- CI dos commits-base de PR #15 e PR #16: sucesso nos runs 63 e 66, respectivamente.
+- Testes adicionais da PR #16 foram gravados, mas ainda aguardam execução do CI após os commits b6cc8d0 e e5b9d92.
+- QA visual real em Android/desktop e tradução nas 13 páginas: pendente; o navegador de verificação não conseguiu acessar o GitHub Pages nesta execução.
+- Cadastro/login/logout/recuperação de sessão, pedidos, níveis de revendedor, Stripe test, Pix assíncrono, reembolso/disputa e entrega privada: pendentes de testes em homologação.
+- Nenhuma alteração foi publicada no GitHub Pages ou implantada no Supabase nesta revisão.
+
+**Conclusão:** manter PR #15 e PR #16 em draft. Não declarar o site completo. Antes de qualquer merge/deploy de segurança/pagamentos, resolver a deduplicação de checkout, decidir o fluxo de pedidos manuais, ativar a proteção nativa de senhas vazadas e executar homologação com STRIPE_MODE=test e sk_test_, sem cobrança real.
