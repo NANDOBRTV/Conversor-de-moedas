@@ -49,3 +49,25 @@
 - **Credenciais:** nunca publicar `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, assinatura de webhook ou arquivos de `private-artifacts/` em issues, commits, logs ou navegador.
 
 **Critério de liberação:** CI verde + teste no navegador Android + testes RLS + confirmação de cobrança de teste + reversão + revisão dos segredos. Sem isso, mantenha a versão principal inalterada.
+
+
+## Revisão complementar — 15/11/2026
+
+### Verificações realizadas
+- O projeto Supabase conversor-sanba está ACTIVE_HEALTHY.
+- O histórico de migrações em produção termina em 20261101225353; as duas migrações deste PR, de 10/11, não foram aplicadas.
+- O bucket premium-content ainda não existe e a Edge Function get-premium-content ainda não está implantada.
+- Os testes do PR estavam verdes no run 66 antes desta revisão. Foram acrescentados testes de regressão para consistência do modo Stripe, rejeição de replay de pedidos revertidos e compatibilidade do arredondamento/permissões de recarga. O novo commit ainda precisa de CI.
+- O PR de idiomas #15 também tem CI verde (run 63), mas segue draft; os testes não substituem a validação visual real das 13 páginas.
+- Nenhuma migração, deploy, cobrança, leitura/alteração de segredo ou mudança de permissão foi feita nesta revisão.
+
+### Bloqueadores e compatibilidade a resolver antes do merge/deploy
+
+1. **Ambiente Stripe implantado não é o desta branch.** As funções atuais no Supabase continuam exigindo sk_live_: create-stripe-plan-checkout v10, create-stripe-product-checkout v4 e verify-product-payment v1. O checkout de planos implantado ainda define Ouro em R$ 1,00, enquanto a branch propõe R$ 9,90. O webhook implantado stripe-revenue-webhook v11 não contém tratamento de charge.refunded/charge.dispute.created. A branch não foi implantada e nenhuma chave foi alterada.
+2. **Idempotência de checkout ainda é insuficiente.** O checkout de planos usa uma chave derivada do ID do pedido, mas cada requisição cria um novo pedido/ID; isso não deduplica dois cliques ou reenvios HTTP. O checkout de produtos não envia Idempotency-Key. Ambos permitem até três pedidos pendentes recentes. Antes de habilitar, adicionar deduplicação estável/reuso de sessão pendente e testar cliques simultâneos, timeouts e reenvios.
+3. **Pedidos manuais e conteúdo privado precisam de decisão explícita.** A função implantada manage-revenue-orders v8 aceita pedidos whatsapp_manual para planilha_lucro e kit_divulgacao e permite ao Desenvolvedor marcar payment_confirmed/delivered, mas não cria product_entitlements. O novo get-premium-content exige entitlement ativo, pedido pago e payment_provider = stripe. Portanto, o fluxo manual não libera os arquivos privados. O código-fonte dessa função implantada também não está versionado no caminho supabase/functions/manage-revenue-orders/index.ts. Antes do merge, decidir se esses produtos deixam de aceitar pedido manual ou se o fluxo manual será versionado e receberá uma concessão de entitlement restrita ao Desenvolvedor, com testes.
+4. **Proteção de senha vazada não está imposta pelo Supabase Auth.** A checagem HIBP desta branch é feita no cliente/serviço auxiliar e pode ser contornada por chamadas diretas à API de Auth. O Advisor continua mostrando auth_leaked_password_protection como WARN. Ativar o controle nativo do Auth e testar cadastro/troca de senha antes de afirmar que a proteção é obrigatória.
+5. **RLS sem política continua em três tabelas.** bot_rate_limits, reseller_invites e revenue_orders têm RLS habilitado e nenhuma política; isso mantém acesso direto de clientes negado e é compatível com o uso por Edge Functions privilegiadas. Não adicionar políticas amplas. O Advisor também aponta sete índices não utilizados (INFO); nenhum foi removido.
+6. **QA visual/funcional real continua pendente.** Não foi possível abrir o GitHub Pages no navegador de verificação desta execução. Faltam Android/desktop, troca de idioma e navegação real nas 13 páginas, login/logout/recuperação de sessão, pedidos e níveis de revendedor, checkout de teste, Pix assíncrono, reembolso e disputa.
+
+**Decisão desta revisão:** manter este PR em draft e não mesclar nem implantar até resolver os itens 1–4, executar os testes de homologação e validar a compatibilidade do fluxo manual. Usar exclusivamente STRIPE_MODE=test + credenciais sk_test_ em homologação. Não configurar modo live nesta etapa.
