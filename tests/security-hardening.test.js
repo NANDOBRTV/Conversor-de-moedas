@@ -111,3 +111,15 @@ test("recharge database rounding and write grants match the current client", asy
   assert.match(migration, /GRANT UPDATE \(status,\s*admin_note\)/i);
   assert.match(reseller, /from\('recharge_orders'\)\.update\(\{status\}\)/);
 });
+
+
+test("recharge calculator enforces the same 10 million coin cap and reference prices as the database", async () => {
+  const client = await read("conversor-app.js");
+  const migration = await read("supabase/migrations/20261110_recharge_integrity_and_stripe_compat.sql");
+  assert.match(client, /MAXIMO_MOEDAS=10000000/);
+  assert.match(client, /m>MAXIMO_MOEDAS/);
+  assert.match(client, /qtd>MAXIMO_MOEDAS/);
+  assert.match(migration, /NEW\.coin_quantity > 10000000/);
+  assert.match(client, /CUSTO_USD=0\.99\/1500, CUSTO_BRL=6\/1500, CUSTO_VES=1450\/1500/);
+  assert.match(migration, /VALUES \('BRL',6\),\('USD',0\.99\),\('VES',1450\)/);
+});
