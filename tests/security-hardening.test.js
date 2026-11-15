@@ -103,7 +103,7 @@ test("Stripe product replays cannot reactivate cancelled or refunded orders", as
 
 test("recharge database rounding and write grants match the current client", async () => {
   const migration = await read("supabase/migrations/20261110_recharge_integrity_and_stripe_compat.sql");
-  const index = await read("index.html");
+  const client = await read("conversor-app.js");
   const reseller = await read("revendedor-app.js");
   assert.match(migration, /v_expected := pg_catalog\.ceil\(\(NEW\.coin_quantity::numeric \* v_price \/ 1500\) \* 100\) \/ 100;/);
   assert.match(index, /function arredondarParaCima\(v,c\).*Math\.ceil\(v\*fator-1e-9\)\/fator/);
