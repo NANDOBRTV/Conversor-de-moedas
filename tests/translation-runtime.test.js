@@ -161,3 +161,26 @@ test("o modo automático respeita a língua espanhola do navegador", () => {
   assert.equal(env.scripts.length, 1);
   assert.ok(env.cookieWrites.some((value) => value.includes("googtrans=/pt/es")));
 });
+
+
+test("all 13 site pages load the one shared language controller", async () => {
+  const pages = [
+    "index.html",
+    "cliente.html",
+    "revendedor.html",
+    "admin-pedidos.html",
+    "aprovacoes-revendedores.html",
+    "desenvolvedor.html",
+    "convites-revendedores.html",
+    "calculadora-precos.html",
+    "kit-divulgacao.html",
+    "kit-divulgacao-online.html",
+    "novas-receitas.html",
+    "pedidos-revendedores.html",
+    "planilha-lucro.html"
+  ];
+  for (const page of pages) {
+    const html = await readFile(new URL("../" + page, import.meta.url), "utf8");
+    assert.match(html, /idiomas\.js/, page + ": shared language controller missing");
+  }
+});
