@@ -73,3 +73,41 @@ test("private product content cannot be read in GitHub Pages source", async () =
   }
   assert.match(await read("premium-viewer.js"), /get-premium-content/);
 });
+
+
+test("Stripe checkout, verification and webhook enforce one explicit environment", async () => {
+  const paths = [
+    "supabase/functions/create-stripe-plan-checkout/index.ts",
+    "supabase/functions/create-stripe-product-checkout/index.ts",
+    "supabase/functions/verify-product-payment/index.ts",
+    "supabase/functions/stripe-revenue-webhook/index.ts"
+  ];
+  for (const path of paths) {
+    const source = await read(path);
+    assert.match(source, /STRIPE_MODE/, path + ": explicit Stripe mode missing");
+    assert.match(source, /sk_test_/, path + ": test key prefix not checked");
+    assert.match(source, /sk_live_/, path + ": live key prefix not checked");
+  }
+  const verify = await read("supabase/functions/verify-product-payment/index.ts");
+  assert.match(verify, /sessionId\.startsWith\(stripeMode === "live" \? "cs_live_" : "cs_test_"\)/);
+  const webhook = await read("supabase/functions/stripe-revenue-webhook/index.ts");
+  assert.match(webhook, /Boolean\(event\.livemode\) !== \(stripeMode === "live"\)/);
+});
+
+test("Stripe product replays cannot reactivate cancelled or refunded orders", async () => {
+  const verify = await read("supabase/functions/verify-product-payment/index.ts");
+  const webhook = await read("supabase/functions/stripe-revenue-webhook/index.ts");
+  assert.match(verify, /!\["pending","payment_confirmed","delivered"\]\.includes\(order\.status\)/);
+  assert.match(webhook, /!\["pending", "payment_confirmed", "delivered"\]\.includes\(order\.status\)/);
+});
+
+test("recharge database rounding and write grants match the current client", async () => {
+  const migration = await read("supabase/migrations/20261110_recharge_integrity_and_stripe_compat.sql");
+  const index = await read("index.html");
+  const reseller = await read("revendedor-app.js");
+  assert.match(migration, /v_expected := pg_catalog\.ceil\(\(NEW\.coin_quantity::numeric \* v_price \/ 1500\) \* 100\) \/ 100;/);
+  assert.match(index, /function arredondarParaCima\(v,c\).*Math\.ceil\(v\*fator-1e-9\)\/fator/);
+  assert.match(migration, /REVOKE UPDATE ON public\.recharge_orders FROM authenticated/i);
+  assert.match(migration, /GRANT UPDATE \(status,\s*admin_note\)/i);
+  assert.match(reseller, /from\('recharge_orders'\)\.update\(\{status\}\)/);
+});
