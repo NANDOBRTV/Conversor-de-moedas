@@ -14,7 +14,10 @@ Deno.serve(async(req:Request)=>{
  const auth=req.headers.get("Authorization")||"",token=auth.startsWith("Bearer ")?auth.slice(7):"";
  const url=Deno.env.get("SUPABASE_URL"),service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),stripeKey=Deno.env.get("STRIPE_SECRET_KEY");
  if(!url||!service)return reply({error:"Configuração do servidor incompleta."},503);
- if(!stripeKey||!stripeKey.startsWith("sk_live_"))return reply({error:"O checkout exige STRIPE_SECRET_KEY de produção (sk_live_) configurada no Supabase."},503);
+ const stripeMode=Deno.env.get("STRIPE_MODE");
+ if(!stripeKey||!["test","live"].includes(stripeMode||"")||
+    !stripeKey.startsWith(stripeMode==="live"?"sk_live_":"sk_test_"))
+   return reply({error:"Configuração de modo Stripe inconsistente."},503);
  if(!token)return reply({error:"Entre na sua conta antes de comprar."},401);
  let body:{product_code?:unknown};try{body=await req.json()}catch{return reply({error:"Pedido inválido."},400)}
  const code=body.product_code;

@@ -1,21 +1,33 @@
-# Conversor Sanba Protection API
+# Conversor Sanba — verificação de senha comprometida
 
-Serviço auxiliar para verificar se uma senha apareceu em vazamentos conhecidos usando a API Pwned Passwords do Have I Been Pwned.
+Este serviço **não recebe senhas em texto claro nem o hash SHA-1 completo**.
+A página calcula SHA-1 localmente e envia somente os cinco primeiros caracteres
+hexadecimais no campo `sha1_prefix`. O serviço consulta o Have I Been Pwned
+com esse prefixo e retorna apenas os sufixos de hashes comprometidos.
+A comparação do sufixo (35 caracteres) ocorre **no navegador**.
 
-## Endpoints
-- `GET /health`: estado do serviço.
-- `POST /v1/password-check`: recebe JSON `{"password":"..." }` e responde `{"ok":true,"compromised":true|false,"occurrences":N}`.
+## API
 
-## Privacidade e limites
-- A senha completa não é enviada ao Have I Been Pwned. O serviço calcula SHA-1 localmente e envia apenas os primeiros cinco caracteres do hash (modelo k-anonymity).
-- Não grava senhas nem hashes em logs.
-- Limita o tamanho da requisição e aplica rate limit simples por IP.
-- CORS é restrito às origens configuradas em `server.js`. CORS não é autenticação e não impede chamadas feitas por scripts fora do navegador.
-- Rate limit em memória é básico e reinicia ao reiniciar a instância; não substitui um limitador compartilhado.
-- A indisponibilidade do HIBP retorna erro temporário, não uma resposta dizendo que a senha é segura.
+- `GET /health`: saúde do processo (não garante acesso ao HIBP).
+- `POST /v1/password-check`: JSON `{"sha1_prefix":"ABCDE"}`.
+- Resposta: `{"ok":true,"suffixes":["..."]}`; cada sufixo tem 35 caracteres hexadecimais.
+- Entrada sem prefixo válido: HTTP 400.
+- Rate limit por IP + limite global; em caso de sobrecarga: HTTP 429.
+- HIBP indisponível: HTTP 503. O cliente deve falhar fechado.
+- CORS limitado à origem do site; **CORS não autentica clientes**.
 
-## Importante
-Este serviço é apenas um componente auxiliar. **Ele ainda não está conectado ao fluxo de cadastro/alteração de senha do Supabase**, portanto sua implantação isolada não impede que um usuário cadastre uma senha comprometida por outros caminhos. A integração de autenticação e os testes ponta a ponta são etapas separadas antes de anunciar essa proteção como ativa.
+## Dependências e limitações
 
-## Render
-Runtime Node, build command `npm install`, start command `npm start`, plano Free. O Render fornece a variável `PORT`.
+O endereço do serviço precisa ser o mesmo configurado em `cliente-app.js` e
+`revendedor-app.js`. Atualize o serviço e os dois clientes de forma coordenada:
+o protocolo antigo não é compatível.
+
+**Importante:** a validação no JavaScript público pode ser ignorada por chamadas
+diretas ao Supabase Auth. Para proteção obrigatória, habilite o controle
+nativo de senhas comprometidas no Supabase, quando disponível, ou use uma política
+servidora equivalente que cubra TODAS as rotas de cadastro e troca de senha.
+Não afirme que a verificação é obrigatória enquanto isso não estiver comprovado.
+
+Não registrar cabeçalhos ou corpos de requisição. Use HTTPS, proteção de proxy,
+limites do provedor e monitoramento de erros. O armazenamento de contadores em
+memória é uma proteção complementar, não distribuída.

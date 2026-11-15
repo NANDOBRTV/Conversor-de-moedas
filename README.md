@@ -47,6 +47,10 @@ npm run check:js
 
 Essas verificações são uma rede de segurança, não substituem testes reais de autenticação, RLS, convites, pedidos, checkout e webhooks.
 
+## Reforço de segurança (10/11/2026)
+
+As correções críticas estão documentadas em [plano de implantação segura](docs/SECURITY-HARDENING-2026-11-10.md). Antes de mesclar/publicar, é obrigatório preparar o bucket privado de produtos, aplicar migrações em homologação e validar autenticação, pagamentos, reembolsos e RLS. **Criar o PR não executa deploy.**
+
 ## Configuração e segurança
 
 - Use somente a chave pública/publishable do Supabase no navegador.

@@ -33,6 +33,11 @@ Deno.serve(async (req: Request) => {
   }));
   const ts = parts.ts || "", suppliedV1 = parts.v1 || "";
   if (!paymentId || !/^[0-9]+$/.test(paymentId) || !ts || !suppliedV1 || !requestId) return json({ error: "Assinatura ou identificador ausente." }, 400);
+  // Mercado Pago may emit timestamps in seconds or milliseconds.
+  const sentAtMs = /^\d{10}$/.test(ts) ? Number(ts) * 1000 :
+                   /^\d{13}$/.test(ts) ? Number(ts) : NaN;
+  if (!Number.isFinite(sentAtMs) || Math.abs(Date.now() - sentAtMs) > 5 * 60 * 1000)
+    return json({ error: "Notificação expirada ou fora da janela de segurança." }, 401);
   const expected = await hmacSha256Hex(webhookSecret, `id:${paymentId.toLowerCase()};request-id:${requestId};ts:${ts};`);
   if (!safeEqual(expected, suppliedV1.toLowerCase())) return json({ error: "Assinatura inválida." }, 401);
   try {
@@ -44,6 +49,17 @@ Deno.serve(async (req: Request) => {
     const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
     const { data: order, error: orderError } = await admin.from("payment_orders").select("*").eq("id", externalReference).maybeSingle();
     if (orderError || !order) return json({ received: true, ignored: true });
+    if (order.provider !== "mercadopago" || (order.preference_id &&
+        String(payment.preference_id || "") !== String(order.preference_id))) {
+      return json({ error: "Pagamento não corresponde ao provedor ou preferência do pedido." }, 409);
+    }
+    const meta = payment.metadata || {};
+    if (String(meta.order_id || "") !== order.id ||
+        String(meta.user_id || "") !== order.user_id ||
+        String(meta.plan_tier || "") !== order.plan_tier) {
+      return json({ error: "Metadados do pagamento não correspondem ao pedido." }, 409);
+    }
+    if (order.status === "refunded") return json({ received: true, ignored: "reversed_order" });
     const status = String(payment.status || "");
     if (status === "approved") {
       if (String(payment.currency_id) !== "BRL" || Math.abs(Number(payment.transaction_amount) - Number(order.amount)) > 0.001) {
@@ -51,7 +67,15 @@ Deno.serve(async (req: Request) => {
         return json({ error: "Valor ou moeda não corresponde ao pedido." }, 409);
       }
       if (order.status === "approved" && String(order.payment_id) === paymentId) return json({ received: true, already_processed: true });
-      const { data: profile } = await admin.from("reseller_profiles").select("membership_tier").eq("user_id", order.user_id).maybeSingle();
+      if (order.status !== "pending") return json({ error: "O pedido não está pendente." }, 409);
+      const { data: profile } = await admin.from("reseller_profiles")
+        .select("membership_tier, access_status, access_until, reseller_application_status")
+        .eq("user_id", order.user_id).maybeSingle();
+      if (!profile || profile.access_status !== "active" ||
+          profile.reseller_application_status !== "approved" ||
+          (profile.access_until && new Date(profile.access_until).getTime() <= Date.now())) {
+        return json({ error: "Pagamento confirmado, mas o revendedor precisa de aprovação ou reativação manual." }, 409);
+      }
       if (!profile || profile.membership_tier === "developer") {
         await admin.from("payment_orders").update({ payment_id: paymentId }).eq("id", order.id);
         return json({ received: true, profile_unchanged: true });
@@ -82,7 +106,29 @@ Deno.serve(async (req: Request) => {
       }).eq("id", order.id);
       if (orderUpdateError) return json({ error: "Pagamento confirmado; atualização do pedido será repetida." }, 500);
     } else if (["rejected", "cancelled", "refunded", "charged_back"].includes(status)) {
-      await admin.from("payment_orders").update({ status: status === "charged_back" ? "refunded" : status, payment_id: paymentId }).eq("id", order.id);
+      const reversed = status === "refunded" || status === "charged_back";
+      const finalStatus = reversed ? "refunded" : status;
+      if (order.status === "approved" && !reversed) {
+        return json({ received: true, ignored: "non_terminal_status_after_approval" });
+      }
+      const { error: changeError } = await admin.from("payment_orders")
+        .update({ status: finalStatus, payment_id: paymentId }).eq("id", order.id);
+      if (changeError) throw changeError;
+      if (reversed) {
+        const { data: otherOrders, error: otherError } = await admin.from("payment_orders")
+          .select("id").eq("user_id", order.user_id).eq("status", "approved")
+          .neq("id", order.id).limit(1);
+        if (otherError) throw otherError;
+        const { data: manualOrders, error: manualError } = await admin.from("customer_orders")
+          .select("id").eq("user_id", order.user_id).eq("status", "approved").limit(1);
+        if (manualError) throw manualError;
+        if (!(otherOrders || []).length && !(manualOrders || []).length) {
+          const { error: revokeError } = await admin.from("reseller_profiles")
+            .update({ membership_tier: "common", plan_name: "Revendedor", access_until: null })
+            .eq("user_id", order.user_id).eq("membership_tier", order.plan_tier);
+          if (revokeError) throw revokeError;
+        }
+      }
     }
     return json({ received: true });
   } catch (error) {

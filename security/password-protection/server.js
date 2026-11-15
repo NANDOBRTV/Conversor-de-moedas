@@ -1,15 +1,16 @@
 import http from "node:http";
-import { createHash } from "node:crypto";
 
 const PORT = Number(process.env.PORT || 10000);
 const ALLOWED_ORIGINS = new Set([
-  "https://nandobrtv.github.io",
-  "https://cute-easy-worlds-kawaii-coloring-series-for-kids.catalog.yampi.io"
+  "https://nandobrtv.github.io"
 ]);
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 20;
 const MAX_BODY_BYTES = 2_048;
 const requests = new Map();
+const MAX_TRACKED_IPS = 5000;
+const MAX_GLOBAL_REQUESTS = 400;
+let globalWindow = { startedAt: Date.now(), count: 0 };
 
 function json(res, status, body, origin) {
   const headers = {
@@ -36,7 +37,18 @@ function clientKey(req) {
 
 function rateLimited(req) {
   const now = Date.now();
+  if (now - globalWindow.startedAt >= WINDOW_MS) globalWindow = { startedAt: now, count: 0 };
+  if (++globalWindow.count > MAX_GLOBAL_REQUESTS) return true;
   const key = clientKey(req);
+  // Bound memory usage. A fresh entry is never trusted to disable the limit.
+  if (requests.size >= MAX_TRACKED_IPS) {
+    for (const [ip, record] of requests) {
+      if (now - record.startedAt >= WINDOW_MS) requests.delete(ip);
+    }
+    if (requests.size >= MAX_TRACKED_IPS && !requests.has(key)) {
+      return true; // fail closed instead of allowing unbounded memory growth
+    }
+  }
   const current = requests.get(key);
   if (!current || now - current.startedAt >= WINDOW_MS) {
     requests.set(key, { startedAt: now, count: 1 });
@@ -64,21 +76,23 @@ async function readJson(req) {
   }
 }
 
-async function checkPwnedPassword(password) {
-  // The full password is never sent to HIBP: only the first five SHA-1 hex chars.
-  const hash = createHash("sha1").update(password, "utf8").digest("hex").toUpperCase();
-  const prefix = hash.slice(0, 5);
-  const suffix = hash.slice(5);
+async function checkPwnedPasswordPrefix(prefix) {
+  // The server never receives a raw password or a complete password hash.
   const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
-    headers: { "Add-Padding": "true", "User-Agent": "ConversorSanba-PasswordProtection/1.0" },
+    headers: { "Add-Padding": "true", "User-Agent": "ConversorSanba-PasswordProtection/3.0" },
     signal: AbortSignal.timeout(5000)
   });
   if (!response.ok) throw new Error("hibp_unavailable");
-  const text = await response.text();
-  const match = text.split("\r\n").find(line => line.split(":")[0]?.toUpperCase() === suffix);
-  const count = match ? Number(match.split(":")[1]) : 0;
-  if (!Number.isSafeInteger(count) || count < 0) throw new Error("hibp_invalid_response");
-  return { compromised: count > 0, occurrences: count };
+  const raw = await response.text();
+  if (raw.length > 100000) throw new Error("hibp_unexpected_size");
+  const suffixes = [];
+  for (const line of raw.split(/\r?\n/)) {
+    const [suffix, count] = line.trim().split(":");
+    if (/^[a-f0-9]{35}$/i.test(suffix || "") && Number(count) > 0) {
+      suffixes.push(suffix.toUpperCase());
+    }
+  }
+  return { suffixes };
 }
 
 const server = http.createServer(async (req, res) => {
@@ -107,10 +121,10 @@ const server = http.createServer(async (req, res) => {
 
   try {
     const body = await readJson(req);
-    if (typeof body.password !== "string" || body.password.length < 1 || body.password.length > 256) {
-      return json(res, 400, { error: "Informe uma senha válida para verificação." }, origin);
+    if (typeof body.sha1_prefix !== "string" || !/^[a-f0-9]{5}$/i.test(body.sha1_prefix)) {
+      return json(res, 400, { error: "Prefixo SHA-1 inválido para verificação." }, origin);
     }
-    const result = await checkPwnedPassword(body.password);
+    const result = await checkPwnedPasswordPrefix(body.sha1_prefix.toUpperCase());
     return json(res, 200, { ok: true, ...result }, origin);
   } catch (error) {
     if (error?.status === 400 || error?.status === 413) {

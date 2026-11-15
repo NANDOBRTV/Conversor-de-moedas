@@ -17,7 +17,12 @@ Deno.serve(async(req:Request)=>{
  const sessionId=typeof body.session_id==="string"?body.session_id:"";
  if(!/^cs_(live|test)_[A-Za-z0-9]+$/.test(sessionId))return reply({error:"Sessão de pagamento inválida."},400);
  const url=Deno.env.get("SUPABASE_URL"),service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),stripeKey=Deno.env.get("STRIPE_SECRET_KEY");
- if(!url||!service||!stripeKey||!stripeKey.startsWith("sk_live_"))return reply({error:"A confirmação de pagamento não está configurada em produção."},503);
+ const stripeMode=Deno.env.get("STRIPE_MODE");
+ if(!url||!service||!stripeKey||!["test","live"].includes(stripeMode||"")||
+    !stripeKey.startsWith(stripeMode==="live"?"sk_live_":"sk_test_"))
+   return reply({error:"Modo de confirmação Stripe inconsistente."},503);
+ if(!sessionId.startsWith(stripeMode==="live"?"cs_live_":"cs_test_"))
+   return reply({error:"Sessão pertence a outro ambiente Stripe."},409);
  try{
   const admin=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
   const {data:authData,error:authError}=await admin.auth.getUser(token),user=authData?.user;

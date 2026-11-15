@@ -1,0 +1,125 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const read = path => readFile(new URL("../" + path, import.meta.url), "utf8");
+
+test("public pages move JS to external files and use a restrictive CSP", async () => {
+  for (const path of ["index.html", "cliente.html", "revendedor.html", "admin-pedidos.html"]) {
+    const html = await read(path);
+    assert.doesNotMatch(html, /<script(?:\s+type="module")?>\s*[^<\s][\s\S]*?<\/script>/i, path + ": inline script");
+    assert.doesNotMatch(html, /script-src[^;"']*'unsafe-inline'/i, path + ": unsafe inline script CSP");
+  }
+  for (const path of ["conversor-app.js", "conversor-auth.js", "cliente-app.js", "admin-pedidos-app.js", "revendedor-url-sanitizer.js"]) {
+    assert.ok((await read(path)).length > 100, path + ": external module missing");
+  }
+});
+
+test("password protection uses k-anonymity and never receives a raw password or full SHA-1", async () => {
+  const service = await read("security/password-protection/server.js");
+  assert.match(service, /body\.sha1_prefix/);
+  assert.doesNotMatch(service, /body\.password|body\.sha1\b/);
+  assert.match(service, /MAX_TRACKED_IPS/);
+  assert.match(service, /MAX_GLOBAL_REQUESTS/);
+  for (const path of ["cliente-app.js", "revendedor-app.js"]) {
+    const text = await read(path);
+    assert.match(text, /sha1_prefix:sha1\.slice\(0,5\)/);
+    assert.match(text, /result\.suffixes\.includes\(suffix\)/);
+    assert.doesNotMatch(text, /JSON\.stringify\(\{\s*sha1\s*\}\)/);
+  }
+  assert.match(await read("revendedor-app.js"), /await checkPasswordLeak\(password\)/);
+});
+
+test("payment gateways deny unapproved resellers and process reversals", async () => {
+  for (const path of ["supabase/functions/create-stripe-plan-checkout/index.ts",
+                      "supabase/functions/create-checkout/index.ts",
+                      "supabase/functions/stripe-revenue-webhook/index.ts",
+                      "supabase/functions/mercadopago-webhook/index.ts"]) {
+    const source = await read(path);
+    assert.match(source, /reseller_application_status/);
+    assert.match(source, /access_status/);
+  }
+  const stripe = await read("supabase/functions/stripe-revenue-webhook/index.ts");
+  assert.match(stripe, /charge\.refunded/);
+  assert.match(stripe, /charge\.dispute\.created/);
+  assert.match(stripe, /source_order_id/);
+  assert.match(stripe, /handlePaymentReversal/);
+  const mp = await read("supabase/functions/mercadopago-webhook/index.ts");
+  assert.match(mp, /sentAtMs/);
+  assert.match(mp, /meta\.order_id/);
+});
+
+test("database checks price on server and narrows recharge write permissions", async () => {
+  const schema = await read("supabase/schema.sql");
+  const migration = await read("supabase/migrations/20261110_recharge_integrity_and_stripe_compat.sql");
+  for (const source of [schema, migration]) {
+    assert.match(source, /CREATE TRIGGER recharge_orders_integrity/i);
+    assert.match(source, /recharge_reference_prices/i);
+    assert.match(source, /REVOKE UPDATE ON public\.recharge_orders FROM authenticated/i);
+    assert.match(source, /GRANT UPDATE \(status,\s*admin_note\)/i);
+  }
+});
+
+test("private product content cannot be read in GitHub Pages source", async () => {
+  const gate = await read("supabase/functions/get-premium-content/index.ts");
+  assert.match(gate, /product_entitlements/);
+  assert.match(gate, /premium-content/);
+  assert.match(gate, /payment_confirmed/);
+  for (const path of ["kit-divulgacao-online.html", "planilha-lucro.html", "calculadora-precos.html"]) {
+    const html = await read(path);
+    assert.match(html, /premium-viewer\.js/);
+    assert.match(html, /sandbox="allow-scripts"/);
+    assert.doesNotMatch(html, /<article id="content" hidden>|function calc\(|Mensagem 1<\/div>/i);
+  }
+  assert.match(await read("premium-viewer.js"), /get-premium-content/);
+});
+
+
+test("Stripe checkout, verification and webhook enforce one explicit environment", async () => {
+  const paths = [
+    "supabase/functions/create-stripe-plan-checkout/index.ts",
+    "supabase/functions/create-stripe-product-checkout/index.ts",
+    "supabase/functions/verify-product-payment/index.ts",
+    "supabase/functions/stripe-revenue-webhook/index.ts"
+  ];
+  for (const path of paths) {
+    const source = await read(path);
+    assert.match(source, /STRIPE_MODE/, path + ": explicit Stripe mode missing");
+    assert.match(source, /sk_test_/, path + ": test key prefix not checked");
+    assert.match(source, /sk_live_/, path + ": live key prefix not checked");
+  }
+  const verify = await read("supabase/functions/verify-product-payment/index.ts");
+  assert.match(verify, /sessionId\.startsWith\(stripeMode==="live"\?"cs_live_":"cs_test_"\)/);
+  const webhook = await read("supabase/functions/stripe-revenue-webhook/index.ts");
+  assert.match(webhook, /Boolean\(event\.livemode\) !== \(stripeMode === "live"\)/);
+});
+
+test("Stripe product replays cannot reactivate cancelled or refunded orders", async () => {
+  const verify = await read("supabase/functions/verify-product-payment/index.ts");
+  const webhook = await read("supabase/functions/stripe-revenue-webhook/index.ts");
+  assert.match(verify, /!\["pending","payment_confirmed","delivered"\]\.includes\(order\.status\)/);
+  assert.match(webhook, /!\["pending", "payment_confirmed", "delivered"\]\.includes\(order\.status\)/);
+});
+
+test("recharge database rounding and write grants match the current client", async () => {
+  const migration = await read("supabase/migrations/20261110_recharge_integrity_and_stripe_compat.sql");
+  const client = await read("conversor-app.js");
+  const reseller = await read("revendedor-app.js");
+  assert.match(migration, /v_expected := pg_catalog\.ceil\(\(NEW\.coin_quantity::numeric \* v_price \/ 1500\) \* 100\) \/ 100;/);
+  assert.match(client, /function arredondarParaCima\(v,c\).*Math\.ceil\(v\*fator-1e-9\)\/fator/);
+  assert.match(migration, /REVOKE UPDATE ON public\.recharge_orders FROM authenticated/i);
+  assert.match(migration, /GRANT UPDATE \(status,\s*admin_note\)/i);
+  assert.match(reseller, /from\('recharge_orders'\)\.update\(\{status\}\)/);
+});
+
+
+test("recharge calculator enforces the same 10 million coin cap and reference prices as the database", async () => {
+  const client = await read("conversor-app.js");
+  const migration = await read("supabase/migrations/20261110_recharge_integrity_and_stripe_compat.sql");
+  assert.match(client, /MAXIMO_MOEDAS=10000000/);
+  assert.match(client, /m>MAXIMO_MOEDAS/);
+  assert.match(client, /qtd>MAXIMO_MOEDAS/);
+  assert.match(migration, /NEW\.coin_quantity > 10000000/);
+  assert.match(client, /CUSTO_USD=0\.99\/1500, CUSTO_BRL=6\/1500, CUSTO_VES=1450\/1500/);
+  assert.match(migration, /VALUES \('BRL',6\),\('USD',0\.99\),\('VES',1450\)/);
+});

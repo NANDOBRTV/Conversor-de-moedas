@@ -1,0 +1,7 @@
+node_modules/
+private-artifacts/
+.env
+.env.*
+*.pem
+*.p12
+.DS_Store
