@@ -460,3 +460,11 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - Nesta revisão, as únicas alterações de código feitas foram na branch de continuidade de idioma; não houve alteração em `main`, publicação no Pages, deploy de Edge Function, migração, troca de chave ou mudança de permissão. O CI da nova PR ainda precisa executar antes de qualquer decisão de merge.
 
 **Estado em 22/11/2026:** o repositório principal mantém os checks automatizados verdes, mas o site não está certificado como completo nem pronto para produção. Manter PRs #1 e #16 em draft; concluir QA real das 13 páginas e resolver idempotência e compatibilidade de pedidos manuais/licenças antes de qualquer liberação de pagamento/conteúdo privado.
+
+
+### Resultado do CI da branch de continuidade — 22/11/2026
+- A PR #17 foi aberta a partir do commit atual de `main` (`83432b158dfd580871ae27a59e186f8144844751`) para evitar a base antiga/conflictante da PR #15. A PR #17 permanece draft e, na última consulta, estava marcada como mergeable.
+- O workflow `Quality checks` executou na PR #17, run [45077974866](https://github.com/NANDOBRTV/Conversor-de-moedas/actions/runs/45077974866), e terminou com sucesso: setup Node 20, `npm test` e `npm run check:js` aprovados. Isso valida os testes automatizados da branch, não a tradução visual do Google em navegador real.
+- Consulta SQL somente leitura em 22/11 confirmou que `anon` e `authenticated` não têm grants diretos para `bot_rate_limits`, `reseller_invites` e `revenue_orders`; as três continuam com RLS habilitado e sem políticas próprias (Advisor INFO). `recharge_orders` ainda concede UPDATE em nível de tabela a `authenticated`, limitado pela política RLS `Active developers can update recharge orders`; a restrição de colunas proposta na migração da PR #16 ainda não está aplicada. Não alterei grants nem políticas.
+- `product_entitlements` tem grants de escrita para authenticated, mas a leitura das políticas mostra apenas a política de SELECT do próprio usuário; RLS continua bloqueando operações sem política de escrita. Não foram criadas permissões ou políticas adicionais.
+- O site publicado não foi acessível pela ferramenta de navegação nesta execução. Não há evidência de teste visual, de tradução real, de login ou de checkout. Nenhum deploy do Pages ou do Supabase foi feito a partir da PR #17.
