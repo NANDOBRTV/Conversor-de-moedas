@@ -468,3 +468,9 @@ Executar a página de testes publicada e obter aprovação em todos os casos, de
 - Consulta SQL somente leitura em 22/11 confirmou que `anon` e `authenticated` não têm grants diretos para `bot_rate_limits`, `reseller_invites` e `revenue_orders`; as três continuam com RLS habilitado e sem políticas próprias (Advisor INFO). `recharge_orders` ainda concede UPDATE em nível de tabela a `authenticated`, limitado pela política RLS `Active developers can update recharge orders`; a restrição de colunas proposta na migração da PR #16 ainda não está aplicada. Não alterei grants nem políticas.
 - `product_entitlements` tem grants de escrita para authenticated, mas a leitura das políticas mostra apenas a política de SELECT do próprio usuário; RLS continua bloqueando operações sem política de escrita. Não foram criadas permissões ou políticas adicionais.
 - O site publicado não foi acessível pela ferramenta de navegação nesta execução. Não há evidência de teste visual, de tradução real, de login ou de checkout. Nenhum deploy do Pages ou do Supabase foi feito a partir da PR #17.
+
+
+### Correção de status das PRs — 22/11/2026
+- PR #15 foi encerrada sem merge em 22/11/2026 por estar baseada em commit antigo e ter sido substituída pela PR #17, que parte do `main` atual. O código da melhoria de idioma foi reaplicado na PR #17; a PR #17 permanece draft.
+- PR #17: CI aprovado no run 45077974866 para o commit de código `ce34f28`. O commit posterior `eecb43a` alterou somente este relatório; não foi apresentado novo run para esse commit documental.
+- A PR #16 permanece draft, sem merge/deploy. O código de checkout e hardening ainda requer correção de idempotência, alinhamento do fluxo manual com entitlements e homologação completa.
