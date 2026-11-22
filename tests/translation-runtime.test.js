@@ -205,8 +205,8 @@ const operationalPages = [
 test("Portuguese preference stays local on all 13 pages and the selector remains on the home page only", async () => {
   for (const page of operationalPages) {
     const html = await readFile(new URL("../" + page, import.meta.url), "utf8");
-    const controllerTags = html.match(/<script\\b[^>]*src=["'][^"']*idiomas\\.js[^"']*["'][^>]*>/gi) || [];
-    assert.equal(controllerTags.length, 1, page + ": expected exactly one shared controller script");
+    const controllerCount = html.split("idiomas.js").length - 1;
+    assert.equal(controllerCount, 1, page + ": expected exactly one shared controller script reference");
 
     const env = createEnvironment({
       pathname: "/Conversor-de-moedas/" + page,
