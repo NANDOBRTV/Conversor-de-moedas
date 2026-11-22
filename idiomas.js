@@ -120,22 +120,37 @@
     }, 250);
   };
 
-  function init() {
-    addStyles();
+  function loadGoogleTranslator() {
+    if (document.getElementById('sanbaGoogleTranslateScript')) return;
     ensureTranslatorHost();
-    addHomePageSelector();
-    var language = getTargetLanguage();
-    document.documentElement.lang = language === 'pt' ? 'pt-BR' : language;
-    if (language !== 'pt') setTranslationCookie(language);
-
     var script = document.createElement('script');
+    script.id = 'sanbaGoogleTranslateScript';
     script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
     script.async = true;
     script.onerror = function () {
+      document.documentElement.setAttribute('data-translation-status', 'unavailable');
       var picker = document.getElementById('sanbaLanguagePicker');
       if (picker) picker.title = 'A tradução não carregou. Verifique a conexão e tente novamente.';
     };
     document.head.appendChild(script);
+  }
+
+  function init() {
+    addStyles();
+    addHomePageSelector();
+
+    var language = getTargetLanguage();
+    document.documentElement.lang = language === 'pt' ? 'pt-BR' : language;
+
+    // Não carrega um serviço externo enquanto o site está em português.
+    // A tradução só é iniciada quando a escolha efetiva é inglês ou espanhol.
+    if (language === 'pt') {
+      clearTranslationCookies();
+      return;
+    }
+
+    setTranslationCookie(language);
+    loadGoogleTranslator();
   }
 
   if (document.readyState === 'loading') {
